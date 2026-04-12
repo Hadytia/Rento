@@ -3,19 +3,35 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>RentalApp — Dashboard</title>
+    <title>Rento — Premium Rental Management</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --primary: #2D4DA3;
+            --primary-dark: #1E3A8A;
+            --primary-light: #E0E7FF;
+            --secondary: #6366F1;
+            --accent: #00D2FF;
+            --bg: #F8FAFC;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #F7F8FC;
-            color: #1E1E1E;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
 
         /* ── Navbar ── */
@@ -23,392 +39,383 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 48px;
-            height: 64px;
-            background: white;
-            border-bottom: 1px solid #E5E5E5;
+            padding: 0 5vw;
+            height: 80px;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 100;
         }
 
         .nav-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             text-decoration: none;
+            transition: transform 0.2s;
         }
+        .nav-brand:hover { transform: scale(1.02); }
 
         .nav-logo {
-            width: 36px;
-            height: 36px;
-            background: #2D4DA3;
-            border-radius: 10px;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(45, 77, 163, 0.2);
         }
 
         .nav-brand-name {
-            font-size: 17px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
             font-weight: 700;
-            color: #1E1E1E;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
         }
 
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
         }
 
         .btn-login {
-            height: 38px;
-            padding: 0 20px;
-            border: 1px solid #E5E5E5;
-            border-radius: 8px;
-            background: white;
-            font-family: Inter, sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            color: #1E1E1E;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            transition: background 0.15s;
-        }
-
-        .btn-login:hover { background: #F5F5F5; }
-
-        .btn-dashboard {
-            height: 38px;
-            padding: 0 20px;
-            border: none;
-            border-radius: 8px;
-            background: #2D4DA3;
-            font-family: Inter, sans-serif;
             font-size: 14px;
             font-weight: 600;
-            color: white;
-            cursor: pointer;
+            color: var(--text-main);
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            transition: background 0.15s;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+        .btn-login:hover { background: rgba(0,0,0,0.04); }
+
+        .btn-dashboard-nav {
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(45, 77, 163, 0.25);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn-dashboard-nav:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 77, 163, 0.35);
         }
 
-        .btn-dashboard:hover { background: #253f8a; }
-
-        /* ── Hero ── */
+        /* ── Hero Section ── */
         .hero {
-            flex: 1;
+            position: relative;
+            padding: 100px 5vw;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             text-align: center;
-            padding: 80px 24px 60px;
+            background: radial-gradient(circle at top right, #EEF2FF 0%, transparent 50%),
+                        radial-gradient(circle at bottom left, #F0FDFA 0%, transparent 50%);
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            background: #EEF2FF;
-            color: #2D4DA3;
-            border: 1px solid #C7D2FE;
-            border-radius: 20px;
-            padding: 5px 14px;
+            gap: 8px;
+            background: white;
+            border: 1px solid var(--primary-light);
+            padding: 6px 16px;
+            border-radius: 100px;
             font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            animation: fadeInDown 0.8s ease-out;
         }
 
         .hero h1 {
-            font-size: 52px;
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(42px, 6vw, 72px);
             font-weight: 800;
-            color: #1E1E1E;
-            line-height: 1.15;
-            letter-spacing: -1.5px;
-            max-width: 680px;
-            margin-bottom: 12px;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            max-width: 900px;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.8s ease-out;
         }
 
         .hero h1 span {
-            color: #2D4DA3;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .hero-sub {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-style: italic;
             font-size: 18px;
-            color: #6B6B6B;
-            max-width: 480px;
-            line-height: 1.7;
-            margin-bottom: 40px;
+            color: var(--text-muted);
+            max-width: 580px;
+            line-height: 1.6;
+            margin-bottom: 48px;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
         }
 
         .hero-actions {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            gap: 16px;
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
         }
 
         .btn-primary {
-            height: 48px;
-            padding: 0 32px;
-            background: #2D4DA3;
-            border: none;
-            border-radius: 10px;
-            font-family: Inter, sans-serif;
-            font-size: 15px;
-            font-weight: 600;
+            background: var(--primary);
             color: white;
-            cursor: pointer;
+            padding: 18px 40px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: background 0.15s;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(45, 77, 163, 0.2);
+            transition: all 0.3s;
         }
-
-        .btn-primary:hover { background: #253f8a; }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(45, 77, 163, 0.3);
+        }
 
         .btn-secondary {
-            height: 48px;
-            padding: 0 28px;
             background: white;
-            border: 1px solid #E5E5E5;
-            border-radius: 10px;
-            font-family: Inter, sans-serif;
-            font-size: 15px;
-            font-weight: 500;
-            color: #1E1E1E;
-            cursor: pointer;
+            color: var(--text-main);
+            padding: 18px 36px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            transition: background 0.15s;
+            border: 1px solid var(--primary-light);
+            transition: all 0.3s;
         }
+        .btn-secondary:hover { background: #F1F5F9; }
 
-        .btn-secondary:hover { background: #F5F5F5; }
-
-        /* ── Stats Strip ── */
-        .stats-strip {
-            display: flex;
-            justify-content: center;
-            gap: 0;
-            background: white;
-            border-top: 1px solid #E5E5E5;
-            border-bottom: 1px solid #E5E5E5;
-        }
-
-        .stat-item {
-            flex: 1;
-            max-width: 220px;
-            padding: 28px 24px;
-            text-align: center;
-            border-right: 1px solid #E5E5E5;
-        }
-
-        .stat-item:last-child { border-right: none; }
-
-        .stat-item .val {
-            font-size: 30px;
-            font-weight: 800;
-            color: #2D4DA3;
-            letter-spacing: -1px;
-            margin-bottom: 4px;
-        }
-
-        .stat-item .lbl {
-            font-size: 13px;
-            color: #9E9E9E;
-            font-weight: 500;
-        }
-
-        /* ── Feature Cards ── */
-        .features {
-            padding: 64px 48px;
-            max-width: 1100px;
+        /* ── Stats ── */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            padding: 60px 5vw;
+            max-width: 1200px;
             margin: 0 auto;
             width: 100%;
         }
 
-        .features-title {
+        .stat-card {
+            background: white;
+            padding: 32px;
+            border-radius: 24px;
+            border: 1px solid rgba(0,0,0,0.05);
             text-align: center;
-            font-size: 22px;
-            font-weight: 700;
-            color: #1E1E1E;
-            margin-bottom: 32px;
+            transition: all 0.3s;
         }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+        .stat-val { font-size: 32px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+
+        /* ── Features ── */
+        .features {
+            padding: 100px 5vw;
+            background: white;
+        }
+
+        .section-header { text-align: center; margin-bottom: 64px; }
+        .section-header h2 { font-family: 'Outfit', sans-serif; font-size: 36px; font-weight: 800; margin-bottom: 16px; }
+        .section-header p { color: var(--text-muted); font-size: 18px; }
 
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .feature-card {
+            background: var(--bg);
+            padding: 40px;
+            border-radius: 28px;
+            border: 1px solid transparent;
+            transition: all 0.4s ease;
+        }
+        .feature-card:hover {
             background: white;
-            border: 1px solid #E5E5E5;
-            border-radius: 12px;
-            padding: 24px;
-            transition: box-shadow 0.2s;
+            border-color: var(--primary-light);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
         }
 
-        .feature-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-
         .feature-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 16px;
-            font-size: 20px;
+            font-size: 24px;
+            margin-bottom: 24px;
         }
+        .feature-icon.blue { background: #EEF2FF; color: #4338CA; }
+        .feature-icon.green { background: #F0FDF4; color: #15803D; }
+        .feature-icon.red { background: #FEF2F2; color: #B91C1C; }
+        .feature-icon.purple { background: #F5F3FF; color: #6D28D9; }
 
-        .feature-icon.blue   { background: #EEF2FF; }
-        .feature-icon.green  { background: #F0FDF4; }
-        .feature-icon.orange { background: #FFF7ED; }
-        .feature-icon.red    { background: #FEF2F2; }
-        .feature-icon.purple { background: #F5F3FF; }
-        .feature-icon.teal   { background: #F0FDFA; }
-
-        .feature-card h3 {
-            font-size: 15px;
-            font-weight: 700;
-            color: #1E1E1E;
-            margin-bottom: 6px;
-        }
-
-        .feature-card p {
-            font-size: 13px;
-            color: #6B6B6B;
-            line-height: 1.6;
-        }
+        .feature-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+        .feature-card p { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
 
         /* ── Footer ── */
         footer {
-            text-align: center;
-            padding: 24px;
-            font-size: 13px;
-            color: #9E9E9E;
-            border-top: 1px solid #E5E5E5;
+            margin-top: auto;
+            padding: 40px 5vw;
             background: white;
+            border-top: 1px solid var(--primary-light);
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+        footer a:hover { color: var(--secondary); text-decoration: underline; }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 0 24px; }
+            .hero h1 { font-size: 42px; }
+            .hero-actions { flex-direction: column; width: 100%; }
+            .btn-primary, .btn-secondary { justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-    {{-- Navbar --}}
     <nav>
         <a href="/" class="nav-brand">
             <div class="nav-logo">📦</div>
-            <span class="nav-brand-name">RentalApp</span>
+            <span class="nav-brand-name">Rento</span>
         </a>
         <div class="nav-links">
             @auth
-                <a href="{{ url('/dashboard') }}" class="btn-dashboard">
-                    Go to Dashboard →
+                <a href="{{ url('/dashboard') }}" class="btn-dashboard-nav">
+                    Dashboard →
                 </a>
             @else
-                <a href="{{ route('login') }}" class="btn-login">Log in</a>
+                <a href="{{ route('login') }}" class="btn-login">Log In</a>
+                <a href="{{ route('login') }}" class="btn-dashboard-nav">Get Started</a>
             @endauth
         </div>
     </nav>
 
-    {{-- Hero --}}
     <div class="hero">
         <div class="hero-badge">
-            ✦ Rental Management System
+            ✨ Intelligent Rental Management System
         </div>
-        <h1>Kelola Bisnis Rental<br>Anda dengan <span>Mudah</span></h1>
-        <p class="hero-sub">Pantau produk, transaksi, pelanggan, dan denda keterlambatan — semua dalam satu dashboard.</p>
+        <h1>Kelola Bisnis Rental<br>Anda dengan <span>Keunggulan</span></h1>
+        <p class="hero-sub">
+            Pantau stok produk, otomasi denda, dan kelola laporan transaksi dalam satu sistem terintegrasi yang modern.
+        </p>
         <div class="hero-actions">
             @auth
                 <a href="{{ url('/dashboard') }}" class="btn-primary">
-                    Buka Dashboard
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    Buka Dashboard Pintar
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
                 </a>
             @else
                 <a href="{{ route('login') }}" class="btn-primary">
-                    Masuk Sekarang
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    Mulai Sekarang
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
                 </a>
-                <a href="{{ url('/dashboard') }}" class="btn-secondary">Lihat Demo</a>
+                <a href="#" class="btn-secondary">Lihat Demo Produk</a>
             @endauth
         </div>
     </div>
 
-    {{-- Stats Strip --}}
-    <div class="stats-strip">
-        <div class="stat-item">
-            <div class="val">100%</div>
-            <div class="lbl">Cloud-based via Supabase</div>
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-val">100%</div>
+            <div class="stat-label">Cloud-based & Secure</div>
         </div>
-        <div class="stat-item">
-            <div class="val">Real-time</div>
-            <div class="lbl">Data selalu up-to-date</div>
+        <div class="stat-card">
+            <div class="stat-val">Real-time</div>
+            <div class="stat-label">Auto-sync MySQL Database</div>
         </div>
-        <div class="stat-item">
-            <div class="val">Multi-role</div>
-            <div class="lbl">Superadmin & Admin</div>
+        <div class="stat-card">
+            <div class="stat-val">24/7</div>
+            <div class="stat-label">Akses Kapan Pun & Di Mana Pun</div>
         </div>
-        <div class="stat-item">
-            <div class="val">CSV</div>
-            <div class="lbl">Export laporan kapan saja</div>
+        <div class="stat-card">
+            <div class="stat-val">Fast</div>
+            <div class="stat-label">Export Laporan & Email OTP</div>
         </div>
     </div>
 
-    {{-- Features --}}
     <div class="features">
-        <div class="features-title">Semua yang Anda Butuhkan</div>
+        <div class="section-header">
+            <h2>Kekuatan Rento Untuk Bisnis Anda</h2>
+            <p>Fitur cerdas yang dirancang untuk mempercepat operasional rental Anda.</p>
+        </div>
         <div class="feature-grid">
             <div class="feature-card">
-                <div class="feature-icon blue">📊</div>
-                <h3>Dashboard Overview</h3>
-                <p>Pantau revenue, active rentals, total pelanggan, dan penalty dalam satu tampilan ringkas.</p>
+                <div class="feature-icon blue">📦</div>
+                <h3>Manajemen Inventaris</h3>
+                <p>Kelola stok produk secara presisi. Ketahui barang mana yang sedang keluar dan mana yang siap disewa.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon green">📦</div>
-                <h3>Manajemen Produk</h3>
-                <p>Kelola inventaris produk rental lengkap dengan kategori, stok, kondisi, dan harga sewa.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon orange">👥</div>
-                <h3>Manajemen Pelanggan</h3>
-                <p>Data pelanggan lengkap termasuk nomor KTP, kontak darurat, dan riwayat transaksi.</p>
+                <div class="feature-icon green">📊</div>
+                <h3>Laporan Otomatis</h3>
+                <p>Dapatkan insight bisnis harian, bulanan, dan tahunan tanpa harus menghitung manual satu per satu.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon red">⚠️</div>
-                <h3>Penalties & Returns</h3>
-                <p>Lacak keterlambatan pengembalian dan kerusakan barang. Kirim reminder email otomatis.</p>
+                <h3>Sistem Denda Cerdas</h3>
+                <p>Kalkulasi denda keterlambatan secara otomatis berdasarkan durasi sewa yang terlewat.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon purple">📋</div>
-                <h3>Laporan Transaksi</h3>
-                <p>Lihat seluruh histori transaksi dengan filter status dan export ke CSV kapan saja.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon teal">🔐</div>
-                <h3>Multi-role Admin</h3>
-                <p>Superadmin dan admin dengan kontrol akses berbeda untuk keamanan data bisnis Anda.</p>
+                <div class="feature-icon purple">🔐</div>
+                <h3>Keamanan Berlapis</h3>
+                <p>Dilengkapi dengan fitur 2FA (Two-Factor Authentication) untuk melindungi data transaksi sensitif Anda.</p>
             </div>
         </div>
     </div>
 
-    {{-- Footer --}}
     <footer>
-        &copy; {{ date('Y') }} RentalApp · Powered by Laravel & Supabase
+        <p>&copy; {{ date('Y') }} <strong>Rento</strong> · Powered by <a href="https://sekawanputrapratama.com" target="_blank">Sekawan Putra Pratama</a></p>
     </footer>
 
 </body>
