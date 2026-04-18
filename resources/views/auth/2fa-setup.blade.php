@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <title>Setup 2FA – Rento</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -48,8 +49,48 @@
             color: #1E1E1E;
             line-height: 2;
         }
+        .divider {
+            border: none;
+            border-top: 1px solid #E5E5E5;
+            margin: 20px 0;
+        }
+        .verify-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E1E1E;
+            margin-bottom: 6px;
+        }
+        .verify-desc {
+            font-size: 12px;
+            color: #6B6B6B;
+            margin-bottom: 14px;
+        }
+        .otp-input {
+            width: 100%;
+            height: 52px;
+            border: 2px solid #E5E5E5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 8px;
+            color: #1E1E1E;
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+        .otp-input:focus { border-color: #2D4DA3; }
+        .otp-input.is-invalid { border-color: #e53e3e; }
+        .invalid-feedback {
+            font-size: 12px;
+            color: #e53e3e;
+            margin-bottom: 12px;
+        }
         .btn {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 100%;
             height: 44px;
             background: #2D4DA3;
@@ -60,34 +101,65 @@
             font-weight: 500;
             color: #fff;
             cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             transition: background 0.2s;
+            margin-top: 4px;
         }
         .btn:hover { background: #253f8a; }
+        .back-link {
+            margin-top: 14px;
+            font-size: 13px;
+            color: #6B6B6B;
+        }
+        .back-link a { color: #2D4DA3; text-decoration: none; }
+        .back-link a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="logo"><span class="ren">Ren</span><span class="to">to</span></div>
-        <h1>Setup Two-Factor Authentication</h1>
+        <h1>Setup Google Authenticator</h1>
         <p>Scan QR code berikut menggunakan aplikasi <strong>Google Authenticator</strong> atau <strong>Authy</strong>.</p>
 
+        {{-- QR Code --}}
         <div class="qr-wrapper">
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{ urlencode($qrCodeUrl) }}" alt="QR Code 2FA">
         </div>
 
+        {{-- Langkah --}}
         <div class="steps">
             <strong>Langkah:</strong><br>
             1. Install Google Authenticator di HP kamu<br>
             2. Tap tombol <strong>+</strong> → Scan QR Code<br>
             3. Scan QR di atas<br>
-            4. Klik tombol di bawah untuk verifikasi
+            4. Masukkan kode 6 digit di bawah
         </div>
 
-        <a href="{{ route('2fa.verify') }}" class="btn">Lanjut ke Verifikasi →</a>
+        <hr class="divider">
+
+        {{-- Form Verifikasi --}}
+        <p class="verify-title">🔐 Masukkan Kode Verifikasi</p>
+        <p class="verify-desc">Kode 6 digit dari Google Authenticator</p>
+
+        @if($errors->any())
+            <p class="invalid-feedback">{{ $errors->first() }}</p>
+        @endif
+
+        <form method="POST" action="{{ route('2fa.verify.post') }}">
+            @csrf
+            <input
+                type="text"
+                name="one_time_password"
+                class="otp-input {{ $errors->any() ? 'is-invalid' : '' }}"
+                placeholder="000000"
+                maxlength="6"
+                inputmode="numeric"
+                autocomplete="off"
+                autofocus
+            >
+            <button type="submit" class="btn">Verifikasi & Masuk →</button>
+        </form>
+
+        <p class="back-link"><a href="{{ route('2fa.choose') }}">← Pilih metode lain</a></p>
     </div>
 </body>
 </html>

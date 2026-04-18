@@ -3,18 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kategori;
+use App\Traits\CheckEditAccess;
 use Illuminate\Http\Request;
 
 class KategoriController extends Controller
 {
+    use CheckEditAccess;
+
     public function index()
     {
-        $kategoris = Kategori::latest('created_date')->get();
+        $kategoris = Kategori::where('is_deleted', 0)
+                        ->latest('created_date')
+                        ->get();
         return view('kategoris.index', compact('kategoris'));
     }
 
     public function store(Request $request)
     {
+        if ($redirect = $this->checkEditAccess()) return $redirect;
+
         $request->validate([
             'category_name' => 'required|string|max:255',
             'description'   => 'nullable|string',
@@ -35,6 +42,8 @@ class KategoriController extends Controller
 
     public function update(Request $request, $id)
     {
+        if ($redirect = $this->checkEditAccess()) return $redirect;
+
         $request->validate([
             'category_name' => 'required|string|max:255',
             'description'   => 'nullable|string',
@@ -43,10 +52,10 @@ class KategoriController extends Controller
 
         $kategori = Kategori::findOrFail($id);
         $kategori->update([
-            'category_name'   => $request->category_name,
-            'description'     => $request->description,
-            'status'          => $request->status,
-            'last_updated_by' => auth()->user()->name ?? 'system',
+            'category_name'     => $request->category_name,
+            'description'       => $request->description,
+            'status'            => $request->status,
+            'last_updated_by'   => auth()->user()->name ?? 'system',
             'last_updated_date' => now(),
         ]);
 
@@ -55,8 +64,14 @@ class KategoriController extends Controller
 
     public function destroy($id)
     {
+        if ($redirect = $this->checkEditAccess()) return $redirect;
+
         $kategori = Kategori::findOrFail($id);
-        $kategori->delete();
+        $kategori->update([
+            'is_deleted'        => 1,
+            'last_updated_by'   => auth()->user()->name ?? 'system',
+            'last_updated_date' => now(),
+        ]);
 
         return redirect()->route('kategoris.index')->with('success', 'Kategori berhasil dihapus.');
     }

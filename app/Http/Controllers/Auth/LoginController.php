@@ -16,9 +16,16 @@ use PragmaRX\Google2FA\Google2FA;
 
 class LoginController extends Controller
 {
+    private function getGoogle2FA(): Google2FA
+    {
+        $g = new Google2FA();
+        $g->setEnforceGoogleAuthenticatorCompatibility(true);
+        return $g;
+    }
+
     public function showLoginForm()
     {
-        if (Auth::check()) {
+        if (Auth::check() && !session('2fa_admin_id')) {
             return redirect()->intended('/dashboard');
         }
         return view('auth.login');
@@ -44,13 +51,13 @@ class LoginController extends Controller
                 return back()->withErrors(['email' => 'Akun Anda tidak memiliki akses ke sistem ini.']);
             }
 
+            Auth::logout();
             session(['2fa_admin_id' => $admin->id]);
 
             if (!$admin->two_factor_secret) {
                 return redirect()->route('2fa.setup');
             }
 
-            Auth::logout();
             return redirect()->route('2fa.choose');
         }
 
@@ -72,15 +79,78 @@ class LoginController extends Controller
             return redirect('/login')->with('error', 'Login Google gagal, silakan coba lagi.');
         }
 
-        $admin = Admin::where('email', $googleUser->getEmail())
-                     ->where('status', 1)
-                     ->where('is_deleted', 0)
-                     ->first();
+        // ✅ Cek semua kondisi termasuk is_deleted
+        $admin = Admin::where('email', $googleUser->getEmail())->first();
 
-        if (!$admin) {
-            return redirect('/login')->with('error', 'Email ini tidak memiliki akses ke sistem.');
+        // ✅ Akun ditemukan tapi is_deleted = 1
+        if ($admin && $admin->is_deleted == 1) {
+
+            // ✅ Kalau role superadmin/admin/staff → restore dengan role asli
+            if (in_array($admin->role, ['superadmin', 'admin', 'staff'])) {
+                $admin->update([
+                    'is_deleted'   => 0,
+                    'status'       => 1,
+                    'updated_date' => now(),
+                ]);
+                // Lanjut ke proses 2FA
+            } else {
+                // ✅ Role dosen yang ditolak → restore sebagai pending
+                $admin->update([
+                    'is_deleted'   => 0,
+                    'status'       => 0,
+                    'role'         => 'dosen',
+                    'can_edit'     => 0,
+                    'created_date' => now(),
+                ]);
+                return redirect()->route('auth.pending');
+            }
         }
 
+        // ✅ Belum terdaftar sama sekali → auto register sebagai dosen pending
+        if (!$admin) {
+            $admin = Admin::create([
+                'name'         => $googleUser->getName(),
+                'email'        => $googleUser->getEmail(),
+                'password'     => '',
+                'role'         => 'dosen',
+                'can_edit'     => 0,
+                'status'       => 0,
+                'is_deleted'   => 0,
+                'created_by'   => 'google',
+                'created_date' => now(),
+            ]);
+
+            $user = User::where('google_id', $googleUser->getId())->first();
+            if (!$user) {
+                $user = User::where('email', $googleUser->getEmail())->first();
+                if ($user) {
+                    $user->update(['google_id' => $googleUser->getId()]);
+                } else {
+                    $user = User::create([
+                        'name'         => $googleUser->getName(),
+                        'email'        => $googleUser->getEmail(),
+                        'google_id'    => $googleUser->getId(),
+                        'password'     => bcrypt(str()->random(24)),
+                        'company_code' => 'RENT-01',
+                        'status'       => 1,
+                        'is_deleted'   => 0,
+                        'created_date' => now(),
+                    ]);
+                }
+            }
+
+            return redirect()->route('auth.pending');
+        }
+
+        // ✅ Status 0 → cek rolenya
+        if ($admin->status == 0) {
+            if ($admin->role === 'dosen') {
+                return redirect()->route('auth.pending');
+            }
+            return redirect('/login')->with('error', 'Akun Anda sedang dinonaktifkan. Hubungi Superadmin.');
+        }
+
+        // ✅ Terdaftar dan aktif → lanjut 2FA
         $user = User::where('google_id', $googleUser->getId())->first();
         if (!$user) {
             $user = User::where('email', $googleUser->getEmail())->first();
@@ -88,18 +158,16 @@ class LoginController extends Controller
                 $user->update(['google_id' => $googleUser->getId()]);
             } else {
                 $user = User::create([
-                    'name'      => $googleUser->getName(),
-                    'email'     => $googleUser->getEmail(),
-                    'google_id' => $googleUser->getId(),
-                    'password'  => bcrypt(str()->random(24)),
+                    'name'         => $googleUser->getName(),
+                    'email'        => $googleUser->getEmail(),
+                    'google_id'    => $googleUser->getId(),
+                    'password'     => bcrypt(str()->random(24)),
+                    'company_code' => 'RENT-01',
+                    'status'       => 1,
+                    'is_deleted'   => 0,
+                    'created_date' => now(),
                 ]);
             }
-        }
-
-        if (!$admin->two_factor_secret) {
-            Auth::login($user, true);
-            session(['2fa_admin_id' => $admin->id]);
-            return redirect()->route('2fa.setup');
         }
 
         session([
@@ -107,27 +175,31 @@ class LoginController extends Controller
             '2fa_user_id'  => $user->id,
         ]);
 
+        if (!$admin->two_factor_secret) {
+            return redirect()->route('2fa.setup');
+        }
+
         return redirect()->route('2fa.choose');
     }
 
-    // ── Halaman pilih metode 2FA ──
     public function show2FAChoose()
     {
         if (!session('2fa_admin_id')) return redirect('/login');
         return view('auth.2fa-choose');
     }
 
-    // ── Setup Google Authenticator ──
     public function show2FASetup()
     {
         $adminId = session('2fa_admin_id');
         if (!$adminId) return redirect('/login');
 
         $admin     = Admin::findOrFail($adminId);
-        $google2fa = new Google2FA();
+        $google2fa = $this->getGoogle2FA();
 
         if (!$admin->two_factor_secret) {
-            $admin->update(['two_factor_secret' => $google2fa->generateSecretKey()]);
+            $secret = $google2fa->generateSecretKey(16);
+            $admin->two_factor_secret = $secret;
+            $admin->save();
         }
 
         $qrCodeUrl = $google2fa->getQRCodeUrl(
@@ -139,7 +211,6 @@ class LoginController extends Controller
         return view('auth.2fa-setup', compact('qrCodeUrl', 'admin'));
     }
 
-    // ── Verifikasi Google Authenticator ──
     public function show2FAVerify()
     {
         if (!session('2fa_admin_id')) return redirect('/login');
@@ -155,17 +226,21 @@ class LoginController extends Controller
         if (!$adminId) return redirect('/login');
 
         $admin     = Admin::findOrFail($adminId);
-        $google2fa = new Google2FA();
+        $google2fa = $this->getGoogle2FA();
 
         if (!$google2fa->verifyKey($admin->two_factor_secret, $request->one_time_password)) {
             return back()->withErrors(['one_time_password' => 'Kode OTP salah atau sudah kadaluarsa.']);
+        }
+
+        // ✅ Cek status setelah 2FA berhasil
+        if ($redirect = $this->checkAdminStatus($admin, $request)) {
+            return $redirect;
         }
 
         $this->loginUser($adminId, $userId, $request);
         return redirect()->intended('/dashboard');
     }
 
-    // ── Kirim Email OTP ──
     public function sendEmailOtp()
     {
         $adminId = session('2fa_admin_id');
@@ -173,10 +248,8 @@ class LoginController extends Controller
 
         $admin = Admin::findOrFail($adminId);
 
-        // Hapus OTP lama
         OtpCode::where('admin_id', $adminId)->delete();
 
-        // Generate OTP baru
         $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
         OtpCode::create([
@@ -187,20 +260,17 @@ class LoginController extends Controller
             'created_at' => now(),
         ]);
 
-        // Kirim email
         Mail::to($admin->email)->send(new OtpMail($code, $admin->name));
 
         return redirect()->route('2fa.email.verify');
     }
 
-    // ── Halaman verifikasi Email OTP ──
     public function showEmailOtpVerify()
     {
         if (!session('2fa_admin_id')) return redirect('/login');
         return view('auth.2fa-email-verify');
     }
 
-    // ── Proses verifikasi Email OTP ──
     public function verifyEmailOtp(Request $request)
     {
         $request->validate(['otp_code' => 'required|digits:6']);
@@ -220,14 +290,40 @@ class LoginController extends Controller
         }
 
         $otp->update(['used' => true]);
+
+        $admin = Admin::findOrFail($adminId);
+
+        // ✅ Cek status setelah 2FA berhasil
+        if ($redirect = $this->checkAdminStatus($admin, $request)) {
+            return $redirect;
+        }
+
         $this->loginUser($adminId, $userId, $request);
         return redirect()->intended('/dashboard');
     }
 
-    // ── Helper login user ──
+    // ✅ Cek status admin setelah 2FA berhasil
+    private function checkAdminStatus(Admin $admin, Request $request)
+    {
+        // Fresh dari DB supaya status selalu terbaru
+        $admin = $admin->fresh();
+
+        if ($admin->status == 0) {
+            session()->forget(['2fa_admin_id', '2fa_user_id']);
+            $request->session()->regenerate();
+
+            if ($admin->role === 'dosen') {
+                return redirect()->route('auth.pending');
+            }
+            return redirect('/login')->with('error', 'Akun Anda sedang dinonaktifkan. Hubungi Superadmin.');
+        }
+        return null;
+    }
+
     private function loginUser($adminId, $userId, $request)
     {
         $admin = Admin::findOrFail($adminId);
+
         if ($userId) {
             $user = User::findOrFail($userId);
         } else {

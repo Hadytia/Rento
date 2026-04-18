@@ -9,7 +9,10 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $transactions = Transaction::with(['user', 'product'])->latest('created_date')->get();
+        $transactions = Transaction::with(['user', 'product'])
+                        ->where('is_deleted', 0)
+                        ->latest('created_date')
+                        ->get();
 
         $dateStart = now()->startOfMonth()->format('d M');
         $dateEnd   = now()->endOfMonth()->format('d M');
@@ -19,7 +22,10 @@ class ReportController extends Controller
 
     public function export()
     {
-        $transactions = Transaction::with(['user', 'product'])->latest('created_date')->get();
+        $transactions = Transaction::with(['user', 'product'])
+                        ->where('is_deleted', 0)
+                        ->latest('created_date')
+                        ->get();
 
         $filename = 'transactions_' . now()->format('Ymd_His') . '.csv';
 
@@ -30,13 +36,12 @@ class ReportController extends Controller
 
         $callback = function () use ($transactions) {
             $file = fopen('php://output', 'w');
-
             fputcsv($file, ['TRX ID', 'Customer', 'Item', 'Period Start', 'Period End', 'Amount', 'Status']);
 
             foreach ($transactions as $trx) {
                 fputcsv($file, [
                     $trx->trx_code,
-                    $trx->user->name ?? $trx->user_id,
+                    $trx->user->name        ?? $trx->user_id,
                     $trx->product->product_name ?? $trx->product_id,
                     $trx->rental_start,
                     $trx->rental_end,
@@ -53,7 +58,9 @@ class ReportController extends Controller
 
     public function download($id)
     {
-        $trx = Transaction::with(['user', 'product'])->findOrFail($id);
+        $trx = Transaction::with(['user', 'product'])
+                ->where('is_deleted', 0)
+                ->findOrFail($id);
 
         $filename = 'transaction_' . $trx->trx_code . '.csv';
 
@@ -67,7 +74,7 @@ class ReportController extends Controller
             fputcsv($file, ['TRX ID', 'Customer', 'Item', 'Period Start', 'Period End', 'Amount', 'Status']);
             fputcsv($file, [
                 $trx->trx_code,
-                $trx->user->name ?? $trx->user_id,
+                $trx->user->name            ?? $trx->user_id,
                 $trx->product->product_name ?? $trx->product_id,
                 $trx->rental_start,
                 $trx->rental_end,

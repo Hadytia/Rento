@@ -4,15 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Traits\CheckEditAccess;
 
 class PenaltyController extends Controller
 {
-    /**
-     * Display penalties index page.
-     */
+    use CheckEditAccess;
+
     public function index()
     {
-        // Ambil semua penalties dengan join ke transactions dan users
         $penalties = DB::table('penalties as p')
             ->join('transactions as t', 'p.transaction_id', '=', 't.id')
             ->join('users as u', 't.user_id', '=', 'u.id')
@@ -39,7 +38,6 @@ class PenaltyController extends Controller
             ->orderBy('p.created_date', 'desc')
             ->get();
 
-        // Ambil transaksi overdue yang belum ada penalty (Action Needed)
         $overdueTransactions = DB::table('transactions as t')
             ->join('users as u', 't.user_id', '=', 'u.id')
             ->join('products as pr', 't.product_id', '=', 'pr.id')
@@ -55,7 +53,7 @@ class PenaltyController extends Controller
                 'u.name as customer_name',
                 'u.email as customer_email',
                 'pr.product_name',
-                DB::raw("(CURRENT_DATE - t.rental_end::date) as days_late"), // ← fix ini
+                DB::raw('DATEDIFF(CURDATE(), t.rental_end) as days_late'),
                 DB::raw('COUNT(p.id) as penalty_count')
             )
             ->groupBy(
@@ -64,43 +62,38 @@ class PenaltyController extends Controller
             )
             ->get();
 
-        // Summary stats
         $stats = [
-            'total_penalties'   => DB::table('penalties')->where('is_deleted', 0)->count(),
-            'unpaid_penalties'  => DB::table('penalties')->where('resolved', 0)->where('is_deleted', 0)->count(),
-            'total_amount'      => DB::table('penalties')->where('is_deleted', 0)->sum('penalty_amount'),
-            'unpaid_amount'     => DB::table('penalties')->where('resolved', 0)->where('is_deleted', 0)->sum('penalty_amount'),
+            'total_penalties'  => DB::table('penalties')->where('is_deleted', 0)->count(),
+            'unpaid_penalties' => DB::table('penalties')->where('resolved', 0)->where('is_deleted', 0)->count(),
+            'total_amount'     => DB::table('penalties')->where('is_deleted', 0)->sum('penalty_amount'),
+            'unpaid_amount'    => DB::table('penalties')->where('resolved', 0)->where('is_deleted', 0)->sum('penalty_amount'),
         ];
 
         return view('penalties.index', compact('penalties', 'overdueTransactions', 'stats'));
     }
 
-    /**
-     * Mark penalty as resolved (paid).
-     */
     public function markResolved($id)
     {
+        if ($redirect = $this->checkEditAccess()) return $redirect;
+
         DB::table('penalties')
             ->where('id', $id)
-            ->update([
-                'resolved' => 1,
-                'status'   => 1,
-            ]);
+            ->update(['resolved' => 1, 'status' => 1]);
 
         return redirect()->route('penalties.index')->with('success', 'Penalty marked as resolved.');
     }
 
-    /**
-     * Mark penalty as finished / completed (soft approach).
-     */
     public function markFinished($id)
     {
+        if ($redirect = $this->checkEditAccess()) return $redirect;
+
+        // ✅ Ambil data DULU sebelum di-update
+        $penalty = DB::table('penalties')->where('id', $id)->first();
+
         DB::table('penalties')
             ->where('id', $id)
             ->update(['is_deleted' => 1]);
 
-        // Update transaction status jika penalty selesai
-        $penalty = DB::table('penalties')->where('id', $id)->first();
         if ($penalty) {
             DB::table('transactions')
                 ->where('id', $penalty->transaction_id)
@@ -110,12 +103,10 @@ class PenaltyController extends Controller
         return redirect()->route('penalties.index')->with('success', 'Penalty marked as finished.');
     }
 
-    /**
-     * Send email reminder untuk overdue transaction.
-     * (Placeholder — integrate dengan Mail/API sesuai kebutuhan)
-     */
     public function sendReminder(Request $request)
     {
+        if ($redirect = $this->checkEditAccess()) return $redirect;
+
         $transactionId = $request->input('transaction_id');
 
         $transaction = DB::table('transactions as t')
@@ -128,8 +119,7 @@ class PenaltyController extends Controller
             return redirect()->route('penalties.index')->with('error', 'Transaction not found.');
         }
 
-        // TODO: Kirim email via Mail::to($transaction->email)->send(new ReminderMail($transaction));
-        // Untuk sekarang hanya log / flash message
+        // TODO: Mail::to($transaction->email)->send(new ReminderMail($transaction));
         return redirect()->route('penalties.index')->with('success', "Reminder sent to {$transaction->name} ({$transaction->email}).");
     }
 }

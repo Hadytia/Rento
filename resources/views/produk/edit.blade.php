@@ -13,12 +13,12 @@
                 <h2 class="text-lg font-semibold text-gray-900">Edit Produk</h2>
                 <p class="text-sm text-gray-500 mt-1">Perbarui informasi produk. Kolom bertanda * wajib diisi.</p>
             </div>
-            <a href="{{ route('produk.index') }}" class="text-gray-400 hover:text-gray-600 text-xl leading-none mt-1">✕</a>
+            <a href="{{ route('produks.index') }}" class="text-gray-400 hover:text-gray-600 text-xl leading-none mt-1">✕</a>
         </div>
 
         <hr class="my-4 border-gray-200">
 
-        <form action="{{ route('produk.update', $produk->id) }}" method="POST">
+        <form action="{{ route('produks.update', $produk->id) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -103,7 +103,7 @@
 
             {{-- Buttons --}}
             <div class="flex justify-end gap-3">
-                <a href="{{ route('produk.index') }}"
+                <a href="{{ route('produks.index') }}"
                     class="h-10 px-4 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-lg text-sm text-gray-700 flex items-center">
                     Batal
                 </a>

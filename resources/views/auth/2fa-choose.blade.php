@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <title>Pilih Metode 2FA – Rento</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -58,14 +59,16 @@
         <p>Pilih metode verifikasi yang ingin kamu gunakan.</p>
 
         <div class="options">
-            <a href="{{ route('2fa.verify') }}" class="option-btn">
+            {{-- Google Authenticator → ke halaman setup QR dulu --}}
+            <a href="{{ route('2fa.setup') }}" class="option-btn">
                 <div class="option-icon">🔐</div>
                 <div class="option-text">
                     <div class="title">Google Authenticator</div>
-                    <div class="desc">Gunakan kode dari app Google Authenticator atau Authy</div>
+                    <div class="desc">Scan QR Code lalu masukkan kode dari app Google Authenticator</div>
                 </div>
             </a>
 
+            {{-- Email OTP → langsung kirim OTP ke email --}}
             <a href="{{ route('2fa.email.send') }}" class="option-btn">
                 <div class="option-icon">📧</div>
                 <div class="option-text">

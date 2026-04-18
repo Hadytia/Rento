@@ -44,6 +44,14 @@
 </head>
 <body>
 
+@php
+    $currentAdmin = \App\Models\Admin::where('email', Auth::user()->email)
+                    ->where('status', 1)
+                    ->where('is_deleted', 0)
+                    ->first();
+    $isDosen = $currentAdmin && $currentAdmin->role === 'dosen';
+@endphp
+
 <div class="container">
 
     <!-- SIDEBAR -->
@@ -91,6 +99,9 @@
                 </svg>
                 Penalties &amp; Returns
             </a>
+
+            {{-- ✅ Menu Admin — hidden untuk dosen --}}
+            @if(!$isDosen)
             <a href="/admins" class="{{ request()->is('admins*') ? 'active' : '' }}">
                 <svg class="menu-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -100,6 +111,7 @@
                 </svg>
                 Admin
             </a>
+            @endif
         </div>
 
         <hr class="sidebar-divider">
@@ -135,6 +147,8 @@
                         'penalties.index'  => 'Penalties & Returns',
                         'admins.index'     => 'Admin',
                         'users.index'      => 'Users',
+                        'transaksi.create' => 'Buat Transaksi',
+                        'transaksi.edit'   => 'Edit Transaksi',
                     ];
                     echo $titles[Route::currentRouteName()] ?? ucfirst(Route::currentRouteName() ?? 'Dashboard');
                 @endphp
@@ -147,12 +161,20 @@
                     </div>
                     <div>
                         <div class="user-name">{{ Auth::user()->name }}</div>
-                        <div class="user-role">{{ ucfirst(str_replace('_', ' ', Auth::user()->role ?? 'Admin')) }}</div>
+                        <div class="user-role">{{ $isDosen ? 'Dosen' : ucfirst(str_replace('_', ' ', $currentAdmin->role ?? 'Admin')) }}</div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="content-area">
+
+            {{-- Alert Error Global --}}
+            @if(session('error'))
+                <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#DC2626;display:flex;align-items:center;gap:8px;">
+                    ⚠️ {{ session('error') }}
+                </div>
+            @endif
+
             @yield('content')
         </div>
     </div>

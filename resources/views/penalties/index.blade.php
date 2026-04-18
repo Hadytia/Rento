@@ -4,6 +4,13 @@
 
 @section('content')
 
+@php
+    $currentAdmin = \App\Models\Admin::where('email', Auth::user()->email)
+                    ->where('status', 1)->where('is_deleted', 0)->first();
+    $isDosen = $currentAdmin && $currentAdmin->role === 'dosen';
+    $canEdit = !$isDosen || ($isDosen && $currentAdmin->can_edit);
+@endphp
+
 <div class="p-6 w-full">
 
     {{-- Header --}}
@@ -46,7 +53,7 @@
 
     <div class="flex gap-6">
 
-        {{-- LEFT: Action Needed (Overdue Transactions) --}}
+        {{-- LEFT: Action Needed --}}
         <div class="w-80 flex-shrink-0">
             <div class="bg-orange-50 border border-orange-200 rounded-xl p-5">
                 <div class="flex items-center gap-2 mb-1">
@@ -68,14 +75,22 @@
                         <div class="flex items-center gap-1 text-sm text-red-500 font-medium mb-4">
                             🕐 <span>{{ $trx->days_late }} {{ $trx->days_late == 1 ? 'Day' : 'Days' }} Late</span>
                         </div>
-                        <form action="{{ route('penalties.send-reminder') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="transaction_id" value="{{ $trx->id }}">
-                            <button type="submit"
-                                class="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium py-2 rounded-lg flex items-center justify-center gap-2 transition">
-                                ✉️ Send Email Reminder
-                            </button>
-                        </form>
+
+                        {{-- ✅ Tombol reminder hanya untuk non-dosen atau dosen yang dapat akses --}}
+                        @if($canEdit)
+                            <form action="{{ route('penalties.send-reminder') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="transaction_id" value="{{ $trx->id }}">
+                                <button type="submit"
+                                    class="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium py-2 rounded-lg flex items-center justify-center gap-2 transition">
+                                    ✉️ Send Email Reminder
+                                </button>
+                            </form>
+                        @else
+                            <div class="w-full bg-gray-100 text-gray-400 text-xs font-medium py-2 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed">
+                                🔒 Tidak memiliki akses
+                            </div>
+                        @endif
                     </div>
                 @empty
                     <div class="bg-white rounded-lg p-4 shadow-sm text-center text-sm text-gray-400">
@@ -108,26 +123,28 @@
                         {{-- Actions --}}
                         <td class="py-3 pr-4">
                             <div class="flex gap-2">
-                                {{-- Mark Finished --}}
                                 @if($penalty->resolved == 0)
-                                <form action="{{ route('penalties.finish', $penalty->id) }}" method="POST"
-                                    onsubmit="return confirm('Mark this penalty as finished?')">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit"
-                                        class="w-8 h-8 rounded-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center text-xs transition"
-                                        title="Mark as Finished">✓</button>
-                                </form>
-
-                                {{-- Mark as Paid/Resolved --}}
-                                <form action="{{ route('penalties.resolve', $penalty->id) }}" method="POST"
-                                    onsubmit="return confirm('Mark this penalty as paid/resolved?')">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit"
-                                        class="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center text-xs transition"
-                                        title="Mark as Paid">$</button>
-                                </form>
+                                    @if($canEdit)
+                                        {{-- Mark Finished --}}
+                                        <form action="{{ route('penalties.finish', $penalty->id) }}" method="POST"
+                                            onsubmit="return confirm('Mark this penalty as finished?')">
+                                            @csrf @method('PATCH')
+                                            <button type="submit"
+                                                class="w-8 h-8 rounded-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center text-xs transition"
+                                                title="Mark as Finished">✓</button>
+                                        </form>
+                                        {{-- Mark as Paid --}}
+                                        <form action="{{ route('penalties.resolve', $penalty->id) }}" method="POST"
+                                            onsubmit="return confirm('Mark this penalty as paid/resolved?')">
+                                            @csrf @method('PATCH')
+                                            <button type="submit"
+                                                class="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center text-xs transition"
+                                                title="Mark as Paid">$</button>
+                                        </form>
+                                    @else
+                                        {{-- ✅ Dosen tanpa akses → tampil info --}}
+                                        <span class="text-xs text-gray-400 italic" title="Tidak memiliki akses edit">🔒</span>
+                                    @endif
                                 @else
                                     <span class="text-xs text-gray-400 italic">—</span>
                                 @endif

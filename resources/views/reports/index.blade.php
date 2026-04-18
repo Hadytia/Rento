@@ -38,6 +38,15 @@
     }
     .btn-export:hover { background: #16A34A; color: white; }
 
+    .btn-create {
+        display: flex; align-items: center; gap: 8px;
+        height: 42px; padding: 0 20px; background: #2D4DA3;
+        border: none; border-radius: 8px; font-family: Inter, sans-serif;
+        font-size: 14px; font-weight: 600; color: white;
+        cursor: pointer; white-space: nowrap; text-decoration: none;
+    }
+    .btn-create:hover { background: #243F8F; color: white; }
+
     .table-container { background: white; border-radius: 12px; padding: 20px; box-shadow: 0px 2px 8px rgba(0,0,0,0.06); }
     .table-title { font-size: 16px; font-weight: 600; color: #1E1E1E; margin-bottom: 16px; }
 
@@ -67,6 +76,12 @@
         color: #6B6B6B; transition: all 0.15s; text-decoration: none;
     }
     .action-btn:hover { background: #F5F5F5; border-color: #D0D0D0; }
+    .action-btn.btn-return { color: #059669; border-color: #6EE7B7; }
+    .action-btn.btn-return:hover { background: #ECFDF5; }
+    .action-btn.btn-edit { color: #2D4DA3; border-color: #BFDBFE; }
+    .action-btn.btn-edit:hover { background: #EFF6FF; }
+    .action-btn.btn-delete { color: #DC2626; border-color: #FECACA; }
+    .action-btn.btn-delete:hover { background: #FEF2F2; }
     .action-btn svg { width: 16px; height: 16px; }
 
     .alert-success { background: #ECFDF5; border: 1px solid #6EE7B7; border-radius: 8px; padding: 10px 16px; font-size: 13px; color: #065F46; margin-bottom: 16px; }
@@ -112,6 +127,23 @@
         </svg>
         Export CSV
     </a>
+
+    @php
+        $currentAdmin = \App\Models\Admin::where('email', Auth::user()->email)
+                        ->where('status', 1)->where('is_deleted', 0)->first();
+        $isDosen = $currentAdmin && $currentAdmin->role === 'dosen';
+        $isSuperadmin = $currentAdmin && $currentAdmin->role === 'superadmin';
+        $canEdit = $currentAdmin && ($currentAdmin->can_edit == 1 || $isSuperadmin);
+    @endphp
+
+    @if(!$isDosen && $canEdit)
+    <a href="{{ route('transaksi.create') }}" class="btn-create">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Buat Transaksi
+    </a>
+    @endif
 </div>
 
 {{-- Table --}}
@@ -157,6 +189,7 @@
                                 <circle cx="12" cy="12" r="3"/>
                             </svg>
                         </button>
+
                         {{-- Download --}}
                         <a class="action-btn" href="{{ route('reports.download', $trx->id) }}" title="Download CSV">
                             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -165,6 +198,46 @@
                                 <line x1="12" y1="15" x2="12" y2="3"/>
                             </svg>
                         </a>
+
+                        @if(!$isDosen && ($canEdit || $isSuperadmin))
+                        {{-- Edit --}}
+                        <a class="action-btn btn-edit" href="{{ route('transaksi.edit', $trx->id) }}" title="Edit Transaksi">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </a>
+
+                        {{-- Return (hanya untuk status Active/Overdue) --}}
+                        @if(in_array($trx->trx_status, ['Active', 'Overdue']))
+                        <form method="POST" action="{{ route('transaksi.return', $trx->id) }}"
+                              onsubmit="return confirm('Konfirmasi pengembalian {{ $trx->trx_code }}?')">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="action-btn btn-return" title="Kembalikan Barang">
+                                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <polyline points="1,4 1,10 7,10"/>
+                                    <path d="M3.51 15a9 9 0 1 0 .49-3.45"/>
+                                </svg>
+                            </button>
+                        </form>
+                        @endif
+
+                        {{-- Delete --}}
+                        <form method="POST" action="{{ route('transaksi.destroy', $trx->id) }}"
+                              onsubmit="return confirm('Hapus transaksi {{ $trx->trx_code }}?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="action-btn btn-delete" title="Hapus Transaksi">
+                                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <polyline points="3,6 5,6 21,6"/>
+                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                    <path d="M10 11v6"/><path d="M14 11v6"/>
+                                    <path d="M9 6V4h6v2"/>
+                                </svg>
+                            </button>
+                        </form>
+                        @endif
                     </div>
                 </td>
                 <td><span class="trx-id">{{ $trx->trx_code }}</span></td>

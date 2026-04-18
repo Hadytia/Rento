@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->id();                                              // hapus yang duplikat
             $table->string('google_id')->nullable();
             $table->string('name', 100);
             $table->string('email', 100)->unique();

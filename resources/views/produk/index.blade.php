@@ -30,7 +30,7 @@
             <thead>
                 <tr class="border-b text-gray-500 text-xs uppercase">
                     <th class="py-3 pr-4 w-24">Aksi</th>
-                    <th class="py-3 pr-4">Nama Produk</th>
+                    <th class="py-3 pr-4">Foto & Nama Produk</th>
                     <th class="py-3 pr-4">Kategori</th>
                     <th class="py-3 pr-4">Harga / Hari</th>
                     <th class="py-3 pr-4">Stok</th>
@@ -60,14 +60,29 @@
                         </div>
                     </td>
 
-                    {{-- Product Name --}}
-                    <td class="py-3 pr-4 font-medium text-gray-800 product-name">
-                        {{ $produk->product_name }}
+                    {{-- Foto + Nama Produk --}}
+                    <td class="py-3 pr-4" style="min-width:220px">
+                        <div class="flex items-center" style="gap:14px">
+                            @if($produk->photo)
+                                <img src="{{ asset('products/' . $produk->photo) }}"
+                                     alt="{{ $produk->product_name }}"
+                                     style="width:48px;height:48px;border-radius:8px;object-fit:cover;border:1px solid #E5E7EB;flex-shrink:0;">
+                            @else
+                                <div style="width:48px;height:48px;border-radius:8px;background:#F3F4F6;border:1px solid #E5E7EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <svg width="20" height="20" fill="none" stroke="#9CA3AF" stroke-width="1.5" viewBox="0 0 24 24">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <polyline points="21,15 16,10 5,21"/>
+                                    </svg>
+                                </div>
+                            @endif
+                            <span class="font-medium text-gray-800 product-name">{{ $produk->product_name }}</span>
+                        </div>
                     </td>
 
                     {{-- Category --}}
                     <td class="py-3 pr-4 text-blue-500">
-                        {{ $produk->category->category_name ?? '-' }}
+                        {{ $produk->kategori->category_name ?? '-' }}
                     </td>
 
                     {{-- Price --}}
@@ -141,7 +156,7 @@
 
         <hr class="my-4 border-gray-200">
 
-        <form id="addProductForm" action="{{ route('produks.store') }}" method="POST">
+        <form id="addProductForm" action="{{ route('produks.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             {{-- Product Name & Category --}}
@@ -205,6 +220,14 @@
                     <input type="number" name="min_rental_days" placeholder="1" value="1" min="1"
                         class="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm text-gray-800 outline-none focus:border-blue-500">
                 </div>
+            </div>
+
+            {{-- Foto Produk --}}
+            <div class="mb-4">
+                <label class="block text-sm text-gray-800 mb-1">Foto Produk</label>
+                <input type="file" name="photo" accept="image/*"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:border-blue-500">
+                <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG. Maks 2MB.</p>
             </div>
 
             <hr class="my-4 border-gray-200">
