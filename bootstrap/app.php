@@ -11,7 +11,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // ✅ Cek apakah admin masih aktif di setiap request
+        $middleware->appendToGroup('web', \App\Http\Middleware\CheckAdminActive::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

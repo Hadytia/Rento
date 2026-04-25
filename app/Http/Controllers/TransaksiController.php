@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Traits\CheckEditAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\CustomerCodeHelper;
 
 class TransaksiController extends Controller
 {
@@ -58,30 +59,32 @@ class TransaksiController extends Controller
         $totalDays  = $start->diffInDays($end) + 1;
         $totalAmt   = $totalDays * $produk->rental_price;
 
-        // Generate trx_code unik: TRX-YYYYMMDD-XXXXX
         do {
             $trxCode = 'TRX-' . now()->format('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(5));
         } while (Transaction::where('trx_code', $trxCode)->exists());
 
-        Transaction::create([
-            'trx_code'         => $trxCode,
-            'user_id'          => $request->user_id,
-            'product_id'       => $request->product_id,
-            'rental_start'     => $request->rental_start,
-            'rental_end'       => $request->rental_end,
-            'total_days'       => $totalDays,
-            'total_amount'     => $totalAmt,
-            'paid_amount'      => $request->paid_amount ?? 0,
-            'payment_method'   => $request->payment_method,
-            'trx_status'       => 'Active',
-            'notes'            => $request->notes,
-            'status'           => 1,
-            'is_deleted'       => 0,
-            'created_by'       => Auth::user()->name,
-            'created_date'     => now(),
-            'last_updated_by'  => Auth::user()->name,
-            'last_updated_date'=> now(),
+        $transaction = Transaction::create([
+            'trx_code'          => $trxCode,
+            'user_id'           => $request->user_id,
+            'product_id'        => $request->product_id,
+            'rental_start'      => $request->rental_start,
+            'rental_end'        => $request->rental_end,
+            'total_days'        => $totalDays,
+            'total_amount'      => $totalAmt,
+            'paid_amount'       => $request->paid_amount ?? 0,
+            'payment_method'    => $request->payment_method,
+            'trx_status'        => 'Active',
+            'notes'             => $request->notes,
+            'status'            => 1,
+            'is_deleted'        => 0,
+            'created_by'        => Auth::user()->name,
+            'created_date'      => now(),
+            'last_updated_by'   => Auth::user()->name,
+            'last_updated_date' => now(),
         ]);
+
+        // Auto-assign CUST code ke user jika belum punya
+        CustomerCodeHelper::assignIfNeeded($transaction->user_id);
 
         return redirect()->route('reports.index')
                          ->with('success', "Transaksi {$trxCode} berhasil dibuat.");
@@ -132,18 +135,18 @@ class TransaksiController extends Controller
         $totalAmt  = $totalDays * $produk->rental_price;
 
         $trx->update([
-            'user_id'          => $request->user_id,
-            'product_id'       => $request->product_id,
-            'rental_start'     => $request->rental_start,
-            'rental_end'       => $request->rental_end,
-            'total_days'       => $totalDays,
-            'total_amount'     => $totalAmt,
-            'paid_amount'      => $request->paid_amount ?? 0,
-            'payment_method'   => $request->payment_method,
-            'trx_status'       => $request->trx_status,
-            'notes'            => $request->notes,
-            'last_updated_by'  => Auth::user()->name,
-            'last_updated_date'=> now(),
+            'user_id'           => $request->user_id,
+            'product_id'        => $request->product_id,
+            'rental_start'      => $request->rental_start,
+            'rental_end'        => $request->rental_end,
+            'total_days'        => $totalDays,
+            'total_amount'      => $totalAmt,
+            'paid_amount'       => $request->paid_amount ?? 0,
+            'payment_method'    => $request->payment_method,
+            'trx_status'        => $request->trx_status,
+            'notes'             => $request->notes,
+            'last_updated_by'   => Auth::user()->name,
+            'last_updated_date' => now(),
         ]);
 
         return redirect()->route('reports.index')
@@ -157,34 +160,32 @@ class TransaksiController extends Controller
 
         $trx = Transaction::where('is_deleted', 0)->findOrFail($id);
 
-        // Cek keterlambatan
-        $today    = \Carbon\Carbon::today();
-        $rentEnd  = \Carbon\Carbon::parse($trx->rental_end);
-        $overdue  = $today->gt($rentEnd) ? $today->diffInDays($rentEnd) : 0;
+        $today   = \Carbon\Carbon::today();
+        $rentEnd = \Carbon\Carbon::parse($trx->rental_end);
+        $overdue = $today->gt($rentEnd) ? $today->diffInDays($rentEnd) : 0;
 
         $trx->update([
-            'trx_status'       => 'Completed',
-            'last_updated_by'  => Auth::user()->name,
-            'last_updated_date'=> now(),
+            'trx_status'        => 'Completed',
+            'last_updated_by'   => Auth::user()->name,
+            'last_updated_date' => now(),
         ]);
 
-        // Buat penalty otomatis jika terlambat
         if ($overdue > 0) {
             $penaltyAmt = $overdue * ($trx->product->rental_price ?? 0);
 
             \App\Models\Penalty::create([
-                'transaction_id'   => $trx->id,
-                'penalty_type'     => 'Overdue',
-                'penalty_amount'   => $penaltyAmt,
-                'overdue_days'     => $overdue,
-                'description'      => "Keterlambatan {$overdue} hari untuk transaksi {$trx->trx_code}",
-                'resolved'         => 0,
-                'status'           => 1,
-                'is_deleted'       => 0,
-                'created_by'       => Auth::user()->name,
-                'created_date'     => now(),
-                'last_updated_by'  => Auth::user()->name,
-                'last_updated_date'=> now(),
+                'transaction_id'    => $trx->id,
+                'penalty_type'      => 'Overdue',
+                'penalty_amount'    => $penaltyAmt,
+                'overdue_days'      => $overdue,
+                'description'       => "Keterlambatan {$overdue} hari untuk transaksi {$trx->trx_code}",
+                'resolved'          => 0,
+                'status'            => 1,
+                'is_deleted'        => 0,
+                'created_by'        => Auth::user()->name,
+                'created_date'      => now(),
+                'last_updated_by'   => Auth::user()->name,
+                'last_updated_date' => now(),
             ]);
 
             return redirect()->route('reports.index')
@@ -203,9 +204,9 @@ class TransaksiController extends Controller
         $trx = Transaction::where('is_deleted', 0)->findOrFail($id);
 
         $trx->update([
-            'is_deleted'       => 1,
-            'last_updated_by'  => Auth::user()->name,
-            'last_updated_date'=> now(),
+            'is_deleted'        => 1,
+            'last_updated_by'   => Auth::user()->name,
+            'last_updated_date' => now(),
         ]);
 
         return redirect()->route('reports.index')

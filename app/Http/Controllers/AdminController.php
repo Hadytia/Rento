@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\DosenApproved;
+use App\Mail\DosenRejected;
 use App\Models\Admin;
 use App\Traits\CheckEditAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -13,7 +16,6 @@ class AdminController extends Controller
 
     public function index()
     {
-        // ✅ Dosen tidak boleh akses halaman admin
         $currentAdmin = Admin::where('email', Auth::user()->email)
                             ->where('status', 1)
                             ->where('is_deleted', 0)
@@ -24,6 +26,7 @@ class AdminController extends Controller
         }
 
         $admins = Admin::where('is_deleted', 0)
+                    ->where('status', 1)
                     ->latest('created_date')
                     ->get();
 
@@ -48,7 +51,6 @@ class AdminController extends Controller
             'status'   => 'nullable|in:1,0',
         ]);
 
-        // ✅ Hanya superadmin yang boleh tambah superadmin
         $currentAdmin = Admin::where('email', Auth::user()->email)->first();
         if ($request->role === 'superadmin' && $currentAdmin->role !== 'superadmin') {
             return redirect()->route('admins.index')->with('error', 'Hanya Superadmin yang boleh menambah akun Superadmin.');
@@ -60,7 +62,7 @@ class AdminController extends Controller
             'password'     => bcrypt($request->password),
             'role'         => $request->role,
             'can_edit'     => 0,
-            'status'       => $request->input('status') == 1 ? 1 : 0, // ✅ Fix
+            'status'       => $request->input('status') == 1 ? 1 : 0,
             'is_deleted'   => 0,
             'created_by'   => Auth::user()->name ?? 'system',
             'created_date' => now(),
@@ -84,12 +86,10 @@ class AdminController extends Controller
         $targetAdmin  = Admin::findOrFail($id);
         $currentAdmin = Admin::where('email', Auth::user()->email)->first();
 
-        // ✅ Hanya superadmin yang boleh edit superadmin
         if ($targetAdmin->role === 'superadmin' && $currentAdmin->role !== 'superadmin') {
             return redirect()->route('admins.index')->with('error', 'Anda tidak memiliki akses untuk mengedit akun Superadmin.');
         }
 
-        // ✅ Hanya superadmin yang boleh upgrade role ke superadmin
         if ($request->role === 'superadmin' && $currentAdmin->role !== 'superadmin') {
             return redirect()->route('admins.index')->with('error', 'Hanya Superadmin yang boleh mengatur role Superadmin.');
         }
@@ -98,7 +98,7 @@ class AdminController extends Controller
             'name'              => $request->name,
             'email'             => $request->email,
             'role'              => $request->role,
-            'status'            => $request->input('status') == 1 ? 1 : 0, // ✅ Fix
+            'status'            => $request->input('status') == 1 ? 1 : 0,
             'last_updated_by'   => Auth::user()->name ?? 'system',
             'last_updated_date' => now(),
         ];
@@ -119,12 +119,10 @@ class AdminController extends Controller
         $targetAdmin  = Admin::findOrFail($id);
         $currentAdmin = Admin::where('email', Auth::user()->email)->first();
 
-        // ✅ Hanya superadmin yang boleh hapus superadmin
         if ($targetAdmin->role === 'superadmin' && $currentAdmin->role !== 'superadmin') {
             return redirect()->route('admins.index')->with('error', 'Anda tidak memiliki akses untuk menghapus akun Superadmin.');
         }
 
-        // ✅ Tidak boleh hapus diri sendiri
         if ($targetAdmin->email === Auth::user()->email) {
             return redirect()->route('admins.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
@@ -138,7 +136,7 @@ class AdminController extends Controller
         return redirect()->route('admins.index')->with('success', 'Admin berhasil dihapus.');
     }
 
-    // ✅ ACC dosen pending
+    // ✅ ACC dosen pending + kirim email notifikasi
     public function approve($id)
     {
         $admin = Admin::findOrFail($id);
@@ -148,20 +146,52 @@ class AdminController extends Controller
             'last_updated_date' => now(),
         ]);
 
-        return redirect()->route('admins.index')->with('success', "Akun {$admin->name} berhasil disetujui.");
+        // Kirim email notifikasi ke dosen
+        try {
+            Mail::to($admin->email)->send(new DosenApproved(
+                dosenName:  $admin->name,
+                dosenEmail: $admin->email,
+                approvedBy: Auth::user()->name ?? 'Administrator',
+            ));
+        } catch (\Exception $e) {
+            // Kalau email gagal, tetap redirect sukses
+            return redirect()->route('admins.index')
+                ->with('success', "Akun {$admin->name} berhasil disetujui. (Email gagal terkirim: {$e->getMessage()})");
+        }
+
+        return redirect()->route('admins.index')
+            ->with('success', "Akun {$admin->name} berhasil disetujui dan email notifikasi telah dikirim.");
     }
 
-    // ✅ Reject dosen pending
+    // ✅ Reject dosen pending + kirim email notifikasi
     public function reject($id)
     {
         $admin = Admin::findOrFail($id);
+
+        // Simpan data sebelum dihapus
+        $dosenName  = $admin->name;
+        $dosenEmail = $admin->email;
+
         $admin->update([
             'is_deleted'        => 1,
             'last_updated_by'   => Auth::user()->name ?? 'system',
             'last_updated_date' => now(),
         ]);
 
-        return redirect()->route('admins.index')->with('success', "Akun {$admin->name} berhasil ditolak.");
+        // Kirim email notifikasi penolakan
+        try {
+            Mail::to($dosenEmail)->send(new DosenRejected(
+                dosenName:  $dosenName,
+                dosenEmail: $dosenEmail,
+                rejectedBy: Auth::user()->name ?? 'Administrator',
+            ));
+        } catch (\Exception $e) {
+            return redirect()->route('admins.index')
+                ->with('success', "Akun {$dosenName} berhasil ditolak. (Email gagal terkirim: {$e->getMessage()})");
+        }
+
+        return redirect()->route('admins.index')
+            ->with('success', "Akun {$dosenName} berhasil ditolak dan email notifikasi telah dikirim.");
     }
 
     // ✅ Toggle akses edit/hapus untuk dosen

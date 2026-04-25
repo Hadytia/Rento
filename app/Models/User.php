@@ -24,6 +24,8 @@ class User extends Authenticatable
         'is_deleted',
         'created_by',
         'created_date',
+        'last_updated_by',
+        'last_updated_date',
     ];
 
     protected $hidden = [
