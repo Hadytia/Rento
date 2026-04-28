@@ -100,4 +100,35 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
     }
+
+        public function apiIndex(Request $request)
+    {
+        $userIds = DB::table('transactions')
+            ->whereNotNull('user_id')
+            ->where('is_deleted', 0)
+            ->distinct()
+            ->pluck('user_id');
+
+        $users = User::whereIn('id', $userIds)
+            ->where('is_deleted', 0)
+            ->orderBy('id', 'asc')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id'                => $user->id,
+                    'name'              => $user->name,
+                    'email'             => $user->email,
+                    'phone'             => $user->phone,
+                    'address'           => $user->address,
+                    'company_code'      => $user->company_code,
+                    'emergency_contact' => $user->emergency_contact,
+                    'status'            => $user->status,
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data'    => $users,
+        ]);
+    }
 }

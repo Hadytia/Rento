@@ -381,7 +381,7 @@
                     </div>
                 </td>
                 <td>
-                    @php $sc = $produk->stock <= 3 ? 'stock-low' : ($produk->stock <= 7 ? 'stock-medium' : 'stock-high'); @endphp
+                    @php $sc = $produk->stock <= 5 ? 'stock-low' : ($produk->stock <= 10 ? 'stock-medium' : 'stock-high'); @endphp
                     <span class="stock-badge {{ $sc }}">{{ $produk->stock }}</span>
                 </td>
                 <td>

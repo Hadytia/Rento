@@ -122,4 +122,44 @@ class PenaltyController extends Controller
         // TODO: Mail::to($transaction->email)->send(new ReminderMail($transaction));
         return redirect()->route('penalties.index')->with('success', "Reminder sent to {$transaction->name} ({$transaction->email}).");
     }
+
+        public function apiIndex(Request $request)
+    {
+        $query = DB::table('penalties as p')
+            ->join('transactions as t', 'p.transaction_id', '=', 't.id')
+            ->join('users as u', 't.user_id', '=', 'u.id')
+            ->join('products as pr', 't.product_id', '=', 'pr.id')
+            ->where('p.is_deleted', 0)
+            ->where('p.status', 1)
+            ->select(
+                'p.id',
+                'p.penalty_type',
+                'p.penalty_amount',
+                'p.overdue_days',
+                'p.description',
+                'p.resolved',
+                'p.created_date',
+                't.trx_code',
+                't.rental_start',
+                't.rental_end',
+                't.trx_status',
+                'u.name as customer_name',
+                'u.email as customer_email',
+                'pr.product_name'
+            )
+            ->orderBy('p.created_date', 'desc');
+
+        // Filter by resolved (opsional)
+        // contoh: /api/penalties?resolved=0
+        if ($request->has('resolved')) {
+            $query->where('p.resolved', $request->resolved);
+        }
+
+        $penalties = $query->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $penalties,
+        ]);
+    }
 }

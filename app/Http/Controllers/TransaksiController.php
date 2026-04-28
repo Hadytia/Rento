@@ -212,4 +212,46 @@ class TransaksiController extends Controller
         return redirect()->route('reports.index')
                          ->with('success', "Transaksi {$trx->trx_code} berhasil dihapus.");
     }
+
+        public function apiIndex(Request $request)
+    {
+        $query = \App\Models\Transaction::with(['user', 'product'])
+            ->where('is_deleted', 0)
+            ->orderBy('created_date', 'desc');
+
+        // Filter by status (opsional)
+        // contoh: /api/transactions?status=Active
+        if ($request->trx_status) {
+            $query->where('trx_status', $request->trx_status);
+        }
+
+        // Filter by user_id (opsional)
+        if ($request->user_id) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        $transactions = $query->get()->map(function ($trx) {
+            return [
+                'id'             => $trx->id,
+                'trx_code'       => $trx->trx_code,
+                'customer_name'  => $trx->user?->name,
+                'customer_email' => $trx->user?->email,
+                'product_name'   => $trx->product?->product_name,
+                'rental_start'   => $trx->rental_start,
+                'rental_end'     => $trx->rental_end,
+                'total_days'     => $trx->total_days,
+                'total_amount'   => $trx->total_amount,
+                'paid_amount'    => $trx->paid_amount,
+                'payment_method' => $trx->payment_method,
+                'trx_status'     => $trx->trx_status,
+                'notes'          => $trx->notes,
+                'created_date'   => $trx->created_date,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data'    => $transactions,
+        ]);
+    }
 }
