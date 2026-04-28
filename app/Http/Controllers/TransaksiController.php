@@ -254,4 +254,62 @@ class TransaksiController extends Controller
             'data'    => $transactions,
         ]);
     }
+
+        public function apiStore(Request $request)
+    {
+        $request->validate([
+            'user_id'        => 'required|exists:users,id',
+            'product_id'     => 'required|exists:products,id',
+            'rental_start'   => 'required|date',
+            'rental_end'     => 'required|date|after_or_equal:rental_start',
+            'paid_amount'    => 'nullable|numeric|min:0',
+            'payment_method' => 'nullable|string|max:50',
+            'notes'          => 'nullable|string',
+        ]);
+
+        $produk    = Produk::findOrFail($request->product_id);
+        $start     = \Carbon\Carbon::parse($request->rental_start);
+        $end       = \Carbon\Carbon::parse($request->rental_end);
+        $totalDays = $start->diffInDays($end) + 1;
+        $totalAmt  = $totalDays * $produk->rental_price;
+
+        do {
+            $trxCode = 'TRX-' . now()->format('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(5));
+        } while (\App\Models\Transaction::where('trx_code', $trxCode)->exists());
+
+        $transaction = \App\Models\Transaction::create([
+            'trx_code'          => $trxCode,
+            'user_id'           => $request->user_id,
+            'product_id'        => $request->product_id,
+            'rental_start'      => $request->rental_start,
+            'rental_end'        => $request->rental_end,
+            'total_days'        => $totalDays,
+            'total_amount'      => $totalAmt,
+            'paid_amount'       => $request->paid_amount ?? 0,
+            'payment_method'    => $request->payment_method,
+            'trx_status'        => 'Active',
+            'notes'             => $request->notes,
+            'status'            => 1,
+            'is_deleted'        => 0,
+            'created_by'        => 'api',
+            'created_date'      => now(),
+            'last_updated_by'   => 'api',
+            'last_updated_date' => now(),
+        ]);
+
+        // Auto-assign CUST code
+        \App\Helpers\CustomerCodeHelper::assignIfNeeded($transaction->user_id);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Transaksi {$trxCode} berhasil dibuat.",
+            'data'    => [
+                'id'           => $transaction->id,
+                'trx_code'     => $trxCode,
+                'total_days'   => $totalDays,
+                'total_amount' => $totalAmt,
+                'trx_status'   => 'Active',
+            ],
+        ], 201);
+    }
 }

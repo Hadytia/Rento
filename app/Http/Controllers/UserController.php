@@ -131,4 +131,43 @@ class UserController extends Controller
             'data'    => $users,
         ]);
     }
+
+        public function apiStore(Request $request)
+    {
+        $request->validate([
+            'name'              => 'required|string|max:255',
+            'email'             => 'required|email|unique:users,email',
+            'phone'             => 'required|string|max:20',
+            'address'           => 'nullable|string',
+            'id_card_number'    => 'nullable|string|max:16',
+            'emergency_contact' => 'nullable|string|max:255',
+        ]);
+
+        $user = User::create([
+            'name'              => $request->name,
+            'email'             => $request->email,
+            'password'          => bcrypt(str()->random(16)),
+            'phone'             => $request->phone,
+            'address'           => $request->address,
+            'id_card_number'    => $request->id_card_number,
+            'emergency_contact' => $request->emergency_contact,
+            'company_code'      => null,
+            'status'            => 1,
+            'is_deleted'        => 0,
+            'created_by'        => 'api',
+            'created_date'      => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User berhasil ditambahkan.',
+            'data'    => [
+                'id'           => $user->id,
+                'name'         => $user->name,
+                'email'        => $user->email,
+                'phone'        => $user->phone,
+                'company_code' => $user->company_code,
+            ],
+        ], 201);
+    }
 }

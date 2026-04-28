@@ -185,4 +185,44 @@ class ProdukController extends Controller
             'data'    => $produks,
         ]);
     }
+
+        public function apiStore(Request $request)
+    {
+        $request->validate([
+            'product_name'    => 'required|string|max:255',
+            'description'     => 'nullable|string',
+            'rental_price'    => 'required|numeric|min:0',
+            'stock'           => 'required|integer|min:0',
+            'condition'       => 'required|in:New,Excellent,Good,Fair,Poor',
+            'category_id'     => 'required|exists:categories,id',
+            'min_rental_days' => 'nullable|integer|min:1',
+        ]);
+
+        $produk = Produk::create([
+            'product_name'    => $request->product_name,
+            'description'     => $request->description,
+            'rental_price'    => $request->rental_price,
+            'stock'           => $request->stock,
+            'condition'       => $request->condition,
+            'category_id'     => $request->category_id,
+            'min_rental_days' => $request->min_rental_days ?? 1,
+            'photo'           => null,
+            'status'          => 1,
+            'is_deleted'      => 0,
+            'created_by'      => 'api',
+            'created_date'    => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Produk berhasil ditambahkan.',
+            'data'    => [
+                'id'           => $produk->id,
+                'product_name' => $produk->product_name,
+                'rental_price' => $produk->rental_price,
+                'stock'        => $produk->stock,
+                'condition'    => $produk->condition,
+            ],
+        ], 201);
+    }
 }

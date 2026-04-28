@@ -162,4 +162,41 @@ class PenaltyController extends Controller
             'data'    => $penalties,
         ]);
     }
+
+        public function apiStore(Request $request)
+    {
+        $request->validate([
+            'transaction_id' => 'required|exists:transactions,id',
+            'penalty_type'   => 'required|in:Overdue,Damage,Other',
+            'penalty_amount' => 'required|numeric|min:0',
+            'overdue_days'   => 'nullable|integer|min:0',
+            'description'    => 'nullable|string',
+        ]);
+
+        $id = DB::table('penalties')->insertGetId([
+            'transaction_id'    => $request->transaction_id,
+            'penalty_type'      => $request->penalty_type,
+            'penalty_amount'    => $request->penalty_amount,
+            'overdue_days'      => $request->overdue_days ?? 0,
+            'description'       => $request->description,
+            'resolved'          => 0,
+            'status'            => 1,
+            'is_deleted'        => 0,
+            'created_by'        => 'api',
+            'created_date'      => now(),
+            'last_updated_by'   => 'api',
+            'last_updated_date' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Penalty berhasil ditambahkan.',
+            'data'    => [
+                'id'             => $id,
+                'transaction_id' => $request->transaction_id,
+                'penalty_type'   => $request->penalty_type,
+                'penalty_amount' => $request->penalty_amount,
+            ],
+        ], 201);
+    }
 }
