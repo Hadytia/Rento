@@ -120,41 +120,7 @@ class ProdukController extends Controller
         return redirect()->route('produks.index')->with('success', 'Produk berhasil dihapus.');
     }
 
-        public function apiIndex(Request $request)
-    {
-        $query = Produk::with('kategori')
-            ->where('is_deleted', 0)
-            ->where('status', 1);
-
-        // Filter by kategori (opsional)
-        // contoh: /api/products?category_id=1
-        if ($request->category_id) {
-            $query->where('category_id', $request->category_id);
-        }
-
-        $produks = $query->get()->map(function ($produk) {
-            return [
-                'id'              => $produk->id,
-                'product_name'    => $produk->product_name,
-                'description'     => $produk->description,
-                'rental_price'    => $produk->rental_price,
-                'stock'           => $produk->stock,
-                'condition'       => $produk->condition,
-                'min_rental_days' => $produk->min_rental_days,
-                'category'        => $produk->kategori?->category_name,
-                'photo'           => $produk->photo
-                    ? asset('products/' . $produk->photo)
-                    : null,
-            ];
-        });
-
-        return response()->json([
-            'success' => true,
-            'data'    => $produks,
-        ]);
-    }
-
-        public function apiIndex(Request $request)
+    public function apiIndex(Request $request)
     {
         $query = Produk::with('kategori')
             ->where('is_deleted', 0)
@@ -186,7 +152,7 @@ class ProdukController extends Controller
         ]);
     }
 
-        public function apiStore(Request $request)
+    public function apiStore(Request $request)
     {
         $request->validate([
             'product_name'    => 'required|string|max:255',
