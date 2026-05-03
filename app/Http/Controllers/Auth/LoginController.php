@@ -330,7 +330,7 @@ class LoginController extends Controller
             $user = User::where('email', $admin->email)->firstOrFail();
         }
 
-        Auth::login($user, true);
+        Auth::login($user, false);
         session()->forget(['2fa_admin_id', '2fa_user_id']);
         $request->session()->regenerate();
     }

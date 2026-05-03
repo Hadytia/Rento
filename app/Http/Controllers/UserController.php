@@ -54,6 +54,8 @@ class UserController extends Controller
             'is_deleted'        => 0,
             'created_by'        => auth()->user()->name ?? 'system',
             'created_date'      => now(),
+            'last_updated_by'   => auth()->user()->name ?? 'system',
+            'last_updated_date' => now(),
         ]);
 
         return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
@@ -82,6 +84,7 @@ class UserController extends Controller
             'emergency_contact' => $request->emergency_contact,
             // company_code tidak diupdate dari form, dikelola otomatis
             'status'            => $request->has('status') ? 1 : 0,
+            'last_updated_by'   => auth()->user()->name ?? 'system',
             'last_updated_date' => now(),
         ]);
 
@@ -95,13 +98,14 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->update([
             'is_deleted'        => 1,
+            'last_updated_by'   => auth()->user()->name ?? 'system',
             'last_updated_date' => now(),
         ]);
 
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
     }
 
-        public function apiIndex(Request $request)
+    public function apiIndex(Request $request)
     {
         $userIds = DB::table('transactions')
             ->whereNotNull('user_id')
@@ -132,7 +136,7 @@ class UserController extends Controller
         ]);
     }
 
-        public function apiStore(Request $request)
+    public function apiStore(Request $request)
     {
         $request->validate([
             'name'              => 'required|string|max:255',
@@ -156,6 +160,8 @@ class UserController extends Controller
             'is_deleted'        => 0,
             'created_by'        => 'api',
             'created_date'      => now(),
+            'last_updated_by'   => 'api',
+            'last_updated_date' => now(),
         ]);
 
         return response()->json([

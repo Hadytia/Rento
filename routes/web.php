@@ -22,6 +22,7 @@ use App\Http\Controllers\TransaksiController;
 // =========================
 Route::get('/', function () {
     return view('welcome');
+    // return redirect('https://rento-gules.vercel.app/');
 });
 
 // =========================
