@@ -49,6 +49,7 @@ class UserController extends Controller
             'address'           => $request->address,
             'id_card_number'    => $request->id_card_number,
             'emergency_contact' => $request->emergency_contact,
+            'no_emergency_contact' => $request->no_emergency_contact,
             'company_code'      => null, // akan diisi otomatis saat transaksi pertama
             'status'            => $request->has('status') ? 1 : 0,
             'is_deleted'        => 0,
@@ -82,6 +83,7 @@ class UserController extends Controller
             'address'           => $request->address,
             'id_card_number'    => $request->id_card_number,
             'emergency_contact' => $request->emergency_contact,
+            'no_emergency_contact' => $request->no_emergency_contact,
             // company_code tidak diupdate dari form, dikelola otomatis
             'status'            => $request->has('status') ? 1 : 0,
             'last_updated_by'   => auth()->user()->name ?? 'system',
@@ -124,8 +126,10 @@ class UserController extends Controller
                     'email'             => $user->email,
                     'phone'             => $user->phone,
                     'address'           => $user->address,
+                    'id_card_number'    => $user->id_card_number,
                     'company_code'      => $user->company_code,
                     'emergency_contact' => $user->emergency_contact,
+                    'no_emergency_contact' => $user->no_emergency_contact,
                     'status'            => $user->status,
                 ];
             });
@@ -155,6 +159,7 @@ class UserController extends Controller
             'address'           => $request->address,
             'id_card_number'    => $request->id_card_number,
             'emergency_contact' => $request->emergency_contact,
+            'no_emergency_contact' => $request->no_emergency_contact,
             'company_code'      => null,
             'status'            => 1,
             'is_deleted'        => 0,
@@ -172,6 +177,7 @@ class UserController extends Controller
                 'name'         => $user->name,
                 'email'        => $user->email,
                 'phone'        => $user->phone,
+                'id_card_number' => $user->id_card_number,
                 'company_code' => $user->company_code,
             ],
         ], 201);

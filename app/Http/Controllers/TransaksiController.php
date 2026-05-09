@@ -51,6 +51,7 @@ class TransaksiController extends Controller
             'paid_amount'    => 'nullable|numeric|min:0',
             'payment_method' => 'nullable|string|max:50',
             'notes'          => 'nullable|string',
+            'delivery_method' => 'nullable|in:Pickup,Delivery,COD',
         ]);
 
         $produk     = Produk::findOrFail($request->product_id);
@@ -75,6 +76,7 @@ class TransaksiController extends Controller
             'payment_method'    => $request->payment_method,
             'trx_status'        => 'Active',
             'notes'             => $request->notes,
+            'delivery_method'   => $request->delivery_method,
             'status'            => 1,
             'is_deleted'        => 0,
             'created_by'        => Auth::user()->name,
@@ -126,6 +128,7 @@ class TransaksiController extends Controller
             'payment_method' => 'nullable|string|max:50',
             'trx_status'     => 'required|in:Active,Completed,Overdue,Cancelled',
             'notes'          => 'nullable|string',
+            'delivery_method' => 'nullable|in:Pickup,Delivery,COD',
         ]);
 
         $produk    = Produk::findOrFail($request->product_id);
@@ -145,6 +148,7 @@ class TransaksiController extends Controller
             'payment_method'    => $request->payment_method,
             'trx_status'        => $request->trx_status,
             'notes'             => $request->notes,
+            'delivery_method'   => $request->delivery_method,
             'last_updated_by'   => Auth::user()->name,
             'last_updated_date' => now(),
         ]);
@@ -245,6 +249,7 @@ class TransaksiController extends Controller
                 'payment_method' => $trx->payment_method,
                 'trx_status'     => $trx->trx_status,
                 'notes'          => $trx->notes,
+                'delivery_method' => $trx->delivery_method,
                 'created_date'   => $trx->created_date,
             ];
         });
@@ -265,6 +270,7 @@ class TransaksiController extends Controller
             'paid_amount'    => 'nullable|numeric|min:0',
             'payment_method' => 'nullable|string|max:50',
             'notes'          => 'nullable|string',
+            'delivery_method' => 'nullable|in:Pickup,Delivery,COD',
         ]);
 
         $produk    = Produk::findOrFail($request->product_id);
@@ -289,6 +295,7 @@ class TransaksiController extends Controller
             'payment_method'    => $request->payment_method,
             'trx_status'        => 'Active',
             'notes'             => $request->notes,
+            'delivery_method'   => $request->delivery_method,
             'status'            => 1,
             'is_deleted'        => 0,
             'created_by'        => 'api',
@@ -309,6 +316,7 @@ class TransaksiController extends Controller
                 'total_days'   => $totalDays,
                 'total_amount' => $totalAmt,
                 'trx_status'   => 'Active',
+                'delivery_method' => $request->delivery_method,
             ],
         ], 201);
     }

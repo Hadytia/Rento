@@ -3,6 +3,8 @@
 @section('content')
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
     /* ═══════════════════════════════════════════════════════════════════════
        DESIGN TOKENS
     ═══════════════════════════════════════════════════════════════════════ */
@@ -366,201 +368,413 @@
     }
     .audit-empty { color:var(--gray-300); font-size:13px; }
 
-    /* ── Action Buttons ── */
-    .action-wrap { display:flex; gap:6px; }
-    .action-btn {
-        height:34px; padding:0 13px; border-radius:8px; font-family:Inter,sans-serif;
-        font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center;
-        gap:5px; transition:all .15s ease; border:none;
+    /* ═══════════════════════════════════════════════════════════════════════
+    STAT CARDS
+    ═══════════════════════════════════════════════════════════════════════ */
+    .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:28px; }
+    .stat-card {
+        background:#FFF; border-radius:16px; padding:22px 24px;
+        border:1px solid var(--gray-200);
+        display:flex; align-items:center; gap:16px;
+        position:relative; overflow:hidden;
+        transition:all .25s ease;
+        box-shadow:0 1px 2px rgba(15,23,42,.04);
     }
-    .btn-edit-row {
-        color:#4F46E5; background:#FFF;
-        box-shadow:inset 0 0 0 1px rgba(79,70,229,.2);
+    .stat-card::before {
+        content:''; position:absolute; top:0; left:0; right:0; height:3px;
+        opacity:0; transition:opacity .25s ease;
     }
-    .btn-edit-row:hover {
-        background:#EFF6FF; color:#4338CA;
-        transform:translateY(-1px);
-        box-shadow:0 4px 10px rgba(79,70,229,.2), inset 0 0 0 1px #4F46E5;
-    }
-    .btn-delete-row {
-        color:#DC2626; background:#FFF;
-        box-shadow:inset 0 0 0 1px rgba(220,38,38,.2);
-    }
-    .btn-delete-row:hover {
-        background:#FEF2F2; color:#B91C1C;
-        transform:translateY(-1px);
-        box-shadow:0 4px 10px rgba(220,38,38,.2), inset 0 0 0 1px #DC2626;
-    }
-    .action-btn svg { width:13px; height:13px; }
-
-    .empty-row {
-        text-align:center; padding:64px 0; color:var(--gray-400);
-        font-family:Inter,sans-serif; font-size:14px; font-weight:500;
-    }
+    .stat-card:hover { transform:translateY(-2px); box-shadow:0 12px 24px -8px rgba(15,23,42,.1), 0 4px 8px -4px rgba(15,23,42,.05); border-color:transparent; }
+    .stat-card:hover::before { opacity:1; }
+    .stat-card.blue::before  { background:linear-gradient(90deg, #4F46E5, #818CF8); }
+    .stat-card.green::before { background:linear-gradient(90deg, #059669, #34D399); }
+    .stat-card.red::before   { background:linear-gradient(90deg, #DC2626, #F87171); }
+    .stat-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .stat-icon svg { width:22px; height:22px; }
+    .stat-icon.blue  { background:linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); color:#4F46E5; box-shadow:inset 0 0 0 1px rgba(79,70,229,.1); }
+    .stat-icon.green { background:linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); color:#059669; box-shadow:inset 0 0 0 1px rgba(5,150,105,.1); }
+    .stat-icon.red   { background:linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%); color:#DC2626; box-shadow:inset 0 0 0 1px rgba(220,38,38,.1); }
+    .stat-label { font-family:Inter,sans-serif; font-size:11px; font-weight:600; color:var(--gray-500); text-transform:uppercase; letter-spacing:.8px; margin-bottom:6px; }
+    .stat-value { font-family:Inter,sans-serif; font-size:28px; font-weight:700; color:var(--gray-900); line-height:1; letter-spacing:-1px; }
 
     /* ═══════════════════════════════════════════════════════════════════════
-       MODALS
+    ACTION BUTTONS
+    ═══════════════════════════════════════════════════════════════════════ */
+    .action-btn { height:32px; padding:0 12px; border-radius:8px; font-family:Inter,sans-serif; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .15s ease; border:none; letter-spacing:.1px; }
+    .btn-edit-row { background:#EEF2FF; color:#4F46E5; box-shadow:inset 0 0 0 1px rgba(79,70,229,.15); }
+    .btn-edit-row:hover { background:#4F46E5; color:#FFF; transform:translateY(-1px); box-shadow:0 4px 10px rgba(79,70,229,.3); }
+    .btn-delete-row { background:#FEF2F2; color:#DC2626; box-shadow:inset 0 0 0 1px rgba(220,38,38,.15); }
+    .btn-delete-row:hover { background:#DC2626; color:#FFF; transform:translateY(-1px); box-shadow:0 4px 10px rgba(220,38,38,.3); }
+    .action-btn svg { width:13px; height:13px; }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       MODALS - MODERN DESIGN SYSTEM
     ═══════════════════════════════════════════════════════════════════════ */
     .modal-overlay {
         display:none; position:fixed; inset:0; z-index:999;
         align-items:center; justify-content:center; padding:20px;
-        animation:fadeIn .2s ease;
     }
-    .modal-overlay.show { display:flex; }
+    .modal-overlay.show { display:flex; animation:fadeIn .2s ease; }
     @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+    
     .modal-backdrop {
         position:fixed; inset:0;
-        background:rgba(15,23,42,.6); backdrop-filter:blur(6px);
+        background:rgba(15,23,42,.55); backdrop-filter:blur(6px);
     }
 
     .form-modal {
-        position:relative; z-index:1; background:#FFF; border-radius:20px;
-        width:100%; max-width:500px; max-height:90vh; overflow-y:auto;
-        box-shadow:0 25px 60px rgba(0,0,0,.2), 0 1px 0 rgba(255,255,255,.1) inset;
-        animation:slideUp .25s ease;
+        position:relative; z-index:1; background:#FFF; border-radius:18px;
+        width:100%; max-width:540px; max-height:90vh; overflow:hidden;
+        box-shadow:0 25px 60px rgba(0,0,0,.25);
+        animation:slideUp .28s cubic-bezier(0.22,1,0.36,1);
     }
     @keyframes slideUp {
-        from { transform:translateY(20px); opacity:0; }
+        from { transform:translateY(24px); opacity:0; }
         to   { transform:translateY(0); opacity:1; }
     }
-    .modal-header {
-        padding:24px 28px 18px; border-bottom:1px solid var(--gray-100);
-        display:flex; align-items:center; justify-content:space-between;
-        position:sticky; top:0; background:white; z-index:2;
-        border-radius:20px 20px 0 0;
-    }
-    .modal-header h2 {
-        font-family:Inter,sans-serif; font-size:16px; font-weight:700;
-        color:var(--gray-900); margin:0; letter-spacing:-0.2px;
-    }
-    .modal-close {
-        width:32px; height:32px; background:var(--gray-100); border:none;
-        border-radius:9px; cursor:pointer; display:flex;
-        align-items:center; justify-content:center;
-        color:var(--gray-500); font-size:14px; transition:all .15s ease;
-    }
-    .modal-close:hover { background:var(--gray-200); color:var(--gray-700); }
 
-    .modal-body { padding:20px 28px; }
+    /* ── Modal Header dengan Gradient Biru ── */
+    .modal-header {
+        position:relative;
+        background:linear-gradient(135deg, #1e3a5f 0%, #2563eb 60%, #3b82f6 100%);
+        padding:28px 32px;
+        overflow:hidden;
+    }
+    .modal-header::before {
+        content:''; position:absolute; top:-40px; right:-40px;
+        width:180px; height:180px; border-radius:50%;
+        background:rgba(255,255,255,0.06);
+    }
+    .modal-header::after {
+        content:''; position:absolute; bottom:-60px; left:-60px;
+        width:200px; height:200px; border-radius:50%;
+        background:rgba(255,255,255,0.04);
+    }
+    .modal-header-content {
+        position:relative; z-index:1;
+        display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+    }
+    .modal-icon-box {
+        width:52px; height:52px; border-radius:12px;
+        background:rgba(255,255,255,0.15); backdrop-filter:blur(10px);
+        border:1px solid rgba(255,255,255,0.2);
+        display:flex; align-items:center; justify-content:center;
+        flex-shrink:0;
+        box-shadow:0 8px 16px rgba(0,0,0,0.1);
+    }
+    .modal-icon-box svg { width:24px; height:24px; color:#fff; }
+    .modal-title-wrap { flex:1; }
+    .modal-title-wrap h2 {
+        font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800;
+        color:#fff; margin:0 0 4px 0; letter-spacing:-0.3px;
+    }
+    .modal-title-wrap p {
+        font-family:'Plus Jakarta Sans',sans-serif; font-size:13px;
+        color:rgba(255,255,255,0.7); margin:0; font-weight:500;
+    }
+    .modal-close-btn {
+        position:absolute; top:20px; right:20px; z-index:2;
+        width:36px; height:36px; border-radius:10px;
+        background:rgba(255,255,255,0.15); backdrop-filter:blur(10px);
+        border:1px solid rgba(255,255,255,0.2);
+        display:flex; align-items:center; justify-content:center;
+        cursor:pointer; transition:all .2s ease;
+    }
+    .modal-close-btn:hover {
+        background:rgba(255,255,255,0.25);
+        transform:rotate(90deg);
+    }
+    .modal-close-btn svg { width:18px; height:18px; color:#fff; }
+
+    /* ── Modal Body ── */
+    .modal-body {
+        padding:28px 32px;
+        max-height:calc(90vh - 200px);
+        overflow-y:auto;
+    }
+    .modal-body::-webkit-scrollbar { width:8px; }
+    .modal-body::-webkit-scrollbar-track { background:transparent; }
+    .modal-body::-webkit-scrollbar-thumb {
+        background:#e2e8f0; border-radius:10px;
+    }
+
+    /* ── Section Labels dengan Icon ── */
     .form-section {
-        font-family:Inter,sans-serif; font-size:11px; font-weight:700;
-        color:var(--gray-400); text-transform:uppercase; letter-spacing:.08em;
-        margin:18px 0 12px;
+        display:flex; align-items:center; gap:10px;
+        margin:24px 0 16px;
+        font-family:'Plus Jakarta Sans',sans-serif;
+        font-size:0.65rem; font-weight:700;
+        color:#94a3b8; text-transform:uppercase; letter-spacing:.08em;
     }
     .form-section:first-child { margin-top:0; }
-    .form-divider { height:1px; background:var(--gray-100); margin:16px 0; }
-    .form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    .form-group { margin-bottom:14px; }
-    .form-group:last-child { margin-bottom:0; }
-    .form-group label {
-        display:block; font-family:Inter,sans-serif; font-size:12px;
-        font-weight:600; color:var(--gray-700); margin-bottom:6px;
-        text-transform:uppercase; letter-spacing:.05em;
+    .form-section svg {
+        width:14px; height:14px; flex-shrink:0;
     }
-    .form-group input,.form-group select {
-        width:100%; border:1px solid var(--gray-200); border-radius:10px; padding:10px 14px;
-        font-family:Inter,sans-serif; font-size:13px; color:var(--gray-900); outline:none;
-        box-sizing:border-box; background:var(--gray-50); transition:all .2s ease;
-        font-weight:500;
-    }
-    .form-group input:focus,.form-group select:focus {
-        border-color:#4F46E5; background:#FFF;
-        box-shadow:0 0 0 4px rgba(79,70,229,.08);
+    .form-section::after {
+        content:''; flex:1; height:1px; background:#f1f5f9;
     }
 
+    /* ── Form Groups ── */
+    .form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-group { margin-bottom:16px; }
+    .form-group:last-child { margin-bottom:0; }
+    
+    .form-group label {
+        display:block;
+        font-family:'Plus Jakarta Sans',sans-serif;
+        font-size:0.7rem; font-weight:700;
+        color:#64748b; margin-bottom:8px;
+        text-transform:uppercase; letter-spacing:.06em;
+    }
+    .form-group label .required { color:#ef4444; margin-left:2px; }
+
+    /* ── Input Fields dengan Icon ── */
+    .fg-ico {
+        position:relative;
+    }
+    .fg-ico .input-icon {
+        position:absolute; left:12px; top:50%;
+        transform:translateY(-50%);
+        width:16px; height:16px; color:#94a3b8;
+        pointer-events:none;
+    }
+    .fg-ico input,
+    .fg-ico select {
+        width:100%; height:42px;
+        padding-left:34px; padding-right:14px;
+        border:1.5px solid #e8edf5; border-radius:10px;
+        background:#f8fafc;
+        font-family:'Plus Jakarta Sans',sans-serif;
+        font-size:0.875rem; font-weight:500; color:#1e293b;
+        outline:none; box-sizing:border-box;
+        transition:all .2s ease;
+    }
+    .fg-ico input:focus,
+    .fg-ico select:focus {
+        border-color:#3b82f6; background:#fff;
+        box-shadow:0 0 0 3px rgba(59,130,246,.1);
+    }
+    .fg-ico input::placeholder {
+        color:#cbd5e1; font-weight:400;
+    }
+
+    /* ── Select Custom Arrow ── */
+    .fg-ico select {
+        appearance:none;
+        background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat:no-repeat;
+        background-position:right 14px center;
+        padding-right:38px;
+    }
+
+    /* ── Toggle Password Section ── */
+    .toggle-password-section {
+        display:flex; justify-content:space-between; align-items:center;
+        margin:24px 0 0;
+    }
+    .toggle-password-section .form-section {
+        margin:0; flex:1;
+    }
+    .pw-reveal {
+        font-family:'Plus Jakarta Sans',sans-serif;
+        font-size:0.75rem; font-weight:700;
+        color:#3b82f6; cursor:pointer;
+        padding:6px 12px; border-radius:6px;
+        transition:all .15s ease;
+    }
+    .pw-reveal:hover {
+        background:#eff6ff;
+    }
+
+    /* ── Toggle Slider Modern ── */
+    .toggle-wrap {
+        display:flex; align-items:center; justify-content:space-between;
+        padding:12px 0;
+    }
+    .toggle-label {
+        font-family:'Plus Jakarta Sans',sans-serif;
+        font-size:0.7rem; font-weight:700;
+        color:#64748b; text-transform:uppercase; letter-spacing:.06em;
+    }
+    .toggle-control { display:flex; align-items:center; gap:10px; }
+    .toggle-slider {
+        width:48px; height:26px; background:#e2e8f0; border-radius:20px;
+        position:relative; cursor:pointer; transition:all .2s ease;
+        box-shadow:inset 0 2px 4px rgba(0,0,0,0.06);
+    }
+    .toggle-slider.on {
+        background:linear-gradient(135deg, #2563eb, #3b82f6);
+    }
+    .toggle-thumb {
+        width:22px; height:22px; background:white; border-radius:50%;
+        position:absolute; top:2px; left:2px; transition:all .2s ease;
+        box-shadow:0 2px 4px rgba(0,0,0,0.2);
+    }
+    .toggle-slider.on .toggle-thumb { left:24px; }
+    .toggle-text {
+        font-family:'Plus Jakarta Sans',sans-serif;
+        font-size:0.8rem; font-weight:600; color:#64748b;
+    }
+
+    /* ── Modal Footer ── */
     .modal-footer {
-        padding:16px 28px 22px; border-top:1px solid var(--gray-100);
-        display:flex; gap:10px; justify-content:flex-end;
-        position:sticky; bottom:0; background:white;
-        border-radius:0 0 20px 20px;
+        padding:20px 32px 28px;
+        border-top:1px solid #f1f5f9;
+        display:flex; gap:12px; justify-content:flex-end;
+        background:#fafbfc;
     }
     .btn-cancel {
-        height:40px; padding:0 20px; background:white; border:1px solid var(--gray-200);
-        border-radius:10px; font-family:Inter,sans-serif; font-size:13px;
-        font-weight:500; cursor:pointer; color:var(--gray-700); transition:all .15s ease;
+        height:42px; padding:0 24px;
+        background:#f1f5f9; border:1.5px solid #e2e8f0;
+        border-radius:10px;
+        font-family:'Plus Jakarta Sans',sans-serif;
+        font-size:0.875rem; font-weight:700;
+        color:#64748b; cursor:pointer;
+        transition:all .2s ease;
     }
-    .btn-cancel:hover { background:var(--gray-50); border-color:var(--gray-300); }
+    .btn-cancel:hover {
+        background:#e2e8f0; border-color:#cbd5e1;
+    }
     .btn-save {
-        height:40px; padding:0 22px;
-        background:linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
-        border:none; border-radius:10px; font-family:Inter,sans-serif;
-        font-size:13px; font-weight:600; color:#FFF; cursor:pointer;
-        box-shadow:0 4px 12px rgba(79,70,229,.3), 0 1px 0 rgba(255,255,255,.12) inset;
+        height:42px; padding:0 28px;
+        background:linear-gradient(135deg, #2563eb, #3b82f6);
+        border:none; border-radius:10px;
+        font-family:'Plus Jakarta Sans',sans-serif;
+        font-size:0.875rem; font-weight:700;
+        color:#fff; cursor:pointer;
+        box-shadow:0 4px 14px rgba(37,99,235,.35);
         transition:all .2s ease;
     }
     .btn-save:hover {
         transform:translateY(-1px);
-        box-shadow:0 6px 16px rgba(79,70,229,.4), 0 1px 0 rgba(255,255,255,.12) inset;
+        box-shadow:0 6px 20px rgba(37,99,235,.45);
     }
 
-    .toggle-wrap {
-        display:flex; align-items:center; justify-content:space-between; padding:12px 0;
-    }
-    .toggle-label {
-        font-family:Inter,sans-serif; font-size:13px; font-weight:600;
-        color:var(--gray-700);
-    }
-    .toggle-slider {
-        width:44px; height:24px; background:var(--gray-200); border-radius:20px;
-        position:relative; cursor:pointer; transition:background .2s;
-    }
-    .toggle-slider.on { background:#4F46E5; }
-    .toggle-thumb {
-        width:20px; height:20px; background:white; border-radius:50%;
-        position:absolute; top:2px; left:2px; transition:left .2s;
-        box-shadow:0 1px 3px rgba(0,0,0,.2);
-    }
-    .toggle-slider.on .toggle-thumb { left:22px; }
-    .toggle-text {
-        font-family:Inter,sans-serif; font-size:13px; color:var(--gray-500);
-        margin-left:10px;
-    }
-    .pw-reveal {
-        font-family:Inter,sans-serif; font-size:11px; color:#4F46E5;
-        font-weight:600; cursor:pointer;
-    }
-    .pw-reveal:hover { text-decoration:underline; }
-
-    /* Confirm Modal */
+    /* ═══════════════════════════════════════════════════════════════════════
+       CONFIRM MODAL
+    ═══════════════════════════════════════════════════════════════════════ */
     .confirm-box {
-        position:relative; z-index:1; background:#FFF; border-radius:20px;
+        position:relative; z-index:1; background:#FFF; border-radius:18px;
         width:100%; max-width:420px;
-        box-shadow:0 25px 60px rgba(0,0,0,.2);
-        overflow:hidden; animation:slideUp .25s ease;
+        box-shadow:0 25px 60px rgba(0,0,0,.25);
+        overflow:hidden; animation:slideUp .28s cubic-bezier(0.22,1,0.36,1);
     }
     .confirm-accent { height:4px; width:100%; }
-    .confirm-body { padding:28px 28px 20px; }
+    .confirm-body { padding:32px; }
     .confirm-icon-wrap {
-        width:56px; height:56px; border-radius:16px;
-        display:flex; align-items:center; justify-content:center; margin-bottom:16px;
+        width:56px; height:56px; border-radius:14px;
+        display:flex; align-items:center; justify-content:center; margin-bottom:18px;
     }
     .confirm-icon-wrap svg { width:24px; height:24px; }
     .confirm-subtitle {
-        font-family:Inter,sans-serif; font-size:11px; font-weight:700;
-        color:var(--gray-400); text-transform:uppercase; letter-spacing:.08em;
-        margin-bottom:5px;
+        font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700;
+        color:#94a3b8; text-transform:uppercase; letter-spacing:.08em;
+        margin-bottom:6px;
     }
     .confirm-title {
-        font-family:Inter,sans-serif; font-size:18px; font-weight:700;
-        color:var(--gray-900); margin-bottom:10px; letter-spacing:-0.3px;
+        font-family:'Plus Jakarta Sans',sans-serif; font-size:1.25rem; font-weight:800;
+        color:#1e293b; margin-bottom:12px; letter-spacing:-0.3px;
     }
     .confirm-desc {
-        font-family:Inter,sans-serif; font-size:13.5px;
-        color:var(--gray-500); line-height:1.6; margin:0;
+        font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem;
+        color:#64748b; line-height:1.6; margin:0; font-weight:500;
     }
-    .confirm-footer { padding:14px 28px 24px; display:flex; gap:10px; }
+    .confirm-footer { padding:0 32px 32px; display:flex; gap:12px; }
     .btn-cf-cancel {
-        flex:1; height:42px; border:1.5px solid var(--gray-200);
-        border-radius:11px; font-family:Inter,sans-serif;
-        font-size:13px; font-weight:600; color:var(--gray-600);
-        background:white; cursor:pointer; transition:all .15s ease;
+        flex:1; height:42px;
+        background:#f1f5f9; border:1.5px solid #e2e8f0;
+        border-radius:10px;
+        font-family:'Plus Jakarta Sans',sans-serif;
+        font-size:0.875rem; font-weight:700;
+        color:#64748b; cursor:pointer;
+        transition:all .2s ease;
     }
-    .btn-cf-cancel:hover { background:var(--gray-50); border-color:var(--gray-300); }
+    .btn-cf-cancel:hover {
+        background:#e2e8f0; border-color:#cbd5e1;
+    }
     .btn-cf-ok {
-        flex:1; height:42px; border:none; border-radius:11px;
-        font-family:Inter,sans-serif; font-size:13px; font-weight:700;
-        color:white; cursor:pointer; transition:all .2s ease;
+        flex:1; height:42px; border:none; border-radius:10px;
+        font-family:'Plus Jakarta Sans',sans-serif;
+        font-size:0.875rem; font-weight:700;
+        color:#fff; cursor:pointer;
+        transition:all .2s ease;
     }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+    MODAL DELETE ADMIN — sama dengan modal delete user
+    ═══════════════════════════════════════════════════════════════════════ */
+    .confirm-box {
+        position:relative; z-index:1; background:#FFF; border-radius:18px;
+        width:100%; max-width:460px; overflow:hidden;
+        box-shadow:0 25px 60px rgba(0,0,0,.25);
+        animation:slideUp .28s cubic-bezier(0.22,1,0.36,1);
+    }
+    .confirm-header {
+        position:relative;
+        background:linear-gradient(135deg, #7f1d1d 0%, #dc2626 60%, #ef4444 100%);
+        padding:28px 32px; overflow:hidden;
+    }
+    .confirm-header::before {
+        content:''; position:absolute; top:-40px; right:-40px;
+        width:160px; height:160px; border-radius:50%;
+        background:rgba(255,255,255,0.06); pointer-events:none;
+    }
+    .confirm-header::after {
+        content:''; position:absolute; bottom:-50px; left:-50px;
+        width:180px; height:180px; border-radius:50%;
+        background:rgba(255,255,255,0.04); pointer-events:none;
+    }
+    .confirm-header-content {
+        position:relative; z-index:1;
+        display:flex; align-items:flex-start; gap:16px;
+    }
+    .confirm-icon-box {
+        width:52px; height:52px; border-radius:12px; flex-shrink:0;
+        background:rgba(255,255,255,0.15); backdrop-filter:blur(10px);
+        border:1px solid rgba(255,255,255,0.2);
+        display:flex; align-items:center; justify-content:center;
+        box-shadow:0 8px 16px rgba(0,0,0,0.1);
+    }
+    .confirm-icon-box svg { width:24px; height:24px; color:#fff; }
+    .confirm-title-wrap h2 {
+        font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800;
+        color:#fff; margin:0 0 4px 0; letter-spacing:-0.3px;
+    }
+    .confirm-title-wrap p {
+        font-family:'Plus Jakarta Sans',sans-serif; font-size:13px;
+        color:rgba(255,255,255,0.7); margin:0; font-weight:500;
+    }
+    .confirm-close-btn {
+        position:absolute; top:20px; right:20px; z-index:2;
+        width:36px; height:36px; border-radius:10px;
+        background:rgba(255,255,255,0.15); backdrop-filter:blur(10px);
+        border:1px solid rgba(255,255,255,0.2);
+        display:flex; align-items:center; justify-content:center;
+        cursor:pointer; transition:all .2s ease;
+    }
+    .confirm-close-btn:hover { background:rgba(255,255,255,0.25); transform:rotate(90deg); }
+    .confirm-close-btn svg { width:18px; height:18px; color:#fff; }
+    .confirm-body { padding:28px 32px 8px; }
+    .confirm-desc {
+        font-family:'Plus Jakarta Sans',sans-serif; font-size:14px;
+        color:#64748b; line-height:1.65; margin:0; font-weight:500;
+    }
+    .confirm-footer { padding:16px 32px 28px; display:flex; gap:12px; }
+    .btn-confirm-cancel {
+        flex:1; height:42px;
+        background:#f1f5f9; border:1.5px solid #e2e8f0; border-radius:10px;
+        font-family:'Plus Jakarta Sans',sans-serif; font-size:0.875rem; font-weight:700;
+        color:#64748b; cursor:pointer; transition:all .2s ease;
+    }
+    .btn-confirm-cancel:hover { background:#e2e8f0; border-color:#cbd5e1; }
+    .btn-confirm-delete {
+        flex:1; height:42px; border:none; border-radius:10px;
+        background:linear-gradient(135deg, #dc2626, #ef4444);
+        font-family:'Plus Jakarta Sans',sans-serif; font-size:0.875rem; font-weight:700;
+        color:#fff; cursor:pointer;
+        box-shadow:0 4px 14px rgba(220,38,38,.35); transition:all .2s ease;
+    }
+    .btn-confirm-delete:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(220,38,38,.45); }
 </style>
 
 {{-- Header --}}
@@ -585,6 +799,51 @@
         {{ session('success') }}
     </div>
 @endif
+
+@php
+    $totalAdmins    = $admins->count();
+    $activeAdmins   = $admins->where('status', 1)->count();
+    $inactiveAdmins = $admins->where('status', 0)->count();
+@endphp
+<div class="stats-grid">
+    <div class="stat-card blue">
+        <div class="stat-icon blue">
+            <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        </div>
+        <div>
+            <div class="stat-label">Total Admin</div>
+            <div class="stat-value">{{ $totalAdmins }}</div>
+        </div>
+    </div>
+    <div class="stat-card green">
+        <div class="stat-icon green">
+            <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        </div>
+        <div>
+            <div class="stat-label">Aktif</div>
+            <div class="stat-value" style="color:#059669;">{{ $activeAdmins }}</div>
+        </div>
+    </div>
+    <div class="stat-card red">
+        <div class="stat-icon red">
+            <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+        </div>
+        <div>
+            <div class="stat-label">Nonaktif</div>
+            <div class="stat-value" style="color:#DC2626;">{{ $inactiveAdmins }}</div>
+        </div>
+    </div>
+</div>
 
 {{-- Pending Dosen --}}
 @if($pendingDosens->count() > 0)
@@ -891,25 +1150,38 @@
     </div>
 </div>
 
-{{-- Modals tetap sama seperti sebelumnya --}}
-{{-- (Kode modal tidak berubah, saya skip untuk menghemat space) --}}
-
-{{-- ── MODAL KONFIRMASI ── --}}
-<div id="modalConfirm" class="modal-overlay">
+{{-- ══════════════════════════════════════════════════════════════════════════
+     MODAL DELETE ADMIN
+══════════════════════════════════════════════════════════════════════════ --}}
+<div class="modal-overlay" id="modalConfirm">
     <div class="modal-backdrop" onclick="closeConfirmModal()"></div>
     <div class="confirm-box">
-        <div class="confirm-accent" id="confirmAccent"></div>
-        <div class="confirm-body">
-            <div class="confirm-icon-wrap" id="confirmIconWrap">
-                <svg id="confirmIcon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"></svg>
+        <div class="confirm-header">
+            <div class="confirm-header-content">
+                <div class="confirm-icon-box">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="3,6 5,6 21,6"/>
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                        <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                    </svg>
+                </div>
+                <div class="confirm-title-wrap">
+                    <h2 id="confirmTitle">Hapus Admin</h2>
+                    <p id="confirmSubtitle">Tindakan ini tidak dapat dibatalkan</p>
+                </div>
             </div>
-            <div class="confirm-subtitle" id="confirmSubtitle"></div>
-            <div class="confirm-title"   id="confirmTitle"></div>
-            <p class="confirm-desc"      id="confirmDesc"></p>
+            <button class="confirm-close-btn" type="button" onclick="closeConfirmModal()">
+                <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="confirm-body">
+            <p class="confirm-desc" id="confirmDesc"></p>
         </div>
         <div class="confirm-footer">
-            <button class="btn-cf-cancel" onclick="closeConfirmModal()">Batal</button>
-            <button class="btn-cf-ok" id="confirmBtn" onclick="executeConfirm()">Konfirmasi</button>
+            <button class="btn-confirm-cancel" onclick="closeConfirmModal()">Batal</button>
+            <button class="btn-confirm-delete" id="confirmBtn" onclick="executeConfirm()">Ya, Hapus</button>
         </div>
     </div>
 </div>
@@ -919,122 +1191,282 @@
 <form id="formToggle"  method="POST" action="" style="display:none">@csrf @method('PATCH')</form>
 <form id="formDelete"  method="POST" action="" style="display:none">@csrf @method('DELETE')</form>
 
-{{-- ── MODAL ADD ── --}}
+{{-- ══════════════════════════════════════════════════════════════════════════
+     MODAL TAMBAH ADMIN
+══════════════════════════════════════════════════════════════════════════ --}}
 <div class="modal-overlay" id="modalAdd">
     <div class="modal-backdrop" onclick="closeModal('modalAdd')"></div>
     <div class="form-modal">
+        {{-- Header dengan Gradient Biru --}}
         <div class="modal-header">
-            <h2>Tambah Data Admin</h2>
-            <button class="modal-close" onclick="closeModal('modalAdd')">✕</button>
+            <div class="modal-header-content">
+                <div class="modal-icon-box">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"/>
+                        <line x1="23" y1="11" x2="17" y2="11"/>
+                    </svg>
+                </div>
+                <div class="modal-title-wrap">
+                    <h2>Tambah Admin Baru</h2>
+                    <p>Isi formulir untuk menambahkan akun administrator</p>
+                </div>
+            </div>
+            <button class="modal-close-btn" type="button" onclick="closeModal('modalAdd')">
+                <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
         </div>
+
+        {{-- Form --}}
         <form method="POST" action="{{ route('admins.store') }}">
             @csrf
             <div class="modal-body">
-                <div class="form-section">Identitas Admin</div>
-                <div class="form-group">
-                    <label>Nama Lengkap <span style="color:#EF4444">*</span></label>
-                    <input type="text" name="name" placeholder="Masukkan nama lengkap..." required>
+                {{-- Section: Identitas --}}
+                <div class="form-section">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Identitas Admin
                 </div>
                 <div class="form-group">
-                    <label>Email <span style="color:#EF4444">*</span></label>
-                    <input type="email" name="email" placeholder="Masukkan email..." required>
-                </div>
-                <div class="form-divider"></div>
-                <div class="form-section">Akun & Autentikasi</div>
-                <div class="form-grid-2">
-                    <div class="form-group">
-                        <label>Password <span style="color:#EF4444">*</span></label>
-                        <input type="password" name="password" placeholder="Password..." required>
-                    </div>
-                    <div class="form-group">
-                        <label>Konfirmasi</label>
-                        <input type="password" name="password_confirmation" placeholder="Ulangi...">
+                    <label>Nama Lengkap <span class="required">*</span></label>
+                    <div class="fg-ico">
+                        <svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <input type="text" name="name" placeholder="Masukkan nama lengkap..." required>
                     </div>
                 </div>
-                <div class="form-divider"></div>
-                <div class="form-section">Role & Status</div>
+                <div class="form-group">
+                    <label>Alamat Email <span class="required">*</span></label>
+                    <div class="fg-ico">
+                        <svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <input type="email" name="email" placeholder="nama@email.com" required>
+                    </div>
+                </div>
+
+                {{-- Section: Autentikasi --}}
+                <div class="form-section">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    Akun & Autentikasi
+                </div>
                 <div class="form-grid-2">
                     <div class="form-group">
-                        <label>Role <span style="color:#EF4444">*</span></label>
-                        <select name="role" required>
-                            <option value="" disabled selected>— Pilih Role —</option>
-                            <option value="superadmin">Super Admin</option>
-                            <option value="admin">Admin</option>
-                            <option value="staff">Staff</option>
-                            <option value="dosen">Dosen</option>
-                        </select>
+                        <label>Password <span class="required">*</span></label>
+                        <div class="fg-ico">
+                            <svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            <input type="password" name="password" placeholder="Minimal 8 karakter" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Konfirmasi Password <span class="required">*</span></label>
+                        <div class="fg-ico">
+                            <svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            <input type="password" name="password_confirmation" placeholder="Ketik ulang password">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Section: Role & Status --}}
+                <div class="form-section">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Role & Status
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Role <span class="required">*</span></label>
+                        <div class="fg-ico">
+                            <svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="8.5" cy="7" r="4"/>
+                                <line x1="20" y1="8" x2="20" y2="14"/>
+                                <line x1="23" y1="11" x2="17" y2="11"/>
+                            </svg>
+                            <select name="role" required>
+                                <option value="" disabled selected>Pilih Role</option>
+                                <option value="superadmin">Super Admin</option>
+                                <option value="admin">Admin</option>
+                                <option value="staff">Staff</option>
+                                <option value="dosen">Dosen</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Status</label>
-                        <select name="status">
-                            <option value="1">Aktif</option>
-                            <option value="0">Nonaktif</option>
-                        </select>
+                        <div class="fg-ico">
+                            <svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            </svg>
+                            <select name="status">
+                                <option value="1">Aktif</option>
+                                <option value="0">Nonaktif</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            {{-- Footer --}}
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('modalAdd')">Batal</button>
-                <button type="submit" class="btn-save">Simpan</button>
+                <button type="submit" class="btn-save">Simpan Admin</button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- ── MODAL EDIT ── --}}
+{{-- ══════════════════════════════════════════════════════════════════════════
+     MODAL EDIT ADMIN
+══════════════════════════════════════════════════════════════════════════ --}}
 <div class="modal-overlay" id="modalEdit">
     <div class="modal-backdrop" onclick="closeModal('modalEdit')"></div>
     <div class="form-modal">
+        {{-- Header dengan Gradient Biru --}}
         <div class="modal-header">
-            <h2>Edit Data Admin</h2>
-            <button class="modal-close" onclick="closeModal('modalEdit')">✕</button>
+            <div class="modal-header-content">
+                <div class="modal-icon-box">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </div>
+                <div class="modal-title-wrap">
+                    <h2>Edit Data Admin</h2>
+                    <p>Perbarui informasi akun administrator</p>
+                </div>
+            </div>
+            <button class="modal-close-btn" type="button" onclick="closeModal('modalEdit')">
+                <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
         </div>
+
+        {{-- Form --}}
         <form method="POST" id="editForm" action="">
             @csrf @method('PUT')
             <div class="modal-body">
-                <div class="form-section">Identitas Admin</div>
-                <div class="form-group">
-                    <label>Nama Lengkap <span style="color:#EF4444">*</span></label>
-                    <input type="text" name="name" id="editName" required>
+                {{-- Section: Identitas --}}
+                <div class="form-section">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Identitas Admin
                 </div>
                 <div class="form-group">
-                    <label>Email <span style="color:#EF4444">*</span></label>
-                    <input type="email" name="email" id="editEmail" required>
+                    <label>Nama Lengkap <span class="required">*</span></label>
+                    <div class="fg-ico">
+                        <svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <input type="text" name="name" id="editName" required>
+                    </div>
                 </div>
-                <div class="form-divider"></div>
-                <div class="form-section" style="display:flex;justify-content:space-between;align-items:center;">
-                    Akun & Autentikasi
-                    <span class="pw-reveal" onclick="togglePasswordFields()">Ubah password</span>
+                <div class="form-group">
+                    <label>Alamat Email <span class="required">*</span></label>
+                    <div class="fg-ico">
+                        <svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <input type="email" name="email" id="editEmail" required>
+                    </div>
+                </div>
+
+                {{-- Section: Password (Toggle) --}}
+                <div class="toggle-password-section">
+                    <div class="form-section">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        Password
+                    </div>
+                    <span class="pw-reveal" onclick="togglePasswordFields()">Ubah Password</span>
                 </div>
                 <div id="passwordFields" style="display:none;">
                     <div class="form-grid-2">
                         <div class="form-group">
                             <label>Password Baru</label>
-                            <input type="password" name="password" placeholder="Password baru...">
+                            <div class="fg-ico">
+                                <svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                                <input type="password" name="password" placeholder="Minimal 8 karakter">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>Konfirmasi</label>
-                            <input type="password" name="password_confirmation" placeholder="Ulangi...">
+                            <label>Konfirmasi Password</label>
+                            <div class="fg-ico">
+                                <svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <input type="password" name="password_confirmation" placeholder="Ketik ulang password">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="form-divider"></div>
-                <div class="form-section">Role & Status</div>
+
+                {{-- Section: Role & Status --}}
+                <div class="form-section">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Role & Status
+                </div>
                 <div class="form-grid-2">
                     <div class="form-group">
-                        <label>Role</label>
-                        <select name="role" id="editRole">
-                            <option value="superadmin">Super Admin</option>
-                            <option value="admin">Admin</option>
-                            <option value="staff">Staff</option>
-                            <option value="dosen">Dosen</option>
-                        </select>
+                        <label>Role <span class="required">*</span></label>
+                        <div class="fg-ico">
+                            <svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="8.5" cy="7" r="4"/>
+                                <line x1="20" y1="8" x2="20" y2="14"/>
+                                <line x1="23" y1="11" x2="17" y2="11"/>
+                            </svg>
+                            <select name="role" id="editRole">
+                                <option value="superadmin">Super Admin</option>
+                                <option value="admin">Admin</option>
+                                <option value="staff">Staff</option>
+                                <option value="dosen">Dosen</option>
+                            </select>
+                        </div>
                     </div>
-                    <div>
+                    <div class="form-group">
                         <input type="hidden" name="status" id="editStatusValue" value="1">
-                        <div class="toggle-wrap" style="padding:0;margin-top:22px;">
-                            <span class="toggle-label" style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--gray-700);">Status</span>
-                            <div style="display:flex;align-items:center;">
+                        <label>Status Akun</label>
+                        <div class="toggle-wrap" style="padding-top:4px;">
+                            <span class="toggle-label">Status</span>
+                            <div class="toggle-control">
                                 <div class="toggle-slider on" id="editToggleSlider" onclick="toggleEditStatus()">
                                     <div class="toggle-thumb"></div>
                                 </div>
@@ -1044,9 +1476,11 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Footer --}}
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('modalEdit')">Batal</button>
-                <button type="submit" class="btn-save">Update</button>
+                <button type="submit" class="btn-save">Update Admin</button>
             </div>
         </form>
     </div>
@@ -1193,30 +1627,31 @@
     };
 
     function openConfirmModal(type, id, name, canEdit = false) {
-        const key = type === 'toggle' ? (canEdit ? 'toggle_off' : 'toggle_on') : type;
-        const cfg = confirmConfig[key];
         const routes = {
             approve: `/admins/${id}/approve`,
             reject:  `/admins/${id}/reject`,
             toggle:  `/admins/${id}/toggle-edit`,
             delete:  `/admins/${id}`,
         };
-        confirmAction = { formId:`form${type.charAt(0).toUpperCase()+type.slice(1)}`, action:routes[type] };
+        confirmAction = {
+            formId: `form${type.charAt(0).toUpperCase() + type.slice(1)}`,
+            action: routes[type]
+        };
 
-        document.getElementById('confirmAccent').style.background   = cfg.accent;
-        document.getElementById('confirmIconWrap').style.background = cfg.iconBg;
-        document.getElementById('confirmIcon').style.color          = cfg.iconColor;
-        document.getElementById('confirmIcon').innerHTML            = cfg.icon;
-        document.getElementById('confirmSubtitle').textContent      = cfg.subtitle;
-        document.getElementById('confirmTitle').textContent         = cfg.title;
-        document.getElementById('confirmDesc').innerHTML            = cfg.desc(name);
+        const titles = {
+            approve:     ['Setujui Akses Dosen',  'Akun akan disetujui dan dapat login ke sistem.'],
+            reject:      ['Tolak Akses Dosen',    'Akun akan ditolak dan tidak dapat mengakses sistem.'],
+            toggle:      ['Toggle Akses Edit',    canEdit ? `Akses edit ${name} akan dicabut.` : `${name} akan mendapatkan hak akses edit.`],
+            delete:      ['Hapus Akun Admin',     `Admin <strong style="color:#1e293b;font-weight:700;">${name}</strong> akan dihapus secara permanen dari sistem.`],
+        };
 
-        const btn = document.getElementById('confirmBtn');
-        btn.style.background = cfg.btnBg;
-        btn.style.boxShadow  = cfg.btnShadow;
-        btn.textContent      = cfg.btnLabel;
-        btn.onmouseover = () => { btn.style.boxShadow = cfg.btnHoverShadow; btn.style.transform = 'translateY(-1px)'; };
-        btn.onmouseout  = () => { btn.style.boxShadow = cfg.btnShadow; btn.style.transform = 'translateY(0)'; };
+        const [title, desc] = titles[type];
+        document.getElementById('confirmTitle').textContent   = title;
+        document.getElementById('confirmDesc').innerHTML      = desc;
+        document.getElementById('confirmBtn').textContent     =
+            type === 'approve' ? 'Ya, Setujui' :
+            type === 'reject'  ? 'Ya, Tolak'   :
+            type === 'toggle'  ? 'Ya, Lanjutkan' : 'Ya, Hapus';
 
         document.getElementById('modalConfirm').classList.add('show');
     }
@@ -1237,7 +1672,9 @@
     function openAddModal() { document.getElementById('modalAdd').classList.add('show'); }
     function closeModal(id) {
         document.getElementById(id).classList.remove('show');
-        document.getElementById('passwordFields').style.display = 'none';
+        if (id === 'modalEdit') {
+            document.getElementById('passwordFields').style.display = 'none';
+        }
     }
 
     function openEditModal(id, name, email, role, status) {
@@ -1256,12 +1693,15 @@
         document.getElementById('modalEdit').classList.add('show');
     }
 
-    let editStatusActive = true;
     function toggleEditStatus() {
-        editStatusActive = !editStatusActive;
-        document.getElementById('editStatusValue').value = editStatusActive ? 1 : 0;
-        document.getElementById('editToggleSlider').classList.toggle('on', editStatusActive);
-        document.getElementById('editToggleLabel').textContent = editStatusActive ? 'Aktif' : 'Nonaktif';
+        const currentValue = document.getElementById('editStatusValue').value;
+        const newValue = currentValue == '1' ? '0' : '1';
+        document.getElementById('editStatusValue').value = newValue;
+        
+        const slider = document.getElementById('editToggleSlider');
+        const label  = document.getElementById('editToggleLabel');
+        slider.classList.toggle('on', newValue == '1');
+        label.textContent = newValue == '1' ? 'Aktif' : 'Nonaktif';
     }
 
     function togglePasswordFields() {
@@ -1269,6 +1709,7 @@
         pf.style.display = pf.style.display === 'none' ? 'block' : 'none';
     }
 
+    // Close modal on backdrop click
     document.querySelectorAll('#modalAdd, #modalEdit').forEach(overlay => {
         overlay.addEventListener('click', function(e) {
             if (e.target === this) closeModal(this.id);

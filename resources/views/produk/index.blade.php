@@ -3,6 +3,8 @@
 @section('content')
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
     /* ═══════════════════════════════════════════════════════════════════════
        DESIGN TOKENS
     ═══════════════════════════════════════════════════════════════════════ */
@@ -30,20 +32,14 @@
     /* ═══════════════════════════════════════════════════════════════════════
        PAGE HEADER
     ═══════════════════════════════════════════════════════════════════════ */
-    .page-header {
-        display:flex; align-items:flex-end; justify-content:space-between;
-        margin-bottom:32px; gap:24px;
-    }
+    .page-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:32px; gap:24px; }
     .page-title h1 {
         font-family:Inter,sans-serif; font-size:26px; font-weight:700;
         color:var(--gray-900); margin:0; letter-spacing:-0.5px;
         background:linear-gradient(135deg, #111827 0%, #2D4DA3 100%);
         -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
     }
-    .page-title p {
-        font-family:Inter,sans-serif; font-size:14px; color:var(--gray-500);
-        margin:6px 0 0 0; letter-spacing:-0.1px;
-    }
+    .page-title p { font-family:Inter,sans-serif; font-size:14px; color:var(--gray-500); margin:6px 0 0 0; letter-spacing:-0.1px; }
     .btn-add {
         height:44px; padding:0 22px;
         background:linear-gradient(135deg, #2D4DA3 0%, #4F6FCA 100%);
@@ -53,10 +49,7 @@
         box-shadow:0 4px 14px rgba(45,77,163,.32), 0 1px 0 rgba(255,255,255,.15) inset;
         transition:all .2s ease; letter-spacing:.2px; text-decoration:none;
     }
-    .btn-add:hover {
-        transform:translateY(-1px);
-        box-shadow:0 8px 20px rgba(45,77,163,.4), 0 1px 0 rgba(255,255,255,.15) inset;
-    }
+    .btn-add:hover { transform:translateY(-1px); box-shadow:0 8px 20px rgba(45,77,163,.4), 0 1px 0 rgba(255,255,255,.15) inset; }
     .btn-add:active { transform:translateY(0); }
 
     /* ═══════════════════════════════════════════════════════════════════════
@@ -74,33 +67,15 @@
        STAT CARDS
     ═══════════════════════════════════════════════════════════════════════ */
     .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:28px; }
-    .stat-card {
-        background:#FFF; border-radius:16px; padding:22px 24px;
-        border:1px solid var(--gray-200);
-        display:flex; align-items:center; gap:16px;
-        position:relative; overflow:hidden;
-        transition:all .25s ease;
-        box-shadow:0 1px 2px rgba(15,23,42,.04);
-    }
-    .stat-card::before {
-        content:''; position:absolute; top:0; left:0; right:0; height:3px;
-        opacity:0; transition:opacity .25s ease;
-    }
-    .stat-card:hover {
-        transform:translateY(-2px);
-        box-shadow:0 12px 24px -8px rgba(15,23,42,.1), 0 4px 8px -4px rgba(15,23,42,.05);
-        border-color:transparent;
-    }
+    .stat-card { background:#FFF; border-radius:16px; padding:22px 24px; border:1px solid var(--gray-200); display:flex; align-items:center; gap:16px; position:relative; overflow:hidden; transition:all .25s ease; box-shadow:0 1px 2px rgba(15,23,42,.04); }
+    .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; opacity:0; transition:opacity .25s ease; }
+    .stat-card:hover { transform:translateY(-2px); box-shadow:0 12px 24px -8px rgba(15,23,42,.1), 0 4px 8px -4px rgba(15,23,42,.05); border-color:transparent; }
     .stat-card:hover::before { opacity:1; }
-    .stat-card.blue::before   { background:linear-gradient(90deg, #2D4DA3, #4F6FCA); }
-    .stat-card.green::before  { background:linear-gradient(90deg, #059669, #34D399); }
-    .stat-card.amber::before  { background:linear-gradient(90deg, #D97706, #FBBF24); }
-    .stat-card.red::before    { background:linear-gradient(90deg, #DC2626, #F87171); }
-
-    .stat-icon {
-        width:52px; height:52px; border-radius:14px;
-        display:flex; align-items:center; justify-content:center; flex-shrink:0;
-    }
+    .stat-card.blue::before  { background:linear-gradient(90deg, #2D4DA3, #4F6FCA); }
+    .stat-card.green::before { background:linear-gradient(90deg, #059669, #34D399); }
+    .stat-card.amber::before { background:linear-gradient(90deg, #D97706, #FBBF24); }
+    .stat-card.red::before   { background:linear-gradient(90deg, #DC2626, #F87171); }
+    .stat-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .stat-icon svg { width:22px; height:22px; position:relative; z-index:1; }
     .stat-icon.blue  { background:linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); color:#2D4DA3; box-shadow:inset 0 0 0 1px rgba(45,77,163,.1); }
     .stat-icon.green { background:linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); color:#059669; box-shadow:inset 0 0 0 1px rgba(5,150,105,.1); }
@@ -112,156 +87,70 @@
     /* ═══════════════════════════════════════════════════════════════════════
        TABLE CONTAINER
     ═══════════════════════════════════════════════════════════════════════ */
-    .table-container {
-        background:#FFF; border-radius:18px; padding:24px;
-        border:1px solid var(--gray-200);
-        box-shadow:0 1px 2px rgba(15,23,42,.04), 0 4px 12px rgba(15,23,42,.04);
-    }
-    .table-toolbar {
-        display:flex; align-items:center; justify-content:space-between;
-        margin-bottom:20px; padding-bottom:4px;
-    }
+    .table-container { background:#FFF; border-radius:18px; padding:24px; border:1px solid var(--gray-200); box-shadow:0 1px 2px rgba(15,23,42,.04), 0 4px 12px rgba(15,23,42,.04); }
+    .table-toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-bottom:4px; }
     .table-label { font-family:Inter,sans-serif; font-size:15px; font-weight:600; color:var(--gray-900); letter-spacing:-0.2px; }
-    .count-badge {
-        display:inline-flex; align-items:center; justify-content:center;
-        background:linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-        color:#2D4DA3; border-radius:8px; padding:3px 10px;
-        font-size:12px; font-weight:700; margin-left:10px;
-        font-family:Inter,sans-serif; box-shadow:inset 0 0 0 1px rgba(45,77,163,.15);
-    }
-    .search-wrap {
-        display:flex; align-items:center; gap:8px;
-        border:1px solid var(--gray-200); border-radius:11px;
-        padding:0 14px; height:42px; background:var(--gray-50);
-        width:260px; transition:all .2s ease;
-    }
-    .search-wrap:focus-within {
-        border-color:#2D4DA3; background:#FFF;
-        box-shadow:0 0 0 4px rgba(45,77,163,.08);
-    }
-    .search-wrap input {
-        border:none; outline:none; font-family:Inter,sans-serif;
-        font-size:13px; color:var(--gray-900); width:100%;
-        background:transparent; font-weight:500;
-    }
+    .count-badge { display:inline-flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); color:#2D4DA3; border-radius:8px; padding:3px 10px; font-size:12px; font-weight:700; margin-left:10px; font-family:Inter,sans-serif; box-shadow:inset 0 0 0 1px rgba(45,77,163,.15); }
+    .search-wrap { display:flex; align-items:center; gap:8px; border:1px solid var(--gray-200); border-radius:11px; padding:0 14px; height:42px; background:var(--gray-50); width:260px; transition:all .2s ease; }
+    .search-wrap:focus-within { border-color:#2D4DA3; background:#FFF; box-shadow:0 0 0 4px rgba(45,77,163,.08); }
+    .search-wrap input { border:none; outline:none; font-family:Inter,sans-serif; font-size:13px; color:var(--gray-900); width:100%; background:transparent; font-weight:500; }
     .search-wrap input::placeholder { color:var(--gray-400); font-weight:400; }
 
     /* ═══════════════════════════════════════════════════════════════════════
        TABLE
     ═══════════════════════════════════════════════════════════════════════ */
-    .table-scroll {
-        overflow-x:auto; border-radius:12px; border:1px solid var(--gray-100);
-    }
+    .table-scroll { overflow-x:auto; border-radius:12px; border:1px solid var(--gray-100); }
     .table-scroll::-webkit-scrollbar { height:10px; }
     .table-scroll::-webkit-scrollbar-track { background:transparent; }
     .table-scroll::-webkit-scrollbar-thumb { background:var(--gray-200); border-radius:10px; border:2px solid #FFF; }
     .table-scroll::-webkit-scrollbar-thumb:hover { background:var(--gray-300); }
-
     table { width:100%; border-collapse:separate; border-spacing:0; }
     thead tr { background:var(--gray-50); }
-    thead th {
-        font-family:Inter,sans-serif; font-size:11px; font-weight:600;
-        color:var(--gray-500); letter-spacing:.08em; text-transform:uppercase;
-        padding:14px 18px; text-align:left; white-space:nowrap;
-        background:var(--gray-50); border-bottom:1px solid var(--gray-200);
-    }
+    thead th { font-family:Inter,sans-serif; font-size:11px; font-weight:600; color:var(--gray-500); letter-spacing:.08em; text-transform:uppercase; padding:14px 18px; text-align:left; white-space:nowrap; background:var(--gray-50); border-bottom:1px solid var(--gray-200); }
     tbody tr { transition:background .15s ease; }
-    tbody td {
-        font-family:Inter,sans-serif; font-size:13px; color:var(--gray-800);
-        padding:16px 18px; vertical-align:middle;
-        background:#FFF; border-bottom:1px solid var(--gray-100);
-    }
+    tbody td { font-family:Inter,sans-serif; font-size:13px; color:var(--gray-800); padding:16px 18px; vertical-align:middle; background:#FFF; border-bottom:1px solid var(--gray-100); }
     tbody tr:last-child td { border-bottom:none; }
     tbody tr:hover td { background:#F8FAFF; }
 
-    /* ═══════════════════════════════════════════════════════════════════════
-       FREEZE PANES
-    ═══════════════════════════════════════════════════════════════════════ */
+    /* Freeze Panes */
     th.freeze-1, td.freeze-1 { position:sticky; left:0; z-index:3; width:180px; min-width:180px; }
     th.freeze-2, td.freeze-2 { position:sticky; left:180px; z-index:3; min-width:280px; width:280px; box-shadow:6px 0 12px -8px rgba(15,23,42,.12); }
     thead th.freeze-1, thead th.freeze-2 { z-index:4; background:var(--gray-50); }
     tbody td.freeze-1, tbody td.freeze-2 { background:#FFF; }
-    tbody tr:hover td.freeze-1,
-    tbody tr:hover td.freeze-2 { background:#F8FAFF; }
+    tbody tr:hover td.freeze-1, tbody tr:hover td.freeze-2 { background:#F8FAFF; }
 
-    /* ═══════════════════════════════════════════════════════════════════════
-       SORT
-    ═══════════════════════════════════════════════════════════════════════ */
+    /* Sort */
     .sortable { cursor:pointer; user-select:none; transition:all .15s ease; }
     .sortable:hover { color:#2D4DA3 !important; background:#EFF6FF !important; }
     .th-inner { display:inline-flex; align-items:center; gap:8px; }
     .sort-icon { display:inline-flex; flex-direction:column; align-items:center; gap:2px; flex-shrink:0; }
     .sort-icon svg { width:9px; height:6px; display:block; transition:fill .15s; }
-    .sortable:not(.sort-active) .tri-up,
-    .sortable:not(.sort-active) .tri-down { fill:var(--gray-300); }
-    .sortable:hover:not(.sort-active) .tri-up,
-    .sortable:hover:not(.sort-active) .tri-down { fill:var(--gray-400); }
+    .sortable:not(.sort-active) .tri-up, .sortable:not(.sort-active) .tri-down { fill:var(--gray-300); }
+    .sortable:hover:not(.sort-active) .tri-up, .sortable:hover:not(.sort-active) .tri-down { fill:var(--gray-400); }
     th.sort-active { color:#2D4DA3 !important; background:#EFF6FF !important; }
     th.sort-active.asc  .tri-up   { fill:#2D4DA3; }
     th.sort-active.asc  .tri-down { fill:#BFDBFE; }
     th.sort-active.desc .tri-up   { fill:#BFDBFE; }
     th.sort-active.desc .tri-down { fill:#2D4DA3; }
-    .sort-badge {
-        display:inline-flex; align-items:center;
-        background:linear-gradient(135deg, #2D4DA3 0%, #4F6FCA 100%);
-        color:white; font-size:9px; font-weight:700;
-        padding:2px 6px; border-radius:5px; letter-spacing:.5px;
-        margin-left:4px; opacity:0; transition:opacity .15s;
-        box-shadow:0 2px 4px rgba(45,77,163,.2);
-    }
+    .sort-badge { display:inline-flex; align-items:center; background:linear-gradient(135deg, #2D4DA3 0%, #4F6FCA 100%); color:white; font-size:9px; font-weight:700; padding:2px 6px; border-radius:5px; letter-spacing:.5px; margin-left:4px; opacity:0; transition:opacity .15s; box-shadow:0 2px 4px rgba(45,77,163,.2); }
     th.sort-active .sort-badge { opacity:1; }
 
-    /* ═══════════════════════════════════════════════════════════════════════
-       PRODUCT IMAGE HOVER & ZOOM
-    ═══════════════════════════════════════════════════════════════════════ */
+    /* Product Cell */
     .product-cell { display:flex; align-items:center; gap:13px; }
-    .product-img-wrap {
-        width:44px; height:44px; border-radius:12px;
-        overflow:hidden; cursor:pointer; position:relative;
-        background:var(--gray-50); border:1px solid var(--gray-200);
-        flex-shrink:0; transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow:0 2px 6px rgba(15,23,42,.08);
-    }
-    .product-img-wrap:hover {
-        transform:scale(1.18);
-        box-shadow:0 12px 24px rgba(45,77,163,.2), 0 4px 8px rgba(45,77,163,.1);
-        z-index:10; border-color:#2D4DA3;
-    }
+    .product-img-wrap { width:44px; height:44px; border-radius:12px; overflow:hidden; cursor:pointer; position:relative; background:var(--gray-50); border:1px solid var(--gray-200); flex-shrink:0; transition:all .3s cubic-bezier(0.4,0,0.2,1); box-shadow:0 2px 6px rgba(15,23,42,.08); }
+    .product-img-wrap:hover { transform:scale(1.18); box-shadow:0 12px 24px rgba(45,77,163,.2); z-index:10; border-color:#2D4DA3; }
     .product-img { width:100%; height:100%; object-fit:cover; transition:transform .3s ease; }
     .product-img-wrap:hover .product-img { transform:scale(1.12); }
-    .product-img-placeholder {
-        width:44px; height:44px; border-radius:12px;
-        background:linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
-        border:1px solid var(--gray-200); display:flex; align-items:center;
-        justify-content:center; flex-shrink:0;
-    }
+    .product-img-placeholder { width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%); border:1px solid var(--gray-200); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .product-name { font-weight:600; color:var(--gray-900); font-size:13.5px; letter-spacing:-0.1px; }
-    .cat-pill {
-        display:inline-flex; align-items:center; gap:5px;
-        background:linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-        color:#2D4DA3; border-radius:8px; padding:4px 11px;
-        font-size:11.5px; font-weight:600; font-family:Inter,sans-serif;
-        white-space:nowrap; box-shadow:inset 0 0 0 1px rgba(45,77,163,.15);
-    }
+    .cat-pill { display:inline-flex; align-items:center; gap:5px; background:linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); color:#2D4DA3; border-radius:8px; padding:4px 11px; font-size:11.5px; font-weight:600; font-family:Inter,sans-serif; white-space:nowrap; box-shadow:inset 0 0 0 1px rgba(45,77,163,.15); }
     .price-text { font-weight:700; color:var(--gray-900); font-size:13px; white-space:nowrap; letter-spacing:-0.2px; }
     .price-unit { font-size:11px; color:var(--gray-400); font-weight:400; }
-
-    /* ── Stock Badge ── */
-    .stock-badge {
-        display:inline-flex; align-items:center; justify-content:center;
-        min-width:30px; height:30px; padding:0 8px; border-radius:8px;
-        font-family:Inter,sans-serif; font-size:12px; font-weight:700; white-space:nowrap;
-    }
+    .stock-badge { display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:30px; padding:0 8px; border-radius:8px; font-family:Inter,sans-serif; font-size:12px; font-weight:700; white-space:nowrap; }
     .stock-high  { background:linear-gradient(135deg,#ECFDF5,#D1FAE5); color:#047857; box-shadow:inset 0 0 0 1px rgba(5,150,105,.2); }
     .stock-med   { background:linear-gradient(135deg,#FFFBEB,#FDE68A); color:#B45309; box-shadow:inset 0 0 0 1px rgba(217,119,6,.2); }
     .stock-low   { background:linear-gradient(135deg,#FEF2F2,#FEE2E2); color:#B91C1C; box-shadow:inset 0 0 0 1px rgba(220,38,38,.2); }
-
-    /* ── Condition Badge ── */
-    .cond-badge {
-        display:inline-flex; align-items:center; gap:6px; border-radius:8px;
-        padding:5px 12px; font-family:Inter,sans-serif;
-        font-size:11.5px; font-weight:600; letter-spacing:.2px;
-    }
+    .cond-badge { display:inline-flex; align-items:center; gap:6px; border-radius:8px; padding:5px 12px; font-family:Inter,sans-serif; font-size:11.5px; font-weight:600; letter-spacing:.2px; }
     .cond-badge-dot { width:6px; height:6px; border-radius:50%; display:inline-block; }
     .cond-new       { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); color:#1D4ED8; box-shadow:inset 0 0 0 1px rgba(37,99,235,.2); }
     .cond-new .cond-badge-dot       { background:#2563EB; }
@@ -273,44 +162,24 @@
     .cond-fair .cond-badge-dot      { background:#F59E0B; }
     .cond-poor      { background:linear-gradient(135deg,#FEF2F2,#FEE2E2); color:#B91C1C; box-shadow:inset 0 0 0 1px rgba(220,38,38,.2); }
     .cond-poor .cond-badge-dot      { background:#EF4444; }
-
-    /* ── Audit Trail ── */
     .audit-cell { min-width:150px; }
     .audit-name { font-size:12px; font-weight:600; color:var(--gray-700); margin-bottom:2px; letter-spacing:-0.1px; }
     .audit-date { font-size:11px; color:var(--gray-400); font-family:'JetBrains Mono','Consolas',monospace; font-weight:500; }
     .audit-empty { color:var(--gray-300); font-size:13px; }
-
-    /* ── Min Sewa ── */
-    .min-sewa-badge {
-        display:inline-flex; align-items:center; gap:5px;
-        background:var(--gray-100); color:var(--gray-600);
-        border-radius:8px; padding:4px 10px;
-        font-size:12px; font-weight:600; font-family:Inter,sans-serif;
-        border:1px solid var(--gray-200);
-    }
-
-    /* ── Action Buttons ── */
+    .min-sewa-badge { display:inline-flex; align-items:center; gap:5px; background:var(--gray-100); color:var(--gray-600); border-radius:8px; padding:4px 10px; font-size:12px; font-weight:600; font-family:Inter,sans-serif; border:1px solid var(--gray-200); }
     .action-wrap { display:flex; gap:6px; }
-    .action-btn {
-        height:32px; padding:0 12px; border-radius:8px;
-        font-family:Inter,sans-serif; font-size:12px; font-weight:600;
-        cursor:pointer; display:inline-flex; align-items:center;
-        gap:5px; transition:all .15s ease; text-decoration:none;
-        letter-spacing:.1px; border:none;
-    }
+    .action-btn { height:32px; padding:0 12px; border-radius:8px; font-family:Inter,sans-serif; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .15s ease; text-decoration:none; letter-spacing:.1px; border:none; }
     .btn-edit   { background:#EFF6FF; color:#2D4DA3; box-shadow:inset 0 0 0 1px rgba(45,77,163,.15); }
     .btn-edit:hover { background:#2D4DA3; color:#FFF; transform:translateY(-1px); box-shadow:0 4px 10px rgba(45,77,163,.3); }
     .btn-delete { background:#FEF2F2; color:#DC2626; box-shadow:inset 0 0 0 1px rgba(220,38,38,.15); }
     .btn-delete:hover { background:#DC2626; color:#FFF; transform:translateY(-1px); box-shadow:0 4px 10px rgba(220,38,38,.3); }
     .action-btn svg { width:13px; height:13px; }
-
-    /* ── Empty State ── */
     .empty-state { text-align:center; padding:64px 0; color:var(--gray-400); }
     .empty-state svg { width:48px; height:48px; margin-bottom:14px; opacity:.4; }
     .empty-state p { font-size:14px; margin:0; font-family:Inter,sans-serif; font-weight:500; }
 
     /* ═══════════════════════════════════════════════════════════════════════
-       IMAGE MODAL — unchanged
+       IMAGE MODAL
     ═══════════════════════════════════════════════════════════════════════ */
     .img-modal-overlay { display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; padding:20px; }
     .img-modal-overlay.show { display:flex; animation:fadeIn .25s ease; }
@@ -332,24 +201,24 @@
     .img-modal-meta-label { font-family:Inter,sans-serif; font-size:11px; font-weight:700; color:var(--gray-400); text-transform:uppercase; letter-spacing:.08em; }
     .img-modal-meta-value { font-family:Inter,sans-serif; font-size:13px; font-weight:600; color:var(--gray-900); }
     .stock-badge-modal { display:inline-flex; align-items:center; justify-content:center; padding:4px 10px; border-radius:7px; font-size:13px; font-weight:700; font-family:Inter,sans-serif; }
-    .stock-badge-modal.safe { background:linear-gradient(135deg,#ECFDF5,#D1FAE5); color:#059669; box-shadow:inset 0 0 0 1px rgba(5,150,105,.2); }
+    .stock-badge-modal.safe    { background:linear-gradient(135deg,#ECFDF5,#D1FAE5); color:#059669; box-shadow:inset 0 0 0 1px rgba(5,150,105,.2); }
     .stock-badge-modal.warning { background:linear-gradient(135deg,#FEF3C7,#FDE68A); color:#D97706; box-shadow:inset 0 0 0 1px rgba(217,119,6,.2); }
-    .stock-badge-modal.empty { background:linear-gradient(135deg,#FEF2F2,#FEE2E2); color:#DC2626; box-shadow:inset 0 0 0 1px rgba(220,38,38,.2); }
+    .stock-badge-modal.empty   { background:linear-gradient(135deg,#FEF2F2,#FEE2E2); color:#DC2626; box-shadow:inset 0 0 0 1px rgba(220,38,38,.2); }
     .kondisi-badge-modal { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:7px; font-size:13px; font-weight:700; font-family:Inter,sans-serif; }
     .kondisi-badge-modal .dot { width:6px; height:6px; border-radius:50%; }
-    .kondisi-badge-modal.new { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); color:#1D4ED8; box-shadow:inset 0 0 0 1px rgba(37,99,235,.2); }
-    .kondisi-badge-modal.new .dot { background:#2563EB; }
+    .kondisi-badge-modal.new       { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); color:#1D4ED8; box-shadow:inset 0 0 0 1px rgba(37,99,235,.2); }
+    .kondisi-badge-modal.new .dot  { background:#2563EB; }
     .kondisi-badge-modal.excellent { background:linear-gradient(135deg,#ECFDF5,#D1FAE5); color:#047857; box-shadow:inset 0 0 0 1px rgba(5,150,105,.2); }
     .kondisi-badge-modal.excellent .dot { background:#10B981; }
-    .kondisi-badge-modal.good { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); color:#15803D; box-shadow:inset 0 0 0 1px rgba(22,163,74,.2); }
+    .kondisi-badge-modal.good      { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); color:#15803D; box-shadow:inset 0 0 0 1px rgba(22,163,74,.2); }
     .kondisi-badge-modal.good .dot { background:#22C55E; }
-    .kondisi-badge-modal.fair { background:linear-gradient(135deg,#FEF3C7,#FDE68A); color:#B45309; box-shadow:inset 0 0 0 1px rgba(245,158,11,.2); }
+    .kondisi-badge-modal.fair      { background:linear-gradient(135deg,#FEF3C7,#FDE68A); color:#B45309; box-shadow:inset 0 0 0 1px rgba(245,158,11,.2); }
     .kondisi-badge-modal.fair .dot { background:#F59E0B; }
-    .kondici-badge-modal.poor { background:linear-gradient(135deg,#FEF2F2,#FEE2E2); color:#B91C1C; box-shadow:inset 0 0 0 1px rgba(220,38,38,.2); }
+    .kondisi-badge-modal.poor      { background:linear-gradient(135deg,#FEF2F2,#FEE2E2); color:#B91C1C; box-shadow:inset 0 0 0 1px rgba(220,38,38,.2); }
     .kondisi-badge-modal.poor .dot { background:#EF4444; }
 
     /* ═══════════════════════════════════════════════════════════════════════
-       MODAL OVERLAY & ANIMATION — shared
+       MODAL SHARED — overlay & animation
     ═══════════════════════════════════════════════════════════════════════ */
     .modal-overlay { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; padding:20px; }
     .modal-overlay.show { display:flex; animation:fadeIn .2s ease; }
@@ -358,14 +227,12 @@
     .modal-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.55); backdrop-filter:blur(6px); }
 
     /* ═══════════════════════════════════════════════════════════════════════
-       MODAL ADD — redesigned
+       MODAL BOX — shared
     ═══════════════════════════════════════════════════════════════════════ */
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-
     .modal-box {
         position:relative; z-index:1; background:#FFF; border-radius:20px;
         width:100%; max-width:660px; max-height:90vh; overflow-y:auto;
-        box-shadow:0 25px 60px rgba(0,0,0,.18), 0 1px 0 rgba(255,255,255,.1) inset;
+        box-shadow:0 25px 60px rgba(0,0,0,.18);
         animation:slideUp .28s cubic-bezier(0.22,1,0.36,1);
         font-family:'Plus Jakarta Sans',Inter,sans-serif;
     }
@@ -373,33 +240,16 @@
     .modal-box::-webkit-scrollbar-track { background:transparent; }
     .modal-box::-webkit-scrollbar-thumb { background:var(--gray-200); border-radius:6px; }
 
-    /* gradient header */
-    .modal-header {
-        padding:0;
-        position:sticky; top:0; z-index:2; border-radius:20px 20px 0 0;
-        overflow:hidden;
-    }
+    /* ── Modal Header Gradient Biru ── */
+    .modal-header { padding:0; position:sticky; top:0; z-index:2; border-radius:20px 20px 0 0; overflow:hidden; }
     .modal-header-inner {
         background:linear-gradient(135deg, #1e3a5f 0%, #2563eb 60%, #3b82f6 100%);
-        padding:22px 26px 20px;
-        position:relative; overflow:hidden;
+        padding:22px 26px 20px; position:relative; overflow:hidden;
         display:flex; align-items:center; gap:14px;
     }
-    .modal-header-inner::before {
-        content:''; position:absolute; top:-40px; right:-40px;
-        width:150px; height:150px; border-radius:50%;
-        background:rgba(255,255,255,0.06);
-    }
-    .modal-header-inner::after {
-        content:''; position:absolute; bottom:-60px; left:35%;
-        width:200px; height:200px; border-radius:50%;
-        background:rgba(255,255,255,0.04);
-    }
-    .modal-hicon {
-        width:42px; height:42px; background:rgba(255,255,255,0.15);
-        border-radius:12px; display:flex; align-items:center; justify-content:center;
-        border:1px solid rgba(255,255,255,0.2); flex-shrink:0; position:relative; z-index:1;
-    }
+    .modal-header-inner::before { content:''; position:absolute; top:-40px; right:-40px; width:150px; height:150px; border-radius:50%; background:rgba(255,255,255,0.06); }
+    .modal-header-inner::after  { content:''; position:absolute; bottom:-60px; left:35%; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,0.04); }
+    .modal-hicon { width:42px; height:42px; background:rgba(255,255,255,0.15); border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.2); flex-shrink:0; position:relative; z-index:1; }
     .modal-htitle { position:relative; z-index:1; }
     .modal-htitle h2 { font-size:1.1rem; font-weight:700; color:#fff; margin:0; letter-spacing:-0.01em; }
     .modal-htitle p  { font-size:0.78rem; color:rgba(255,255,255,0.7); margin:3px 0 0; }
@@ -409,14 +259,14 @@
         border:1px solid rgba(255,255,255,0.2); border-radius:9px;
         display:flex; align-items:center; justify-content:center;
         color:rgba(255,255,255,0.85); font-size:14px; cursor:pointer;
-        transition:background .2s; line-height:1;
+        transition:all .2s ease; line-height:1;
     }
-    .modal-hclose:hover { background:rgba(255,255,255,0.28); color:#fff; }
+    .modal-hclose:hover { background:rgba(255,255,255,0.28); color:#fff; transform:rotate(90deg); }
 
-    /* body */
+    /* ── Modal Body ── */
     .modal-body { padding:24px 26px; }
 
-    /* section labels */
+    /* ── Section Labels ── */
     .modal-section {
         display:flex; align-items:center; gap:7px;
         font-size:0.65rem; font-weight:700; letter-spacing:0.08em;
@@ -430,24 +280,13 @@
     .form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
     .form-group { margin-bottom:14px; }
     .form-group:last-child { margin-bottom:0; }
-
-    /* labels */
-    .form-group label {
-        display:flex; align-items:center; gap:5px;
-        font-size:0.78rem; font-weight:600;
-        color:var(--gray-700); margin-bottom:7px;
-    }
+    .form-group label { display:flex; align-items:center; gap:5px; font-size:0.78rem; font-weight:600; color:var(--gray-700); margin-bottom:7px; }
     .form-group label .req { color:#ef4444; font-size:0.72rem; }
 
-    /* input wrapper with icon */
+    /* ── Input dengan Icon ── */
     .fg-wrap { position:relative; }
-    .fg-ico {
-        position:absolute; left:11px; top:50%; transform:translateY(-50%);
-        color:var(--gray-400); pointer-events:none; display:flex; align-items:center;
-    }
+    .fg-ico { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--gray-400); pointer-events:none; display:flex; align-items:center; }
     .fg-ico-top { position:absolute; left:11px; top:11px; color:var(--gray-400); pointer-events:none; display:flex; align-items:center; }
-
-    /* inputs */
     .form-group input,
     .form-group select {
         width:100%; height:42px;
@@ -455,8 +294,7 @@
         padding:0 12px 0 34px;
         font-family:'Plus Jakarta Sans',Inter,sans-serif; font-size:0.85rem;
         color:var(--gray-900); outline:none; box-sizing:border-box;
-        transition:all .18s ease; font-weight:500;
-        appearance:none;
+        transition:all .18s ease; font-weight:500; appearance:none;
     }
     .form-group textarea {
         width:100%; background:#f8fafc; border:1.5px solid #e8edf5; border-radius:10px;
@@ -465,42 +303,26 @@
         color:var(--gray-900); outline:none; box-sizing:border-box;
         transition:all .18s ease; font-weight:500; resize:none; line-height:1.6;
     }
-    .form-group input::placeholder,
-    .form-group textarea::placeholder { color:#c0cad9; font-weight:400; }
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
+    .form-group input::placeholder, .form-group textarea::placeholder { color:#c0cad9; font-weight:400; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
         border-color:#3b82f6; background:#fff;
         box-shadow:0 0 0 3px rgba(59,130,246,.1);
     }
-    /* file input special */
-    .form-group input[type="file"] {
-        padding:0 12px; cursor:pointer;
-        display:flex; align-items:center;
-    }
+    .form-group input[type="file"] { padding:0 12px; cursor:pointer; display:flex; align-items:center; }
     .form-hint { font-size:0.72rem; color:var(--gray-400); margin-top:5px; padding-left:2px; }
-
-    /* select arrow */
     .select-wrap { position:relative; }
-    .select-arrow {
-        position:absolute; right:11px; top:50%; transform:translateY(-50%);
-        color:var(--gray-400); pointer-events:none; font-size:0.72rem;
-    }
+    .select-arrow { position:absolute; right:11px; top:50%; transform:translateY(-50%); color:var(--gray-400); pointer-events:none; font-size:0.72rem; }
 
-    /* footer */
+    /* ── Modal Footer ── */
     .modal-footer {
-        padding:16px 26px 22px;
-        display:flex; gap:10px; justify-content:flex-end;
+        padding:16px 26px 22px; display:flex; gap:10px; justify-content:flex-end;
         position:sticky; bottom:0; background:white;
-        border-top:1px solid var(--gray-100);
-        border-radius:0 0 20px 20px;
+        border-top:1px solid var(--gray-100); border-radius:0 0 20px 20px;
     }
     .btn-cancel {
-        height:42px; padding:0 20px;
-        background:#f1f5f9; border:1.5px solid #e2e8f0; border-radius:10px;
+        height:42px; padding:0 20px; background:#f1f5f9; border:1.5px solid #e2e8f0; border-radius:10px;
         font-family:'Plus Jakarta Sans',Inter,sans-serif; font-size:0.85rem; font-weight:600;
-        color:var(--gray-600); cursor:pointer; display:inline-flex; align-items:center; gap:6px;
-        transition:all .15s ease;
+        color:var(--gray-600); cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all .15s ease;
     }
     .btn-cancel:hover { background:#e2e8f0; border-color:#cbd5e1; }
     .btn-save {
@@ -514,7 +336,7 @@
     .btn-save:active { transform:translateY(0); }
 
     /* ═══════════════════════════════════════════════════════════════════════
-       CONFIRM / DELETE MODAL — redesigned
+       CONFIRM / DELETE MODAL — gradient merah
     ═══════════════════════════════════════════════════════════════════════ */
     .confirm-box {
         position:relative; z-index:1; background:#FFF; border-radius:20px;
@@ -525,54 +347,23 @@
     }
     .confirm-header {
         background:linear-gradient(135deg, #7f1d1d 0%, #dc2626 60%, #ef4444 100%);
-        padding:22px 24px 18px;
-        position:relative; overflow:hidden;
+        padding:22px 24px 18px; position:relative; overflow:hidden;
     }
-    .confirm-header::before {
-        content:''; position:absolute; top:-30px; right:-30px;
-        width:120px; height:120px; border-radius:50%;
-        background:rgba(255,255,255,0.07);
-    }
-    .confirm-hclose {
-        position:absolute; top:14px; right:14px;
-        width:30px; height:30px; background:rgba(255,255,255,0.15);
-        border:1px solid rgba(255,255,255,0.2); border-radius:8px;
-        display:flex; align-items:center; justify-content:center;
-        color:rgba(255,255,255,0.85); font-size:13px; cursor:pointer;
-        transition:background .2s; z-index:2;
-    }
-    .confirm-hclose:hover { background:rgba(255,255,255,0.28); }
-    .confirm-hicon {
-        width:44px; height:44px; background:rgba(255,255,255,0.15);
-        border-radius:12px; display:flex; align-items:center; justify-content:center;
-        border:1px solid rgba(255,255,255,0.2); margin-bottom:12px; position:relative; z-index:1;
-    }
+    .confirm-header::before { content:''; position:absolute; top:-30px; right:-30px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,0.07); }
+    .confirm-header::after  { content:''; position:absolute; bottom:-40px; left:-30px; width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,0.04); }
+    .confirm-hclose { position:absolute; top:14px; right:14px; width:30px; height:30px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.85); font-size:13px; cursor:pointer; transition:all .2s ease; z-index:2; }
+    .confirm-hclose:hover { background:rgba(255,255,255,0.28); transform:rotate(90deg); }
+    .confirm-hicon { width:44px; height:44px; background:rgba(255,255,255,0.15); border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.2); margin-bottom:12px; position:relative; z-index:1; }
     .confirm-htitle { position:relative; z-index:1; }
     .confirm-htitle h3 { font-size:1.05rem; font-weight:700; color:#fff; margin:0; }
     .confirm-htitle p  { font-size:0.78rem; color:rgba(255,255,255,0.7); margin:3px 0 0; }
-
     .confirm-body { padding:22px 24px 18px; }
-    .confirm-desc {
-        font-size:0.875rem; color:var(--gray-600); line-height:1.65;
-        background:#fef2f2; border:1px solid #fecaca; border-radius:10px;
-        padding:13px 15px;
-    }
+    .confirm-desc { font-size:0.875rem; color:var(--gray-600); line-height:1.65; background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:13px 15px; }
     .confirm-desc strong { color:var(--gray-900); }
-
     .confirm-footer { padding:4px 24px 22px; display:flex; gap:10px; }
-    .btn-confirm-cancel {
-        flex:1; height:42px; border:1.5px solid var(--gray-200); border-radius:10px;
-        font-family:'Plus Jakarta Sans',Inter,sans-serif; font-size:0.85rem; font-weight:600;
-        color:var(--gray-600); background:white; cursor:pointer; transition:all .15s ease;
-    }
+    .btn-confirm-cancel { flex:1; height:42px; border:1.5px solid var(--gray-200); border-radius:10px; font-family:'Plus Jakarta Sans',Inter,sans-serif; font-size:0.85rem; font-weight:600; color:var(--gray-600); background:white; cursor:pointer; transition:all .15s ease; }
     .btn-confirm-cancel:hover { background:var(--gray-50); border-color:var(--gray-300); }
-    .btn-confirm-delete {
-        flex:1; height:42px; border:none; border-radius:10px;
-        font-family:'Plus Jakarta Sans',Inter,sans-serif; font-size:0.85rem; font-weight:700;
-        color:white; background:linear-gradient(135deg,#dc2626,#ef4444); cursor:pointer;
-        box-shadow:0 4px 14px rgba(220,38,38,.35); transition:all .2s ease;
-        display:inline-flex; align-items:center; justify-content:center; gap:7px;
-    }
+    .btn-confirm-delete { flex:1; height:42px; border:none; border-radius:10px; font-family:'Plus Jakarta Sans',Inter,sans-serif; font-size:0.85rem; font-weight:700; color:white; background:linear-gradient(135deg,#dc2626,#ef4444); cursor:pointer; box-shadow:0 4px 14px rgba(220,38,38,.35); transition:all .2s ease; display:inline-flex; align-items:center; justify-content:center; gap:7px; }
     .btn-confirm-delete:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(220,38,38,.45); }
     .btn-confirm-delete:active { transform:translateY(0); }
 </style>
@@ -621,8 +412,7 @@
         <div class="stat-icon blue">
             <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <path d="M16 10a4 4 0 0 1-8 0"/>
+                <line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
         </div>
         <div>
@@ -794,16 +584,30 @@
                 };
             @endphp
             <tr class="product-row">
+                {{-- Aksi --}}
                 <td class="freeze-1">
                     <div class="action-wrap">
                         @if($canEdit)
-                        <a href="{{ route('produks.edit', $produk->id) }}" class="action-btn btn-edit">
+                        {{-- ✅ DIUBAH: dari <a href> menjadi <button onclick> --}}
+                        <button class="action-btn btn-edit"
+                            onclick="openEditModal(
+                                {{ $produk->id }},
+                                '{{ addslashes($produk->product_name) }}',
+                                {{ $produk->category_id }},
+                                '{{ addslashes($produk->description ?? '') }}',
+                                {{ $produk->stock }},
+                                {{ $produk->rental_price }},
+                                '{{ $produk->condition }}',
+                                {{ $produk->min_rental_days ?? 1 }},
+                                {{ $produk->status }},
+                                '{{ $produk->photo ? asset('products/' . $produk->photo) : '' }}'
+                            )">
                             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                             </svg>
                             Edit
-                        </a>
+                        </button>
                         <button class="action-btn btn-delete"
                             onclick="openDeleteModal({{ $produk->id }}, '{{ addslashes($produk->product_name) }}')">
                             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -818,6 +622,8 @@
                         @endif
                     </div>
                 </td>
+
+                {{-- Foto & Nama --}}
                 <td class="freeze-2">
                     <div class="product-cell">
                         @if($produk->photo)
@@ -843,6 +649,8 @@
                         <span class="product-name">{{ $produk->product_name }}</span>
                     </div>
                 </td>
+
+                {{-- Kategori --}}
                 <td>
                     <span class="cat-pill">
                         <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -852,19 +660,27 @@
                         {{ $produk->kategori->category_name ?? '-' }}
                     </span>
                 </td>
+
+                {{-- Harga --}}
                 <td>
                     <div class="price-text">
                         Rp {{ number_format($produk->rental_price, 0, ',', '.') }}
                         <span class="price-unit">/hari</span>
                     </div>
                 </td>
+
+                {{-- Stok --}}
                 <td><span class="stock-badge {{ $sc }}">{{ $produk->stock }}</span></td>
+
+                {{-- Kondisi --}}
                 <td>
                     <span class="cond-badge {{ $cc }}">
                         <span class="cond-badge-dot"></span>
                         {{ $produk->condition }}
                     </span>
                 </td>
+
+                {{-- Min Sewa --}}
                 <td>
                     <span class="min-sewa-badge">
                         <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -875,6 +691,8 @@
                         {{ $produk->min_rental_days }} hari
                     </span>
                 </td>
+
+                {{-- Created By --}}
                 <td class="audit-cell">
                     @if($produk->created_by)
                         <div class="audit-name">{{ $produk->created_by }}</div>
@@ -882,14 +700,17 @@
                         <span class="audit-empty">—</span>
                     @endif
                 </td>
+
+                {{-- Created Date --}}
                 <td class="audit-cell">
                     @if($produk->created_date)
-                        <div class="audit-name">{{ \Carbon\Carbon::parse($produk->created_date)->format('d M Y') }}</div>
-                        <div class="audit-date">{{ \Carbon\Carbon::parse($produk->created_date)->format('H:i') }}</div>
+                        <div class="audit-date">{{ \Carbon\Carbon::parse($produk->created_date)->format('d M Y, H:i') }}</div>
                     @else
                         <span class="audit-empty">—</span>
                     @endif
                 </td>
+
+                {{-- Last Updated By --}}
                 <td class="audit-cell">
                     @if($produk->last_updated_by)
                         <div class="audit-name">{{ $produk->last_updated_by }}</div>
@@ -897,10 +718,11 @@
                         <span class="audit-empty">—</span>
                     @endif
                 </td>
+
+                {{-- Last Updated Date --}}
                 <td class="audit-cell">
                     @if($produk->last_updated_date)
-                        <div class="audit-name">{{ \Carbon\Carbon::parse($produk->last_updated_date)->format('d M Y') }}</div>
-                        <div class="audit-date">{{ \Carbon\Carbon::parse($produk->last_updated_date)->format('H:i') }}</div>
+                        <div class="audit-date">{{ \Carbon\Carbon::parse($produk->last_updated_date)->format('d M Y, H:i') }}</div>
                     @else
                         <span class="audit-empty">—</span>
                     @endif
@@ -923,7 +745,9 @@
     </div>
 </div>
 
-{{-- ═══ MODAL IMAGE POPUP — unchanged ═══ --}}
+{{-- ══════════════════════════════════════════════════════════════════════════
+     MODAL IMAGE POPUP
+══════════════════════════════════════════════════════════════════════════ --}}
 <div id="imageModal" class="img-modal-overlay">
     <div class="img-modal-backdrop" onclick="closeImageModal()"></div>
     <div class="img-modal-box">
@@ -931,38 +755,36 @@
             <h3>Detail Produk</h3>
             <button class="img-modal-close" onclick="closeImageModal()">✕</button>
         </div>
-        <div class="img-modal-body">
-            <div class="img-modal-image-wrap">
-                <img id="modalImage" src="" alt="" class="img-modal-image">
-            </div>
-            <div class="img-modal-content">
-                <h4 class="img-modal-product-name" id="modalProductName"></h4>
-                <p class="img-modal-product-desc" id="modalProductDesc"></p>
-                <div class="img-modal-meta">
-                    <div class="img-modal-meta-item">
-                        <span class="img-modal-meta-label">Kategori</span>
-                        <span class="img-modal-meta-value" id="modalCategory"></span>
-                    </div>
-                    <div class="img-modal-meta-item">
-                        <span class="img-modal-meta-label">Stok Tersedia</span>
-                        <span id="modalStock"></span>
-                    </div>
-                    <div class="img-modal-meta-item" style="grid-column:span 2;">
-                        <span class="img-modal-meta-label">Kondisi Produk</span>
-                        <span id="modalKondisi"></span>
-                    </div>
+        <div class="img-modal-image-wrap">
+            <img id="modalImage" src="" alt="" class="img-modal-image">
+        </div>
+        <div class="img-modal-content">
+            <h4 class="img-modal-product-name" id="modalProductName"></h4>
+            <p class="img-modal-product-desc" id="modalProductDesc"></p>
+            <div class="img-modal-meta">
+                <div class="img-modal-meta-item">
+                    <span class="img-modal-meta-label">Kategori</span>
+                    <span class="img-modal-meta-value" id="modalCategory"></span>
+                </div>
+                <div class="img-modal-meta-item">
+                    <span class="img-modal-meta-label">Stok Tersedia</span>
+                    <span id="modalStock"></span>
+                </div>
+                <div class="img-modal-meta-item" style="grid-column:span 2;">
+                    <span class="img-modal-meta-label">Kondisi Produk</span>
+                    <span id="modalKondisi"></span>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- ═══ MODAL TAMBAH — redesigned ═══ --}}
+{{-- ══════════════════════════════════════════════════════════════════════════
+     MODAL TAMBAH PRODUK
+══════════════════════════════════════════════════════════════════════════ --}}
 <div class="modal-overlay" id="modalAdd">
     <div class="modal-backdrop" onclick="closeModal('modalAdd')"></div>
     <div class="modal-box">
-
-        {{-- Header gradient --}}
         <div class="modal-header">
             <div class="modal-header-inner">
                 <button class="modal-hclose" onclick="closeModal('modalAdd')">✕</button>
@@ -982,8 +804,6 @@
         <form action="{{ route('produks.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="modal-body">
-
-                {{-- Informasi Produk --}}
                 <div class="modal-section">
                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
                     Informasi Produk
@@ -1020,7 +840,6 @@
 
                 <div class="form-divider"></div>
 
-                {{-- Harga & Stok --}}
                 <div class="modal-section">
                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
                     Harga &amp; Stok
@@ -1068,7 +887,6 @@
 
                 <div class="form-divider"></div>
 
-                {{-- Foto & Status --}}
                 <div class="modal-section">
                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
                     Foto &amp; Status
@@ -1110,12 +928,171 @@
     </div>
 </div>
 
-{{-- ═══ MODAL DELETE — redesigned ═══ --}}
+{{-- ══════════════════════════════════════════════════════════════════════════
+     MODAL EDIT PRODUK ← BARU DITAMBAHKAN
+══════════════════════════════════════════════════════════════════════════ --}}
+<div class="modal-overlay" id="modalEdit">
+    <div class="modal-backdrop" onclick="closeModal('modalEdit')"></div>
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-header-inner">
+                <button class="modal-hclose" onclick="closeModal('modalEdit')">✕</button>
+                <div class="modal-hicon">
+                    <svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </div>
+                <div class="modal-htitle">
+                    <h2>Edit Produk</h2>
+                    <p>Perbarui informasi produk. Kolom bertanda * wajib diisi.</p>
+                </div>
+            </div>
+        </div>
+
+        <form id="editProductForm" action="" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            <div class="modal-body">
+                <div class="modal-section">
+                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                    Informasi Produk
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Nama Produk <span class="req">*</span></label>
+                        <div class="fg-wrap">
+                            <span class="fg-ico"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg></span>
+                            <input type="text" name="product_name" id="editProductName" placeholder="Nama produk..." required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Kategori <span class="req">*</span></label>
+                        <div class="fg-wrap select-wrap">
+                            <span class="fg-ico"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h8M4 18h16"/></svg></span>
+                            <select name="category_id" id="editCategoryId" required>
+                                <option value="" disabled>Pilih Kategori</option>
+                                @foreach($kategoris as $kategori)
+                                    <option value="{{ $kategori->id }}">{{ $kategori->category_name }}</option>
+                                @endforeach
+                            </select>
+                            <span class="select-arrow">▼</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Deskripsi</label>
+                    <div class="fg-wrap">
+                        <span class="fg-ico-top"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+                        <textarea name="description" id="editDescription" rows="3" placeholder="Deskripsi detail produk..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-divider"></div>
+
+                <div class="modal-section">
+                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                    Harga &amp; Stok
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Stok Tersedia <span class="req">*</span></label>
+                        <div class="fg-wrap">
+                            <span class="fg-ico"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16"/><path d="M1 21h22"/></svg></span>
+                            <input type="number" name="stock" id="editStock" placeholder="Jumlah stok" required min="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Harga Sewa / Hari <span class="req">*</span></label>
+                        <div class="fg-wrap">
+                            <span class="fg-ico"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span>
+                            <input type="number" name="rental_price" id="editRentalPrice" placeholder="Harga per hari" required min="0">
+                        </div>
+                        <div class="form-hint">dalam Rupiah (Rp)</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Kondisi <span class="req">*</span></label>
+                        <div class="fg-wrap select-wrap">
+                            <span class="fg-ico"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+                            <select name="condition" id="editCondition" required>
+                                <option value="" disabled>Pilih Kondisi</option>
+                                <option value="New">New</option>
+                                <option value="Excellent">Excellent</option>
+                                <option value="Good">Good</option>
+                                <option value="Fair">Fair</option>
+                                <option value="Poor">Poor</option>
+                            </select>
+                            <span class="select-arrow">▼</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Minimal Hari Sewa</label>
+                        <div class="fg-wrap">
+                            <span class="fg-ico"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+                            <input type="number" name="min_rental_days" id="editMinRentalDays" placeholder="1" min="1">
+                        </div>
+                        <div class="form-hint">hari minimum peminjaman</div>
+                    </div>
+                </div>
+
+                <div class="form-divider"></div>
+
+                <div class="modal-section">
+                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+                    Foto &amp; Status
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Ganti Foto Produk</label>
+                        <div class="fg-wrap">
+                            <span class="fg-ico"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+                            <input type="file" name="photo" accept="image/*">
+                        </div>
+                        <div class="form-hint">Kosongkan jika tidak ingin ganti foto.</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <div class="fg-wrap select-wrap">
+                            <span class="fg-ico"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></span>
+                            <select name="status" id="editStatus">
+                                <option value="1">✓ Aktif</option>
+                                <option value="0">✗ Nonaktif</option>
+                            </select>
+                            <span class="select-arrow">▼</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Preview foto existing --}}
+                <div id="editPhotoPreview" style="display:none; margin-top:10px;">
+                    <div style="font-size:0.72rem; color:var(--gray-400); margin-bottom:6px; font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:.06em;">Foto Saat Ini</div>
+                    <div style="position:relative; display:inline-block;">
+                        <img id="editPhotoImg" src="" alt="Foto produk saat ini"
+                            style="width:80px; height:80px; object-fit:cover; border-radius:10px; border:1.5px solid #e8edf5;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('modalEdit')">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    Batal
+                </button>
+                <button type="submit" class="btn-save">
+                    <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Update Produk
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- ══════════════════════════════════════════════════════════════════════════
+     MODAL DELETE
+══════════════════════════════════════════════════════════════════════════ --}}
 <div class="modal-overlay" id="modalDelete">
     <div class="modal-backdrop" onclick="closeModal('modalDelete')"></div>
     <div class="confirm-box">
-
-        {{-- Red gradient header --}}
         <div class="confirm-header">
             <button class="confirm-hclose" onclick="closeModal('modalDelete')">✕</button>
             <div class="confirm-hicon">
@@ -1130,13 +1107,11 @@
                 <p>Tindakan ini tidak dapat dibatalkan</p>
             </div>
         </div>
-
         <div class="confirm-body">
             <p class="confirm-desc">
                 Produk <strong id="deleteProductName"></strong> akan dihapus secara permanen dari sistem dan tidak dapat dipulihkan kembali.
             </p>
         </div>
-
         <div class="confirm-footer">
             <button class="btn-confirm-cancel" onclick="closeModal('modalDelete')">Batal</button>
             <button class="btn-confirm-delete" onclick="executeDelete()">
@@ -1254,14 +1229,14 @@
         stockEl.innerHTML = `<span class="stock-badge-modal ${stockClass}">${stock} Unit</span>`;
         const kondisiEl = document.getElementById('modalKondisi');
         const kondisiMap = {
-            'New': { class: 'new', label: 'New' },
-            'Excellent': { class: 'excellent', label: 'Excellent' },
-            'Good': { class: 'good', label: 'Good' },
-            'Fair': { class: 'fair', label: 'Fair' },
-            'Poor': { class: 'poor', label: 'Poor' }
+            'New':       { class:'new',       label:'New' },
+            'Excellent': { class:'excellent',  label:'Excellent' },
+            'Good':      { class:'good',       label:'Good' },
+            'Fair':      { class:'fair',       label:'Fair' },
+            'Poor':      { class:'poor',       label:'Poor' },
         };
-        const kondisiData = kondisiMap[kondisi] || { class: 'good', label: kondisi };
-        kondisiEl.innerHTML = `<span class="kondisi-badge-modal ${kondisiData.class}"><span class="dot"></span>${kondisiData.label}</span>`;
+        const kd = kondisiMap[kondisi] || { class:'good', label:kondisi };
+        kondisiEl.innerHTML = `<span class="kondisi-badge-modal ${kd.class}"><span class="dot"></span>${kd.label}</span>`;
         document.getElementById('imageModal').classList.add('show');
         document.body.style.overflow = 'hidden';
     }
@@ -1271,23 +1246,61 @@
         document.body.style.overflow = '';
     }
 
-    /* ── Modals ──────────────────────────────────────── */
-    function openAddModal()  { document.getElementById('modalAdd').classList.add('show'); document.body.style.overflow = 'hidden'; }
-    function closeModal(id)  { document.getElementById(id).classList.remove('show'); document.body.style.overflow = ''; }
+    /* ── Modal Open/Close ────────────────────────────── */
+    function openAddModal()  {
+        document.getElementById('modalAdd').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
 
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    /* ── Edit Modal ──────────────────────────────────── */
+    function openEditModal(id, name, categoryId, description, stock, rentalPrice, condition, minRentalDays, status, photo) {
+        // Set form action ke route update
+        document.getElementById('editProductForm').action = `/produk/update/${id}`;
+
+        // Populate semua field
+        document.getElementById('editProductName').value    = name;
+        document.getElementById('editCategoryId').value     = categoryId;
+        document.getElementById('editDescription').value    = description || '';
+        document.getElementById('editStock').value          = stock;
+        document.getElementById('editRentalPrice').value    = rentalPrice;
+        document.getElementById('editCondition').value      = condition;
+        document.getElementById('editMinRentalDays').value  = minRentalDays || 1;
+        document.getElementById('editStatus').value         = status;
+
+        // Tampilkan preview foto existing jika ada
+        const previewWrap = document.getElementById('editPhotoPreview');
+        const previewImg  = document.getElementById('editPhotoImg');
+        if (photo && photo.trim() !== '') {
+            previewImg.src = photo;
+            previewWrap.style.display = 'block';
+        } else {
+            previewWrap.style.display = 'none';
+        }
+
+        document.getElementById('modalEdit').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    /* ── Delete Modal ────────────────────────────────── */
     function openDeleteModal(id, name) {
         document.getElementById('deleteProductName').textContent = name;
         document.getElementById('deleteForm').action = '/produk/delete/' + id;
         document.getElementById('modalDelete').classList.add('show');
         document.body.style.overflow = 'hidden';
     }
+
     function executeDelete() { document.getElementById('deleteForm').submit(); }
 
     /* ── Close on Escape ─────────────────────────────── */
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
             closeImageModal();
-            ['modalAdd','modalDelete'].forEach(id => closeModal(id));
+            ['modalAdd','modalEdit','modalDelete'].forEach(id => closeModal(id));
         }
     });
 

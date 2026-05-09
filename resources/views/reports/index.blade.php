@@ -484,6 +484,20 @@
         font-family:Inter,sans-serif; font-size:13px; font-weight:700;
         color:white; cursor:pointer; transition:all .2s ease;
     }
+
+        .drop-item {
+        padding:10px 16px;
+        font-family:Inter,sans-serif; font-size:13px; font-weight:500;
+        color:var(--gray-700); cursor:pointer;
+        transition:background .12s ease;
+        border-bottom:1px solid var(--gray-100);
+    }
+    .drop-item:last-child { border-bottom:none; }
+    .drop-item:hover { background:var(--gray-50); }
+    .drop-item.active-item {
+        color:#4F46E5; font-weight:700;
+        background:#F5F3FF;
+    }
 </style>
 
 <div class="page-header">
@@ -508,15 +522,27 @@
         <input type="text" placeholder="Cari transaksi..." id="searchInput" onkeyup="filterTable()">
     </div>
 
-    <button class="filter-btn" id="statusFilterBtn" onclick="cycleStatus()">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
-        </svg>
-        <span id="statusLabel">Status: Semua</span>
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <polyline points="6,9 12,15 18,9"/>
-        </svg>
-    </button>
+    <div style="position:relative;">
+        <button class="filter-btn" id="statusFilterBtn" onclick="toggleDropdown()">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
+            </svg>
+            <span id="statusLabel">Status: Semua</span>
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <polyline points="6,9 12,15 18,9"/>
+            </svg>
+        </button>
+        <div id="statusDropdown" style="
+            display:none; position:absolute; top:calc(100% + 8px); left:0; z-index:100;
+            background:#FFF; border:1px solid #E5E7EB; border-radius:12px;
+            box-shadow:0 8px 24px rgba(15,23,42,.12); overflow:hidden; min-width:160px;">
+            <div onclick="selectStatus('all','Status: Semua')"     class="drop-item active-item" id="opt-all">Semua</div>
+            <div onclick="selectStatus('active','Aktif')"          class="drop-item" id="opt-active">Aktif</div>
+            <div onclick="selectStatus('completed','Selesai')"     class="drop-item" id="opt-completed">Selesai</div>
+            <div onclick="selectStatus('overdue','Terlambat')"     class="drop-item" id="opt-overdue">Terlambat</div>
+            <div onclick="selectStatus('cancelled','Dibatalkan')"  class="drop-item" id="opt-cancelled">Dibatalkan</div>
+        </div>
+    </div>
 
     <a href="{{ route('reports.export') }}" class="btn-export">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -815,23 +841,34 @@
         });
     }
 
-    const statuses     = ['all','active','completed','overdue','cancelled'];
-    const statusLabels = {
-        all:       'Status: Semua',
-        active:    'Aktif',
-        completed: 'Selesai',
-        overdue:   'Terlambat',
-        cancelled: 'Dibatalkan'
-    };
-    let currentStatus = 'all', statusIdx = 0;
+    let currentStatus = 'all';
 
-    function cycleStatus() {
-        statusIdx     = (statusIdx + 1) % statuses.length;
-        currentStatus = statuses[statusIdx];
-        document.getElementById('statusLabel').textContent = statusLabels[currentStatus];
-        document.getElementById('statusFilterBtn').classList.toggle('active', currentStatus !== 'all');
+    function toggleDropdown() {
+        const dd = document.getElementById('statusDropdown');
+        dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function selectStatus(status, label) {
+        currentStatus = status;
+        document.getElementById('statusLabel').textContent = label;
+        document.getElementById('statusFilterBtn').classList.toggle('active', status !== 'all');
+        document.getElementById('statusDropdown').style.display = 'none';
+
+        // Update active item highlight
+        document.querySelectorAll('.drop-item').forEach(el => el.classList.remove('active-item'));
+        document.getElementById('opt-' + status).classList.add('active-item');
+
         filterTable();
     }
+
+    // Tutup dropdown kalau klik di luar
+    document.addEventListener('click', function(e) {
+        const dd  = document.getElementById('statusDropdown');
+        const btn = document.getElementById('statusFilterBtn');
+        if (dd && !dd.contains(e.target) && !btn.contains(e.target)) {
+            dd.style.display = 'none';
+        }
+    });
 
     function openDetail(trxCode, name, email, phone, address, emergency, item, start, end, amount, paid, payment, status) {
         const initials = name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
