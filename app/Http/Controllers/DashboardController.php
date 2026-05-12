@@ -80,9 +80,87 @@ class DashboardController extends Controller
             'Cancelled' => (int) ($statusChart['Cancelled']->total ?? 0),
         ];
 
-        return view('dashboard.index', compact(
-            'totalRevenue', 'activeRentals', 'totalCustomers', 'pendingPenalties',
-            'recentTransactions', 'revenueLabels', 'revenueData', 'statusData'
-        ));
+        // ── Harian: 7 hari terakhir ──
+$dailyChart = DB::table('transactions')
+    ->where('is_deleted', 0)
+    ->whereRaw('created_date >= DATE_SUB(NOW(), INTERVAL 7 DAY)')
+    ->select(
+        DB::raw("DATE_FORMAT(created_date, '%d %b') as day_label"),
+        DB::raw("DATE_FORMAT(created_date, '%Y-%m-%d') as day_key"),
+        DB::raw("SUM(total_amount) as total"),
+        DB::raw("COUNT(*) as count")
+    )
+    ->groupBy('day_key', 'day_label')
+    ->orderBy('day_key')
+    ->get()
+    ->keyBy('day_key');
+
+$dailyLabels = [];
+$dailyData   = [];
+$dailyCount  = [];
+for ($i = 6; $i >= 0; $i--) {
+    $key   = now()->subDays($i)->format('Y-m-d');
+    $label = now()->subDays($i)->format('d M');
+    $dailyLabels[] = $label;
+    $dailyData[]   = (float) ($dailyChart[$key]->total ?? 0);
+    $dailyCount[]  = (int)   ($dailyChart[$key]->count ?? 0);
+}
+
+// ── Top 5 Produk Terlaris ──
+$topProducts = DB::table('transactions as t')
+    ->join('products as p', 't.product_id', '=', 'p.id')
+    ->where('t.is_deleted', 0)
+    ->where('t.trx_status', '!=', 'Cancelled')
+    ->select(
+        'p.product_name',
+        DB::raw('COUNT(*) as total_trx'),
+        DB::raw('SUM(t.total_amount) as total_revenue')
+    )
+    ->groupBy('p.id', 'p.product_name')
+    ->orderByDesc('total_trx')
+    ->limit(5)
+    ->get();
+
+    // ── Revenue bulan ini vs bulan lalu ──
+    $revenueThisMonth = DB::table('transactions')
+        ->where('is_deleted', 0)
+        ->where('trx_status', 'Completed')
+        ->whereRaw("DATE_FORMAT(created_date, '%Y-%m') = ?", [now()->format('Y-m')])
+        ->sum('total_amount');
+
+    $revenueLastMonth = DB::table('transactions')
+        ->where('is_deleted', 0)
+        ->where('trx_status', 'Completed')
+        ->whereRaw("DATE_FORMAT(created_date, '%Y-%m') = ?", [now()->subMonth()->format('Y-m')])
+        ->sum('total_amount');
+
+    $revenueGrowth = $revenueLastMonth > 0
+        ? round((($revenueThisMonth - $revenueLastMonth) / $revenueLastMonth) * 100, 1)
+        : 0;
+
+    // ── Transaksi bulan ini ──
+    $trxThisMonth  = DB::table('transactions')
+        ->where('is_deleted', 0)
+        ->whereRaw("DATE_FORMAT(created_date, '%Y-%m') = ?", [now()->format('Y-m')])
+        ->count();
+
+    $trxLastMonth  = DB::table('transactions')
+        ->where('is_deleted', 0)
+        ->whereRaw("DATE_FORMAT(created_date, '%Y-%m') = ?", [now()->subMonth()->format('Y-m')])
+        ->count();
+
+    $trxGrowth = $trxLastMonth > 0
+        ? round((($trxThisMonth - $trxLastMonth) / $trxLastMonth) * 100, 1)
+        : 0;
+
+    return view('dashboard.index', compact(
+        'totalRevenue', 'activeRentals', 'totalCustomers', 'pendingPenalties',
+        'recentTransactions', 'revenueLabels', 'revenueData', 'statusData',
+        'dailyLabels', 'dailyData', 'dailyCount',
+        'topProducts',
+        'revenueThisMonth', 'revenueLastMonth', 'revenueGrowth',
+        'trxThisMonth', 'trxLastMonth', 'trxGrowth'
+    ));
+
     }
 }

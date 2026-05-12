@@ -5,193 +5,347 @@
 @section('content')
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-    .welcome-block { margin-bottom: 28px; }
-    .welcome-block h1 { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 700; color: #1E1E1E; margin: 0 0 6px 0; }
-    .welcome-block p { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 15px; color: #6B6B6B; margin: 0; line-height: 1.7; max-width: 620px; }
-
-    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
-
-    .stat-card { background: white; border-radius: 12px; padding: 20px; border: 1.5px solid #E5E5E5; position: relative; transition: box-shadow 0.2s; }
-    .stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-    .stat-card.blue   { border-color: #2D4DA3; }
-    .stat-card.green  { border-color: #22C55E; }
-    .stat-card.orange { border-color: #F97316; }
-    .stat-card.red    { border-color: #EF4444; }
-
-    .stat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .stat-label { font-family: Inter, sans-serif; font-size: 13px; color: #6B6B6B; font-weight: 500; }
-    .stat-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-    .stat-icon.blue   { background: #EEF2FF; color: #2D4DA3; }
-    .stat-icon.green  { background: #F0FDF4; color: #22C55E; }
-    .stat-icon.orange { background: #FFF7ED; color: #F97316; }
-    .stat-icon.red    { background: #FEF2F2; color: #EF4444; }
-    .stat-icon svg { width: 16px; height: 16px; }
-
-    .stat-value { font-family: Inter, sans-serif; font-size: 26px; font-weight: 700; color: #1E1E1E; margin-bottom: 4px; letter-spacing: -0.5px; }
-    .stat-sub { font-family: Inter, sans-serif; font-size: 12px; color: #9E9E9E; }
-    .stat-sub.positive { color: #22C55E; }
-    .stat-sub.warning  { color: #EF4444; }
-
-    /* ── Chart Section ── */
-    .chart-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
-    .chart-panel {
-        background: white; border-radius: 14px; padding: 22px;
-        box-shadow: 0 2px 12px rgba(0,0,0,.07); border: 1px solid #F1F5F9;
+    :root {
+        --blue:   #2D4DA3;
+        --blue-l: #EFF6FF;
+        --green:  #059669;
+        --green-l:#ECFDF5;
+        --amber:  #D97706;
+        --amber-l:#FFFBEB;
+        --red:    #DC2626;
+        --red-l:  #FEF2F2;
+        --gray-50:#FAFBFC;
+        --gray-100:#F4F6F8;
+        --gray-200:#E5E7EB;
+        --gray-400:#9CA3AF;
+        --gray-500:#6B7280;
+        --gray-700:#374151;
+        --gray-900:#111827;
     }
-    .chart-panel-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
-    .chart-panel-title { font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; color: #0F172A; margin: 0; }
-    .chart-panel-sub   { font-family: Inter, sans-serif; font-size: 12px; color: #94A3B8; margin: 3px 0 0 0; }
-    .chart-wrap { position: relative; }
 
-    /* Pie legend */
-    .pie-legend { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
-    .legend-item { display: flex; align-items: center; justify-content: space-between; }
-    .legend-left { display: flex; align-items: center; gap: 8px; }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .legend-label { font-family: Inter, sans-serif; font-size: 12px; color: #64748B; }
-    .legend-val { font-family: Inter, sans-serif; font-size: 12px; font-weight: 700; color: #0F172A; }
+    * { font-family: 'Plus Jakarta Sans', sans-serif; }
 
-    /* ── Bottom Grid ── */
-    .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    /* ── Welcome ── */
+    .welcome {
+        display:flex; align-items:center; justify-content:space-between;
+        margin-bottom:28px;
+    }
+    .welcome h1 {
+        font-size:24px; font-weight:800; color:var(--gray-900);
+        margin:0 0 5px 0; letter-spacing:-0.5px;
+    }
+    .welcome p { font-size:13px; color:var(--gray-500); margin:0; }
+    .welcome-date {
+        font-size:12px; font-weight:600; color:var(--blue);
+        background:var(--blue-l); padding:6px 14px; border-radius:20px;
+        border:1px solid #BFDBFE;
+    }
 
-    .panel { background: white; border-radius: 12px; padding: 20px; border: 1px solid #E5E5E5; }
-    .panel-title { font-family: Inter, sans-serif; font-size: 15px; font-weight: 700; color: #1E1E1E; margin-bottom: 18px; }
+    /* ── Stat Cards ── */
+    .stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px; }
+    .stat-card {
+        background:#FFF; border-radius:16px; padding:20px 22px;
+        border:1px solid var(--gray-200);
+        box-shadow:0 1px 2px rgba(15,23,42,.04);
+        position:relative; overflow:hidden;
+        transition:all .25s ease;
+    }
+    .stat-card::after {
+        content:''; position:absolute; top:0; left:0; right:0; height:3px;
+        border-radius:16px 16px 0 0;
+    }
+    .stat-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(15,23,42,.1); }
+    .stat-card.blue::after  { background:linear-gradient(90deg,#2D4DA3,#4F6FCA); }
+    .stat-card.green::after { background:linear-gradient(90deg,#059669,#34D399); }
+    .stat-card.amber::after { background:linear-gradient(90deg,#D97706,#FBBF24); }
+    .stat-card.red::after   { background:linear-gradient(90deg,#DC2626,#F87171); }
 
-    .trx-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F5F5F5; }
-    .trx-item:last-child { border-bottom: none; }
-    .trx-left .trx-name { font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; color: #1E1E1E; }
-    .trx-left .trx-item-name { font-family: Inter, sans-serif; font-size: 12px; color: #9E9E9E; margin-top: 2px; }
-    .trx-right { text-align: right; }
-    .trx-amount { font-family: Inter, sans-serif; font-size: 13px; font-weight: 700; color: #2D4DA3; margin-bottom: 4px; }
-    .trx-badge { display: inline-block; border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 600; font-family: Inter, sans-serif; }
-    .trx-active    { background: #EFF6FF; color: #2D4DA3; }
-    .trx-completed { background: #ECFDF5; color: #059669; }
-    .trx-overdue   { background: #FFF7ED; color: #EA580C; }
-    .trx-cancelled { background: #FEF2F2; color: #DC2626; }
+    .stat-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; }
+    .stat-icon-wrap { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; }
+    .stat-icon-wrap svg { width:18px; height:18px; }
+    .stat-icon-wrap.blue  { background:var(--blue-l);  color:var(--blue); }
+    .stat-icon-wrap.green { background:var(--green-l); color:var(--green); }
+    .stat-icon-wrap.amber { background:var(--amber-l); color:var(--amber); }
+    .stat-icon-wrap.red   { background:var(--red-l);   color:var(--red); }
 
-    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .action-card { border: 1px solid #E5E5E5; border-radius: 10px; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: background 0.15s, border-color 0.15s; text-decoration: none; }
-    .action-card:hover { background: #F5F7FF; border-color: #C7D2FE; }
-    .action-icon { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-    .action-icon.blue   { background: #EEF2FF; color: #2D4DA3; }
-    .action-icon.orange { background: #FFF7ED; color: #F97316; }
-    .action-icon svg { width: 20px; height: 20px; }
-    .action-label { font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; color: #1E1E1E; }
+    .stat-badge {
+        font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px;
+        display:inline-flex; align-items:center; gap:3px;
+    }
+    .stat-badge.up   { background:#ECFDF5; color:#059669; }
+    .stat-badge.down { background:#FEF2F2; color:#DC2626; }
+    .stat-badge.flat { background:var(--gray-100); color:var(--gray-500); }
+
+    .stat-value {
+        font-size:28px; font-weight:800; color:var(--gray-900);
+        letter-spacing:-1px; line-height:1; margin-bottom:5px;
+    }
+    .stat-label { font-size:12px; font-weight:600; color:var(--gray-500); }
+    .stat-sub   { font-size:11px; color:var(--gray-400); margin-top:3px; }
+
+    /* ── Row: Grafik Harian + Pie ── */
+    .row-2 { display:grid; grid-template-columns:2fr 1fr; gap:16px; margin-bottom:16px; }
+    .row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:16px; }
+
+    /* ── Panel ── */
+    .panel {
+        background:#FFF; border-radius:16px; padding:22px 24px;
+        border:1px solid var(--gray-200);
+        box-shadow:0 1px 2px rgba(15,23,42,.04);
+    }
+    .panel-head { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
+    .panel-title { font-size:14px; font-weight:700; color:var(--gray-900); margin:0; letter-spacing:-0.2px; }
+    .panel-sub   { font-size:11px; color:var(--gray-400); margin:3px 0 0 0; }
+
+    /* ── Tab Toggle ── */
+    .tab-group { display:flex; gap:4px; background:var(--gray-100); border-radius:8px; padding:3px; }
+    .tab-btn {
+        font-size:11px; font-weight:600; padding:5px 12px; border-radius:6px;
+        border:none; background:transparent; color:var(--gray-500);
+        cursor:pointer; transition:all .15s ease;
+    }
+    .tab-btn.active { background:#FFF; color:var(--blue); box-shadow:0 1px 3px rgba(15,23,42,.1); }
+
+    /* ── Pie legend ── */
+    .pie-legend { display:flex; flex-direction:column; gap:9px; margin-top:16px; }
+    .legend-row { display:flex; align-items:center; justify-content:space-between; }
+    .legend-l   { display:flex; align-items:center; gap:8px; }
+    .legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .legend-name { font-size:12px; color:var(--gray-500); font-weight:500; }
+    .legend-num  { font-size:12px; font-weight:700; color:var(--gray-900); }
+    .legend-pct  { font-size:10px; color:var(--gray-400); margin-left:4px; }
+
+    /* ── Recent Trx ── */
+    .trx-list { display:flex; flex-direction:column; gap:0; }
+    .trx-row {
+        display:flex; align-items:center; justify-content:space-between;
+        padding:11px 0; border-bottom:1px solid var(--gray-100);
+    }
+    .trx-row:last-child { border-bottom:none; }
+    .trx-avatar {
+        width:34px; height:34px; border-radius:50%; flex-shrink:0;
+        display:flex; align-items:center; justify-content:center;
+        font-size:11px; font-weight:700; color:#FFF;
+        margin-right:10px;
+    }
+    .trx-info { flex:1; min-width:0; }
+    .trx-name { font-size:13px; font-weight:600; color:var(--gray-900); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .trx-product { font-size:11px; color:var(--gray-400); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .trx-right { text-align:right; flex-shrink:0; padding-left:10px; }
+    .trx-amount { font-size:12px; font-weight:700; color:var(--blue); }
+    .trx-badge {
+        display:inline-block; border-radius:20px; padding:2px 8px;
+        font-size:10px; font-weight:700; margin-top:3px;
+    }
+    .badge-active    { background:#EFF6FF; color:#2D4DA3; }
+    .badge-completed { background:#ECFDF5; color:#059669; }
+    .badge-overdue   { background:#FFF7ED; color:#EA580C; }
+    .badge-cancelled { background:#FEF2F2; color:#DC2626; }
+
+    /* ── Top Products ── */
+    .product-row {
+        display:flex; align-items:center; gap:12px;
+        padding:10px 0; border-bottom:1px solid var(--gray-100);
+    }
+    .product-row:last-child { border-bottom:none; }
+    .product-rank {
+        width:24px; height:24px; border-radius:8px; flex-shrink:0;
+        display:flex; align-items:center; justify-content:center;
+        font-size:11px; font-weight:800;
+    }
+    .rank-1 { background:linear-gradient(135deg,#FCD34D,#F59E0B); color:#92400E; }
+    .rank-2 { background:linear-gradient(135deg,#E2E8F0,#CBD5E1); color:#475569; }
+    .rank-3 { background:linear-gradient(135deg,#FCA5A5,#F87171); color:#991B1B; }
+    .rank-n { background:var(--gray-100); color:var(--gray-500); }
+    .product-info { flex:1; min-width:0; }
+    .product-name { font-size:12px; font-weight:600; color:var(--gray-900); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .product-trx  { font-size:11px; color:var(--gray-400); margin-top:1px; }
+    .product-rev  { font-size:12px; font-weight:700; color:var(--blue); flex-shrink:0; }
+
+    /* ── Monthly Summary ── */
+    .month-compare {
+        display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:4px;
+    }
+    .month-box {
+        background:var(--gray-50); border-radius:12px; padding:14px 16px;
+        border:1px solid var(--gray-100);
+    }
+    .month-box-label { font-size:11px; font-weight:600; color:var(--gray-400); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+    .month-box-val   { font-size:18px; font-weight:800; color:var(--gray-900); letter-spacing:-0.5px; }
+    .month-box-sub   { font-size:11px; color:var(--gray-400); margin-top:3px; }
+
+    .growth-badge {
+        display:inline-flex; align-items:center; gap:4px;
+        font-size:12px; font-weight:700; padding:4px 10px;
+        border-radius:20px; margin-top:12px;
+    }
+    .growth-up   { background:#ECFDF5; color:#059669; }
+    .growth-down { background:#FEF2F2; color:#DC2626; }
+    .growth-flat { background:var(--gray-100); color:var(--gray-500); }
+
+    /* ── Quick Actions ── */
+    .action-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .action-card {
+        border:1.5px solid var(--gray-200); border-radius:12px; padding:16px;
+        display:flex; flex-direction:column; align-items:center; gap:8px;
+        text-decoration:none; transition:all .2s ease;
+        background:#FFF;
+    }
+    .action-card:hover { background:var(--blue-l); border-color:#BFDBFE; transform:translateY(-1px); box-shadow:0 4px 12px rgba(45,77,163,.12); }
+    .action-icon-wrap { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+    .action-icon-wrap svg { width:18px; height:18px; }
+    .action-label { font-size:12px; font-weight:700; color:var(--gray-700); text-align:center; }
 </style>
 
 {{-- Welcome --}}
-<div class="welcome-block">
-    <h1>Selamat Datang, {{ Auth::user()->name }} 👋</h1>
-    <p>Anda telah berhasil masuk ke sistem. Silakan gunakan menu yang tersedia untuk mengelola data dan memantau aktivitas.</p>
+<div class="welcome">
+    <div>
+        <h1>Selamat Datang, {{ explode(' ', Auth::user()->name)[0] }} 👋</h1>
+        <p>Pantau performa rental Anda hari ini.</p>
+    </div>
+    <div class="welcome-date">
+        {{ now()->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
+    </div>
 </div>
 
 {{-- Stat Cards --}}
+@php
+    $growthRevClass = $revenueGrowth > 0 ? 'up' : ($revenueGrowth < 0 ? 'down' : 'flat');
+    $growthRevIcon  = $revenueGrowth > 0 ? '↑' : ($revenueGrowth < 0 ? '↓' : '→');
+    $growthTrxClass = $trxGrowth > 0 ? 'up' : ($trxGrowth < 0 ? 'down' : 'flat');
+    $growthTrxIcon  = $trxGrowth > 0 ? '↑' : ($trxGrowth < 0 ? '↓' : '→');
+@endphp
+
 <div class="stat-grid">
+    {{-- Total Revenue --}}
     <div class="stat-card blue">
-        <div class="stat-header">
-            <span class="stat-label">Total Revenue</span>
-            <div class="stat-icon blue">
+        <div class="stat-top">
+            <div class="stat-icon-wrap blue">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <line x1="12" y1="1" x2="12" y2="23"/>
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                 </svg>
             </div>
+            <span class="stat-badge {{ $growthRevClass }}">{{ $growthRevIcon }} {{ abs($revenueGrowth) }}%</span>
         </div>
-        <div class="stat-value">Rp {{ number_format($totalRevenue / 1000000, 1) }}M</div>
-        <div class="stat-sub">From completed rentals</div>
+        <div class="stat-value">
+            @if($totalRevenue >= 1000000000)
+                Rp {{ number_format($totalRevenue/1000000000, 1) }}B
+            @else
+                Rp {{ number_format($totalRevenue/1000000, 1) }}M
+            @endif
+        </div>
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-sub">vs bulan lalu: Rp {{ number_format($revenueLastMonth/1000000, 1) }}M</div>
     </div>
+
+    {{-- Active Rentals --}}
     <div class="stat-card green">
-        <div class="stat-header">
-            <span class="stat-label">Active Rentals</span>
-            <div class="stat-icon green">
+        <div class="stat-top">
+            <div class="stat-icon-wrap green">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                     <circle cx="12" cy="10" r="3"/>
                 </svg>
             </div>
+            <span class="stat-badge flat">Live</span>
         </div>
         <div class="stat-value">{{ $activeRentals }}</div>
-        <div class="stat-sub">Currently out</div>
+        <div class="stat-label">Active Rentals</div>
+        <div class="stat-sub">Sedang berjalan</div>
     </div>
-    <div class="stat-card orange">
-        <div class="stat-header">
-            <span class="stat-label">Total Customers</span>
-            <div class="stat-icon orange">
+
+    {{-- Transaksi Bulan Ini --}}
+    <div class="stat-card amber">
+        <div class="stat-top">
+            <div class="stat-icon-wrap amber">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
                 </svg>
             </div>
+            <span class="stat-badge {{ $growthTrxClass }}">{{ $growthTrxIcon }} {{ abs($trxGrowth) }}%</span>
         </div>
-        <div class="stat-value">{{ number_format($totalCustomers) }}</div>
-        <div class="stat-sub positive">Active customers</div>
+        <div class="stat-value">{{ $trxThisMonth }}</div>
+        <div class="stat-label">Transaksi Bulan Ini</div>
+        <div class="stat-sub">Bulan lalu: {{ $trxLastMonth }}</div>
     </div>
+
+    {{-- Pending Penalties --}}
     <div class="stat-card red">
-        <div class="stat-header">
-            <span class="stat-label">Pending Penalties</span>
-            <div class="stat-icon red">
+        <div class="stat-top">
+            <div class="stat-icon-wrap red">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"/>
                     <line x1="12" y1="8" x2="12" y2="12"/>
                     <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
             </div>
+            @if($pendingPenalties > 0)
+                <span class="stat-badge down">Perlu Aksi</span>
+            @else
+                <span class="stat-badge up">All Clear</span>
+            @endif
         </div>
         <div class="stat-value">{{ $pendingPenalties }}</div>
-        <div class="stat-sub {{ $pendingPenalties > 0 ? 'warning' : '' }}">
-            {{ $pendingPenalties > 0 ? 'Require attention' : 'All clear' }}
-        </div>
+        <div class="stat-label">Pending Penalties</div>
+        <div class="stat-sub">{{ $totalCustomers }} total pelanggan</div>
     </div>
 </div>
 
-{{-- ── CHART SECTION ── --}}
-<div class="chart-grid">
+{{-- Row 1: Chart Harian + Pie Status --}}
+<div class="row-2">
 
-    {{-- Line Chart: Pendapatan per Bulan --}}
-    <div class="chart-panel">
-        <div class="chart-panel-header">
+    {{-- Chart Harian / Bulanan (switchable) --}}
+    <div class="panel">
+        <div class="panel-head">
             <div>
-                <div class="chart-panel-title">Pendapatan Bulanan</div>
-                <div class="chart-panel-sub">Revenue dari transaksi Completed — 12 bulan terakhir</div>
+                <div class="panel-title">Grafik Transaksi</div>
+                <div class="panel-sub" id="chartSubtitle">Pendapatan 7 hari terakhir</div>
+            </div>
+            <div class="tab-group">
+                <button class="tab-btn active" onclick="switchChart('daily')">Harian</button>
+                <button class="tab-btn" onclick="switchChart('monthly')">Bulanan</button>
             </div>
         </div>
-        <div class="chart-wrap" style="height:220px;">
-            <canvas id="revenueChart"></canvas>
+        <div style="height:220px; position:relative;">
+            <canvas id="mainChart"></canvas>
         </div>
     </div>
 
-    {{-- Pie Chart: Status Transaksi --}}
-    <div class="chart-panel">
-        <div class="chart-panel-header">
+    {{-- Pie: Status Transaksi --}}
+    <div class="panel">
+        <div class="panel-head">
             <div>
-                <div class="chart-panel-title">Status Transaksi</div>
-                <div class="chart-panel-sub">Distribusi status semua transaksi</div>
+                <div class="panel-title">Status Transaksi</div>
+                <div class="panel-sub">Distribusi semua transaksi</div>
             </div>
         </div>
-        <div class="chart-wrap" style="height:160px;display:flex;justify-content:center;">
+        <div style="height:150px; display:flex; justify-content:center;">
             <canvas id="statusChart"></canvas>
         </div>
         <div class="pie-legend">
             @php
                 $legendItems = [
                     ['Active',    '#2D4DA3', $statusData['Active']],
-                    ['Completed', '#22C55E', $statusData['Completed']],
-                    ['Overdue',   '#F97316', $statusData['Overdue']],
-                    ['Cancelled', '#EF4444', $statusData['Cancelled']],
+                    ['Completed', '#059669', $statusData['Completed']],
+                    ['Overdue',   '#D97706', $statusData['Overdue']],
+                    ['Cancelled', '#DC2626', $statusData['Cancelled']],
                 ];
                 $totalTrx = array_sum(array_column($legendItems, 2));
             @endphp
             @foreach($legendItems as [$label, $color, $val])
-            <div class="legend-item">
-                <div class="legend-left">
+            <div class="legend-row">
+                <div class="legend-l">
                     <div class="legend-dot" style="background:{{ $color }}"></div>
-                    <span class="legend-label">{{ $label }}</span>
+                    <span class="legend-name">{{ $label }}</span>
                 </div>
-                <span class="legend-val">{{ $val }} <span style="color:#94A3B8;font-weight:400;">({{ $totalTrx > 0 ? round($val/$totalTrx*100) : 0 }}%)</span></span>
+                <div>
+                    <span class="legend-num">{{ $val }}</span>
+                    <span class="legend-pct">({{ $totalTrx > 0 ? round($val/$totalTrx*100) : 0 }}%)</span>
+                </div>
             </div>
             @endforeach
         </div>
@@ -199,121 +353,230 @@
 
 </div>
 
-{{-- Bottom Grid --}}
-<div class="bottom-grid">
+{{-- Row 2: Recent Trx + Top Produk + Monthly Summary --}}
+<div class="row-3">
+
+    {{-- Recent Transactions --}}
     <div class="panel">
-        <div class="panel-title">Recent Transactions</div>
-        @forelse ($recentTransactions as $t)
-        <div class="trx-item">
-            <div class="trx-left">
-                <div class="trx-name">{{ $t->customer_name }}</div>
-                <div class="trx-item-name">{{ $t->product_name }}</div>
+        <div class="panel-head">
+            <div>
+                <div class="panel-title">Transaksi Terbaru</div>
+                <div class="panel-sub">5 transaksi terakhir</div>
             </div>
-            <div class="trx-right">
-                <div class="trx-amount">Rp {{ number_format($t->total_amount, 0, ',', '.') }}</div>
-                <span class="trx-badge trx-{{ strtolower($t->trx_status) }}">{{ $t->trx_status }}</span>
+            <a href="{{ route('reports.index') }}" style="
+                display:inline-flex; align-items:center; gap:5px;
+                font-size:11px; font-weight:700; color:var(--blue);
+                text-decoration:none; padding:6px 12px;
+                background:var(--blue-l); border-radius:20px;
+                border:1px solid #BFDBFE;
+                transition:all .2s ease;
+            " onmouseover="this.style.background='#2D4DA3';this.style.color='#fff';this.style.borderColor='#2D4DA3';"
+            onmouseout="this.style.background='var(--blue-l)';this.style.color='var(--blue)';this.style.borderColor='#BFDBFE';">
+                Lihat Semua
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12,5 19,12 12,19"/>
+                </svg>
+            </a>
+        </div>
+        <div class="trx-list">
+            @php
+                $avatarColors = ['#2D4DA3','#7C3AED','#059669','#D97706','#DC2626','#0891B2'];
+            @endphp
+            @forelse ($recentTransactions as $i => $t)
+            @php
+                $initials = strtoupper(substr($t->customer_name, 0, 1)) . strtoupper(substr(strstr($t->customer_name, ' ') ?: ' ', 1, 1));
+                $avColor  = $avatarColors[$i % count($avatarColors)];
+            @endphp
+            <div class="trx-row">
+                <div class="trx-avatar" style="background:{{ $avColor }}">{{ $initials }}</div>
+                <div class="trx-info">
+                    <div class="trx-name">{{ $t->customer_name }}</div>
+                    <div class="trx-product">{{ $t->product_name }}</div>
+                </div>
+                <div class="trx-right">
+                    <div class="trx-amount">Rp {{ number_format($t->total_amount/1000, 0) }}K</div>
+                    <div class="trx-badge badge-{{ strtolower($t->trx_status) }}">{{ $t->trx_status }}</div>
+                </div>
+            </div>
+            @empty
+            <p style="font-size:12px;color:var(--gray-400);text-align:center;padding:20px 0;">Belum ada transaksi.</p>
+            @endforelse
+        </div>
+    </div>
+
+    {{-- Top Produk --}}
+    <div class="panel">
+        <div class="panel-head">
+            <div>
+                <div class="panel-title">Top Produk Terlaris</div>
+                <div class="panel-sub">Berdasarkan jumlah transaksi</div>
+            </div>
+        </div>
+        @forelse ($topProducts as $i => $p)
+        @php
+            $rankClass = match($i) { 0 => 'rank-1', 1 => 'rank-2', 2 => 'rank-3', default => 'rank-n' };
+        @endphp
+        <div class="product-row">
+            <div class="product-rank {{ $rankClass }}">#{{ $i+1 }}</div>
+            <div class="product-info">
+                <div class="product-name">{{ $p->product_name }}</div>
+                <div class="product-trx">{{ $p->total_trx }} transaksi</div>
+            </div>
+            <div class="product-rev">
+                Rp {{ number_format($p->total_revenue/1000000, 1) }}M
             </div>
         </div>
         @empty
-        <p style="font-size:13px;color:#9E9E9E;text-align:center;padding:20px 0;">Belum ada transaksi.</p>
+        <p style="font-size:12px;color:var(--gray-400);text-align:center;padding:20px 0;">Belum ada data.</p>
         @endforelse
     </div>
 
-    <div class="panel">
-        <div class="panel-title">Quick Actions</div>
-        <div class="action-grid">
-            <a href="{{ route('produks.create') }}" class="action-card">
-                <div class="action-icon blue">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                        <line x1="3" y1="6" x2="21" y2="6"/>
-                        <path d="M16 10a4 4 0 0 1-8 0"/>
-                    </svg>
+    {{-- Monthly Summary + Quick Actions --}}
+    <div style="display:flex; flex-direction:column; gap:16px;">
+
+        {{-- Monthly Comparison --}}
+        <div class="panel" style="flex:1;">
+            <div class="panel-head">
+                <div>
+                    <div class="panel-title">Ringkasan Bulan Ini</div>
+                    <div class="panel-sub">{{ now()->format('F Y') }}</div>
                 </div>
-                <span class="action-label">Add Product</span>
-            </a>
-            <a href="{{ route('penalties.index') }}" class="action-card">
-                <div class="action-icon orange">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="8" x2="12" y2="12"/>
-                        <line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
+            </div>
+            <div class="month-compare">
+                <div class="month-box">
+                    <div class="month-box-label">Revenue</div>
+                    <div class="month-box-val">
+                        Rp {{ number_format($revenueThisMonth/1000000, 1) }}M
+                    </div>
+                    <div class="month-box-sub">bulan ini</div>
                 </div>
-                <span class="action-label">View Penalties</span>
-            </a>
+                <div class="month-box">
+                    <div class="month-box-label">Transaksi</div>
+                    <div class="month-box-val">{{ $trxThisMonth }}</div>
+                    <div class="month-box-sub">bulan ini</div>
+                </div>
+            </div>
+            @if($revenueGrowth != 0)
+            <div class="growth-badge {{ $revenueGrowth > 0 ? 'growth-up' : 'growth-down' }}">
+                {{ $revenueGrowth > 0 ? '↑' : '↓' }} {{ abs($revenueGrowth) }}% vs bulan lalu
+            </div>
+            @else
+            <div class="growth-badge growth-flat">→ Sama dengan bulan lalu</div>
+            @endif
         </div>
+
+        {{-- Quick Actions --}}
+        <div class="panel">
+            <div class="panel-title" style="margin-bottom:12px;">Quick Actions</div>
+            <div class="action-grid">
+                <a href="{{ route('transaksi.create') }}" class="action-card">
+                    <div class="action-icon-wrap" style="background:#EFF6FF;color:#2D4DA3;">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                    </div>
+                    <span class="action-label">Buat Transaksi</span>
+                </a>
+                <a href="{{ route('reports.index') }}" class="action-card">
+                    <div class="action-icon-wrap" style="background:#ECFDF5;color:#059669;">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                    </div>
+                    <span class="action-label">Laporan</span>
+                </a>
+                <a href="{{ route('produks.index') }}" class="action-card">
+                    <div class="action-icon-wrap" style="background:#FFF7ED;color:#D97706;">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                        </svg>
+                    </div>
+                    <span class="action-label">Produk</span>
+                </a>
+                <a href="{{ route('penalties.index') }}" class="action-card">
+                    <div class="action-icon-wrap" style="background:#FEF2F2;color:#DC2626;">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                    </div>
+                    <span class="action-label">Penalties</span>
+                </a>
+            </div>
+        </div>
+
     </div>
 </div>
 
-{{-- Chart.js CDN --}}
+{{-- Chart.js --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-    // ── Data dari Laravel ──
-    const revenueLabels = @json($revenueLabels);
-    const revenueData   = @json($revenueData);
+    const dailyLabels   = @json($dailyLabels);
+    const dailyData     = @json($dailyData);
+    const dailyCount    = @json($dailyCount);
+    const monthlyLabels = @json($revenueLabels);
+    const monthlyData   = @json($revenueData);
     const statusData    = @json($statusData);
 
-    // ── Line Chart: Pendapatan Bulanan ──
-    const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+    // ── Main Chart (switchable) ──
+    const ctxMain = document.getElementById('mainChart').getContext('2d');
 
-    const gradient = ctxRevenue.createLinearGradient(0, 0, 0, 220);
-    gradient.addColorStop(0, 'rgba(45, 77, 163, 0.15)');
-    gradient.addColorStop(1, 'rgba(45, 77, 163, 0.0)');
+    function makeGradient(ctx, color1, color2) {
+        const g = ctx.createLinearGradient(0, 0, 0, 220);
+        g.addColorStop(0, color1);
+        g.addColorStop(1, color2);
+        return g;
+    }
 
-    new Chart(ctxRevenue, {
-        type: 'line',
+    let mainChart = new Chart(ctxMain, {
+        type: 'bar',
         data: {
-            labels: revenueLabels,
+            labels: dailyLabels,
             datasets: [{
                 label: 'Pendapatan',
-                data: revenueData,
+                data: dailyData,
+                backgroundColor: makeGradient(ctxMain, 'rgba(45,77,163,0.8)', 'rgba(45,77,163,0.3)'),
                 borderColor: '#2D4DA3',
-                backgroundColor: gradient,
-                borderWidth: 2.5,
-                pointBackgroundColor: '#2D4DA3',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                fill: true,
-                tension: 0.4,
+                borderWidth: 0,
+                borderRadius: 6,
+                borderSkipped: false,
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            responsive: true, maintainAspectRatio: false,
             plugins: {
                 legend: { display: false },
                 tooltip: {
                     backgroundColor: '#0F172A',
-                    titleFont: { family: 'Inter', size: 12 },
-                    bodyFont:  { family: 'Inter', size: 12 },
+                    titleFont: { family: 'Plus Jakarta Sans', size: 12 },
+                    bodyFont:  { family: 'Plus Jakarta Sans', size: 12 },
                     padding: 10,
                     callbacks: {
                         label: ctx => ' Rp ' + ctx.parsed.y.toLocaleString('id-ID'),
+                        afterLabel: (ctx) => {
+                            const cnt = dailyCount[ctx.dataIndex];
+                            return cnt !== undefined ? ' ' + cnt + ' transaksi' : '';
+                        }
                     }
                 }
             },
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: {
-                        font: { family: 'Inter', size: 11 },
-                        color: '#94A3B8',
-                        maxRotation: 0,
-                        maxTicksLimit: 6,
-                    },
+                    ticks: { font: { family: 'Plus Jakarta Sans', size: 11 }, color: '#94A3B8' },
                     border: { display: false },
                 },
                 y: {
-                    grid: { color: '#F1F5F9', drawBorder: false },
+                    grid: { color: '#F1F5F9' },
                     ticks: {
-                        font: { family: 'Inter', size: 11 },
-                        color: '#94A3B8',
-                        callback: v => v >= 1000000
-                            ? 'Rp ' + (v/1000000).toFixed(1) + 'M'
-                            : v >= 1000 ? 'Rp ' + (v/1000).toFixed(0) + 'K' : 'Rp ' + v,
+                        font: { family: 'Plus Jakarta Sans', size: 11 }, color: '#94A3B8',
+                        callback: v => v >= 1000000 ? 'Rp ' + (v/1000000).toFixed(1) + 'M'
+                                     : v >= 1000    ? 'Rp ' + (v/1000).toFixed(0) + 'K'
+                                     : 'Rp ' + v,
                     },
                     border: { display: false },
                 }
@@ -321,35 +584,54 @@
         }
     });
 
-    // ── Pie Chart: Status Transaksi ──
+    function switchChart(type) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+
+        if (type === 'daily') {
+            mainChart.data.labels   = dailyLabels;
+            mainChart.data.datasets[0].data = dailyData;
+            mainChart.config.type   = 'bar';
+            document.getElementById('chartSubtitle').textContent = 'Pendapatan 7 hari terakhir';
+        } else {
+            mainChart.data.labels   = monthlyLabels;
+            mainChart.data.datasets[0].data = monthlyData;
+            mainChart.config.type   = 'line';
+            mainChart.data.datasets[0].backgroundColor = makeGradient(ctxMain, 'rgba(45,77,163,0.15)', 'rgba(45,77,163,0)');
+            mainChart.data.datasets[0].borderColor = '#2D4DA3';
+            mainChart.data.datasets[0].borderWidth = 2.5;
+            mainChart.data.datasets[0].pointBackgroundColor = '#2D4DA3';
+            mainChart.data.datasets[0].pointBorderColor = '#fff';
+            mainChart.data.datasets[0].pointBorderWidth = 2;
+            mainChart.data.datasets[0].pointRadius = 4;
+            mainChart.data.datasets[0].tension = 0.4;
+            mainChart.data.datasets[0].fill = true;
+            document.getElementById('chartSubtitle').textContent = 'Pendapatan 12 bulan terakhir';
+        }
+        mainChart.update();
+    }
+
+    // ── Doughnut: Status ──
     const ctxStatus = document.getElementById('statusChart').getContext('2d');
     new Chart(ctxStatus, {
         type: 'doughnut',
         data: {
-            labels: ['Active', 'Completed', 'Overdue', 'Cancelled'],
+            labels: ['Active','Completed','Overdue','Cancelled'],
             datasets: [{
-                data: [
-                    statusData.Active,
-                    statusData.Completed,
-                    statusData.Overdue,
-                    statusData.Cancelled,
-                ],
-                backgroundColor: ['#2D4DA3', '#22C55E', '#F97316', '#EF4444'],
+                data: [statusData.Active, statusData.Completed, statusData.Overdue, statusData.Cancelled],
+                backgroundColor: ['#2D4DA3','#059669','#D97706','#DC2626'],
                 borderColor: ['#fff','#fff','#fff','#fff'],
                 borderWidth: 3,
                 hoverOffset: 6,
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '68%',
+            responsive: true, maintainAspectRatio: false,
+            cutout: '70%',
             plugins: {
                 legend: { display: false },
                 tooltip: {
                     backgroundColor: '#0F172A',
-                    titleFont: { family: 'Inter', size: 12 },
-                    bodyFont:  { family: 'Inter', size: 12 },
                     padding: 10,
                     callbacks: {
                         label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + ' transaksi',

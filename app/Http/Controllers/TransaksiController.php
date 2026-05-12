@@ -55,6 +55,15 @@ class TransaksiController extends Controller
         ]);
 
         $produk     = Produk::findOrFail($request->product_id);
+        // Validasi stok
+        if ($produk->stock <= 0) {
+            return back()->withErrors([
+                'product_id' => 'Stok produk "' . $produk->product_name . '" sudah habis.'
+            ])->withInput();
+        }
+
+        // Kurangi stok
+        $produk->decrement('stock', 1);
         $start      = \Carbon\Carbon::parse($request->rental_start);
         $end        = \Carbon\Carbon::parse($request->rental_end);
         $totalDays  = $start->diffInDays($end) + 1;
@@ -274,6 +283,13 @@ class TransaksiController extends Controller
         ]);
 
         $produk    = Produk::findOrFail($request->product_id);
+        // Validasi stok
+        if ($produk->stock <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Stok produk "' . $produk->product_name . '" sudah habis.',
+            ], 422);
+        }
         $start     = \Carbon\Carbon::parse($request->rental_start);
         $end       = \Carbon\Carbon::parse($request->rental_end);
         $totalDays = $start->diffInDays($end) + 1;
@@ -304,6 +320,8 @@ class TransaksiController extends Controller
             'last_updated_date' => now(),
         ]);
 
+        // Kurangi stok produk sebesar 1 (asumsi setiap transaksi hanya untuk 1 unit)
+        $produk->decrement('stock', 1);
         // Auto-assign CUST code
         \App\Helpers\CustomerCodeHelper::assignIfNeeded($transaction->user_id);
 
