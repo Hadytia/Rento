@@ -19,4 +19,5 @@ Route::post('/products',     [ProdukController::class,    'apiStore']);
 Route::post('/users',        [UserController::class,      'apiStore']);
 Route::post('/penalties',    [PenaltyController::class,   'apiStore']);
 Route::post('/transactions', [TransaksiController::class, 'apiStore']);
+Route::put('/transactions/{id}', [TransaksiController::class, 'apiUpdate']);
 Route::post('/categories',   [KategoriController::class,  'apiStore']);

@@ -338,4 +338,70 @@ class TransaksiController extends Controller
             ],
         ], 201);
     }
+
+    public function apiUpdate(Request $request, $id)
+    {
+        $trx = \App\Models\Transaction::where('is_deleted', 0)->findOrFail($id);
+
+        $request->validate([
+            'trx_status'     => 'nullable|in:Active,Completed,Overdue,Cancelled',
+            'paid_amount'    => 'nullable|numeric|min:0',
+            'payment_method' => 'nullable|string|max:50',
+            'delivery_method'=> 'nullable|in:Pickup,Delivery,COD',
+            'notes'          => 'nullable|string',
+            'rental_start'   => 'nullable|date',
+            'rental_end'     => 'nullable|date|after_or_equal:rental_start',
+        ]);
+
+        // Recalculate total jika tanggal diubah
+        if ($request->rental_start || $request->rental_end) {
+            $start     = \Carbon\Carbon::parse($request->rental_start ?? $trx->rental_start);
+            $end       = \Carbon\Carbon::parse($request->rental_end ?? $trx->rental_end);
+            $totalDays = $start->diffInDays($end) + 1;
+            $produk    = \App\Models\Produk::findOrFail($trx->product_id);
+            $totalAmt  = $totalDays * $produk->rental_price;
+
+            $trx->update([
+                'rental_start'      => $start->toDateString(),
+                'rental_end'        => $end->toDateString(),
+                'total_days'        => $totalDays,
+                'total_amount'      => $totalAmt,
+            ]);
+        }
+
+        // Tambah stok saat status berubah ke Completed (barang dikembalikan)
+        if ($request->trx_status === 'Completed' && $trx->getOriginal('trx_status') !== 'Completed') {
+            $produk = \App\Models\Produk::find($trx->product_id);
+            if ($produk) {
+                $produk->increment('stock', 1);
+            }
+        }
+
+        // Update field lain
+        $trx->update(array_filter([
+            'trx_status'        => $request->trx_status,
+            'paid_amount'       => $request->paid_amount,
+            'payment_method'    => $request->payment_method,
+            'delivery_method'   => $request->delivery_method,
+            'notes'             => $request->notes,
+            'last_updated_by'   => 'api',
+            'last_updated_date' => now(),
+        ], fn($v) => !is_null($v)));
+
+        return response()->json([
+            'success' => true,
+            'message' => "Transaksi {$trx->trx_code} berhasil diperbarui.",
+            'data'    => [
+                'id'             => $trx->id,
+                'trx_code'       => $trx->trx_code,
+                'trx_status'     => $trx->trx_status,
+                'paid_amount'    => $trx->paid_amount,
+                'payment_method' => $trx->payment_method,
+                'delivery_method'=> $trx->delivery_method,
+                'total_days'     => $trx->total_days,
+                'total_amount'   => $trx->total_amount,
+                'notes'          => $trx->notes,
+            ],
+        ]);
+    }
 }
