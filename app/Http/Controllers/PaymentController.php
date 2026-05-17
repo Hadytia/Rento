@@ -29,18 +29,18 @@ class PaymentController extends Controller
             ->findOrFail($request->trx_id);
 
         // Cek apakah sudah ada payment yang pending/success
-        $existingPayment = Payment::where('trx_id', $trx->id)
-            ->whereIn('transaction_status', ['pending', 'settlement', 'capture'])
-            ->first();
+        // $existingPayment = Payment::where('trx_id', $trx->id)
+        //     ->whereIn('transaction_status', ['pending', 'settlement', 'capture'])
+        //     ->first();
 
-        if ($existingPayment && $existingPayment->snap_token) {
-            return response()->json([
-                'success'          => true,
-                'snap_token'       => $existingPayment->snap_token,
-                'snap_redirect_url'=> $existingPayment->snap_redirect_url,
-                'message'          => 'Menggunakan token yang sudah ada.',
-            ]);
-        }
+        // if ($existingPayment && $existingPayment->snap_token) {
+        //     return response()->json([
+        //         'success'          => true,
+        //         'snap_token'       => $existingPayment->snap_token,
+        //         'snap_redirect_url'=> $existingPayment->snap_redirect_url,
+        //         'message'          => 'Menggunakan token yang sudah ada.',
+        //     ]);
+        // }
 
         // Buat order_id unik
         $orderId = 'RENTO-' . $trx->trx_code . '-' . time();
