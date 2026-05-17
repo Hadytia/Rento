@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PenaltyController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\PaymentController;
 
 // ── GET ──────────────────────────────────────────────────
 Route::get('/products',     [ProdukController::class,    'apiIndex']);
@@ -21,3 +22,8 @@ Route::post('/penalties',    [PenaltyController::class,   'apiStore']);
 Route::post('/transactions', [TransaksiController::class, 'apiStore']);
 Route::put('/transactions/{id}', [TransaksiController::class, 'apiUpdate']);
 Route::post('/categories',   [KategoriController::class,  'apiStore']);
+
+// ── PAYMENT GATEWAY ─────────────────────────────────────────────────
+Route::post('/payment/create',               [PaymentController::class, 'createSnapToken']);
+Route::post('/payment/notification',         [PaymentController::class, 'notification']);
+Route::get('/payment/status/{order_id}',     [PaymentController::class, 'checkStatus']);
