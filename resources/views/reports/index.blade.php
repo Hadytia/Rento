@@ -582,10 +582,11 @@
                 <th class="sortable" data-col="4"><span class="th-inner">Periode<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-4"></span></span></th>
                 <th class="sortable" data-col="5"><span class="th-inner">Total<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-5"></span></span></th>
                 <th class="sortable" data-col="6"><span class="th-inner">Status<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-6"></span></span></th>
-                <th class="sortable" data-col="7"><span class="th-inner">Created By<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-7"></span></span></th>
-                <th class="sortable" data-col="8"><span class="th-inner">Created Date<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-8"></span></span></th>
-                <th class="sortable" data-col="9"><span class="th-inner">Last Updated By<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-9"></span></span></th>
-                <th class="sortable" data-col="10"><span class="th-inner">Last Updated Date<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-10"></span></span></th>
+                <th class="sortable" data-col="7" style="min-width:130px"><span class="th-inner">Payment<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-7"></span></span></th>
+                <th class="sortable" data-col="8"><span class="th-inner">Created By<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-8"></span></span></th>
+                <th class="sortable" data-col="9"><span class="th-inner">Created Date<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-9"></span></span></th>
+                <th class="sortable" data-col="10"><span class="th-inner">Last Updated By<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-10"></span></span></th>
+                <th class="sortable" data-col="11"><span class="th-inner">Last Updated Date<span class="sort-icon"><svg class="tri-up" viewBox="0 0 9 6"><polygon points="4.5,0 9,6 0,6"/></svg><svg class="tri-down" viewBox="0 0 9 6"><polygon points="0,0 9,0 4.5,6"/></svg></span><span class="sort-badge" id="badge-11"></span></span></th>
             </tr>
         </thead>
         <tbody>
@@ -696,6 +697,31 @@
                         };
                     @endphp
                     <span class="badge {{ $bc }}"><span class="dot"></span>{{ $statusLabel }}</span>
+                </td>
+
+                {{-- Payment Status --}}
+                <td>
+                    @php
+                        $pay = $trx->payment;
+                        $payStatus = $pay?->transaction_status ?? null;
+                    @endphp
+                    @if($payStatus)
+                        @php
+                            $payConfig = match($payStatus) {
+                                'settlement', 'capture' => ['Lunas', 'background:#ECFDF5;color:#047857;border:1px solid #A7F3D0;'],
+                                'pending'               => ['Pending', 'background:#FFFBEB;color:#B45309;border:1px solid #FDE68A;'],
+                                'expire'                => ['Expired', 'background:#F9FAFB;color:#6B7280;border:1px solid #E5E7EB;'],
+                                'cancel', 'deny',
+                                'failure'               => ['Batal', 'background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA;'],
+                                default                 => [$payStatus, 'background:#F9FAFB;color:#6B7280;border:1px solid #E5E7EB;'],
+                            };
+                        @endphp
+                        <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;font-size:11.5px;font-weight:600;font-family:Inter,sans-serif;{{ $payConfig[1] }}">
+                            {{ $payConfig[0] }}
+                        </span>
+                    @else
+                        <span style="font-size:12px;color:#9CA3AF;font-family:Inter,sans-serif;">-</span>
+                    @endif
                 </td>
 
                 {{-- Created By --}}
@@ -962,7 +988,7 @@
     // ── Sort ──
     const COL_TYPES = {
         1:'text', 2:'text', 3:'text', 4:'date', 5:'number', 6:'text',
-        7:'text', 8:'date', 9:'text', 10:'date'
+        7:'text', 8:'text', 9:'date', 10:'text', 11:'date'
     };
 
     let sortCol = -1, sortDir = 'asc';

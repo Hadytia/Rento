@@ -9,9 +9,9 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $transactions = Transaction::with(['user', 'product'])
+        $transactions = Transaction::with(['user', 'product', 'payment'])
                         ->where('is_deleted', 0)
-                        ->latest('created_date')
+                        ->orderBy('created_date', 'desc')
                         ->get();
 
         $dateStart = now()->startOfMonth()->format('d M');
@@ -22,9 +22,9 @@ class ReportController extends Controller
 
     public function export()
     {
-        $transactions = Transaction::with(['user', 'product'])
+        $transactions = Transaction::with(['user', 'product', 'payment'])
                         ->where('is_deleted', 0)
-                        ->latest('created_date')
+                        ->orderBy('created_date', 'desc')
                         ->get();
 
         $filename = 'transactions_' . now()->format('Ymd_His') . '.csv';

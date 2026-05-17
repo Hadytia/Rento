@@ -28,4 +28,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(Produk::class, 'product_id');
     }
+
+    public function payment()
+    {
+        return $this->hasOne(\App\Models\Payment::class, 'trx_id');
+    }
 }
