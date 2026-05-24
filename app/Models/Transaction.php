@@ -13,6 +13,7 @@ class Transaction extends Model
         'trx_code', 'user_id', 'product_id',
         'rental_start', 'rental_end', 'total_days',
         'total_amount', 'paid_amount', 'payment_method',
+        'delivery_method',
         'trx_status', 'notes',
         'company_code', 'status', 'is_deleted',
         'created_by', 'created_date',
@@ -31,6 +32,6 @@ class Transaction extends Model
 
     public function payment()
     {
-        return $this->hasOne(\App\Models\Payment::class, 'trx_id');
+        return $this->hasOne(Payment::class, 'trx_id')->latestOfMany('id');
     }
 }

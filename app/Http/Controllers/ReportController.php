@@ -86,4 +86,17 @@ class ReportController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    public function invoice($id)
+    {
+        $trx = Transaction::with(['user', 'product', 'payment'])
+                ->where('is_deleted', 0)
+                ->findOrFail($id);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoice.pdf', compact('trx'));
+
+        $filename = 'Invoice-' . $trx->trx_code . '.pdf';
+
+        return $pdf->download($filename);
+    }
 }

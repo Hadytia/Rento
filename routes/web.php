@@ -10,6 +10,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PenaltyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +84,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     Route::get('/reports/download/{id}', [ReportController::class, 'download'])->name('reports.download');
 
+    // ── Invoice ──
+    Route::get('/transactions/{id}/invoice', [ReportController::class, 'invoice'])->name('invoice.download');
+
     // ── Transaksi ──
     Route::get('/transaksi/create',        [TransaksiController::class, 'create'])->name('transaksi.create');
     Route::post('/transaksi/store',        [TransaksiController::class, 'store'])->name('transaksi.store');
@@ -107,4 +111,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/admins/{id}/reject', [AdminController::class, 'reject'])->name('admins.reject');
     Route::patch('/admins/{id}/toggle-edit', [AdminController::class, 'toggleEdit'])->name('admins.toggleEdit');
 
+    // ── Laporan Owner ──
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.exportPdf');
 });

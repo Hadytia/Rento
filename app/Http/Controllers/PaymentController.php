@@ -137,6 +137,13 @@ class PaymentController extends Controller
             $finalStatus = $fraudStatus === 'accept' ? 'settlement' : 'deny';
         }
 
+        // Jangan proses ulang kalau sudah final
+        $finalStatuses = ['settlement', 'capture', 'cancel', 'expire', 'deny'];
+        if (in_array($payment->transaction_status, $finalStatuses)) {
+            Log::info('Midtrans: already processed, skip. Order: ' . $orderId);
+            return response()->json(['message' => 'Already processed'], 200);
+        }
+
         // Update tabel payments
         $payment->update([
             'midtrans_transaction_id' => $data['transaction_id']  ?? null,
@@ -163,7 +170,7 @@ class PaymentController extends Controller
                         'last_updated_by'   => 'midtrans',
                         'last_updated_date' => now(),
                     ]);
-                } elseif (in_array($finalStatus, ['cancel', 'expire', 'failure'])) {
+                } elseif (in_array($finalStatus, ['cancel', 'expire', 'failure', 'deny'])) {
                     $trx->update([
                         'trx_status'        => 'Cancelled',
                         'last_updated_by'   => 'midtrans',
