@@ -64,6 +64,11 @@ class PaymentController extends Controller
                     'name'     => $trx->product?->product_name ?? 'Rental Item',
                 ],
             ],
+            'callbacks' => [
+                'finish'  => 'https://rento-gules.vercel.app/status',
+                'error'   => 'https://rento-gules.vercel.app/status',
+                'pending' => 'https://rento-gules.vercel.app/status',
+            ],
         ];
 
         try {
