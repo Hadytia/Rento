@@ -91,8 +91,9 @@ class LaporanController extends Controller
 
     public function exportPdf(Request $request)
     {
-        $bulan = (int) $request->get('bulan', now()->month);
-        $tahun = (int) $request->get('tahun', now()->year);
+        $bulan  = (int) $request->get('bulan', now()->month);
+        $tahun  = (int) $request->get('tahun', now()->year);
+        $status = $request->get('status', 'all'); // ← tambah ini
 
         $startDate = Carbon::createFromDate($tahun, $bulan, 1)->startOfMonth();
         $endDate   = Carbon::createFromDate($tahun, $bulan, 1)->endOfMonth();
@@ -113,11 +114,17 @@ class LaporanController extends Controller
             ->where('is_deleted', 0)
             ->count();
 
-        $transaksi = Transaction::with(['user', 'product', 'payment'])
+        // ← Filter transaksi berdasarkan status
+        $transaksiQuery = Transaction::with(['user', 'product', 'payment'])
             ->where('is_deleted', 0)
             ->whereBetween('rental_start', [$startDate, $endDate])
-            ->orderBy('rental_start', 'desc')
-            ->get();
+            ->orderBy('rental_start', 'desc');
+
+        if ($status !== 'all') {
+            $transaksiQuery->whereRaw('LOWER(trx_status) = ?', [$status]);
+        }
+
+        $transaksi = $transaksiQuery->get();
 
         $topProduk = Transaction::with('product')
             ->select('product_id', \DB::raw('COUNT(*) as total_sewa'), \DB::raw('SUM(total_amount) as total_revenue'))
@@ -128,12 +135,22 @@ class LaporanController extends Controller
             ->limit(5)
             ->get();
 
+        $statusLabel = match($status) {
+            'active'    => 'Aktif',
+            'completed' => 'Selesai',
+            'overdue'   => 'Terlambat',
+            'cancelled' => 'Dibatalkan',
+            default     => 'Semua',
+        };
+
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('laporan.pdf', compact(
             'totalRevenue', 'totalTransaksi', 'transaksiLunas',
-            'transaksi', 'topProduk', 'startDate', 'endDate', 'bulan', 'tahun'
+            'transaksi', 'topProduk', 'startDate', 'endDate',
+            'bulan', 'tahun', 'status', 'statusLabel'
         ))->setPaper('a4', 'portrait');
 
-        $filename = 'Laporan-' . Carbon::createFromDate($tahun, $bulan, 1)->format('F-Y') . '.pdf';
+        $suffix   = $status !== 'all' ? '-' . ucfirst($status) : '';
+        $filename = 'Laporan-' . Carbon::createFromDate($tahun, $bulan, 1)->format('F-Y') . $suffix . '.pdf';
 
         return $pdf->download($filename);
     }

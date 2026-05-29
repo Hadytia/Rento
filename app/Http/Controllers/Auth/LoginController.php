@@ -38,32 +38,37 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            $request->session()->regenerate();
+        // Cek di tabel admins langsung
+        $admin = Admin::where('email', $request->email)
+                    ->where('status', 1)
+                    ->where('is_deleted', 0)
+                    ->first();
 
-            $admin = Admin::where('email', Auth::user()->email)
-                         ->where('status', 1)
-                         ->where('is_deleted', 0)
-                         ->first();
-
-            if (!$admin) {
-                Auth::logout();
-                return back()->withErrors(['email' => 'Akun Anda tidak memiliki akses ke sistem ini.']);
-            }
-
-            Auth::logout();
-            session(['2fa_admin_id' => $admin->id]);
-
-            if (!$admin->two_factor_secret) {
-                return redirect()->route('2fa.setup');
-            }
-
-            return redirect()->route('2fa.choose');
+        if (!$admin || !\Illuminate\Support\Facades\Hash::check($request->password, $admin->password)) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Email atau password salah.']);
         }
 
-        return back()
-            ->withInput($request->only('email'))
-            ->withErrors(['email' => 'Email atau password salah.']);
+        // Pastikan ada di tabel users juga
+        $user = \App\Models\User::where('email', $admin->email)->first();
+        if (!$user) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Akun user tidak ditemukan.']);
+        }
+
+        // Set session untuk 2FA
+        session([
+            '2fa_admin_id' => $admin->id,
+            '2fa_user_id'  => $user->id,
+        ]);
+
+        if (!$admin->two_factor_secret) {
+            return redirect()->route('2fa.setup');
+        }
+
+        return redirect()->route('2fa.choose');
     }
 
     public function redirectToGoogle()

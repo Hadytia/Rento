@@ -539,8 +539,23 @@
             </div>
             <p class="action-panel-sub">Overdue items requiring reminders</p>
 
-            @forelse($overdueTransactions as $trx)
-            <div class="overdue-card">
+            <style>
+                .overdue-hidden { display: none; }
+                .btn-show-more {
+                    width: 100%; height: 38px; margin-top: 10px;
+                    background: white; border: 1.5px solid #FDE68A;
+                    border-radius: 10px; font-family: Inter, sans-serif;
+                    font-size: 12.5px; font-weight: 600; color: #B45309;
+                    cursor: pointer; transition: all .15s ease;
+                    display: flex; align-items: center; justify-content: center; gap: 6px;
+                }
+                .btn-show-more:hover { background: #FFFBEB; border-color: #F59E0B; }
+                .btn-show-more svg { transition: transform .2s ease; }
+                .btn-show-more.expanded svg { transform: rotate(180deg); }
+            </style>
+
+            @forelse($overdueTransactions as $index => $trx)
+            <div class="overdue-card {{ $index >= 3 ? 'overdue-hidden' : '' }}">
                 <div class="overdue-top">
                     <span class="overdue-name">{{ $trx->customer_name }}</span>
                     <span class="trx-chip">{{ $trx->trx_code }}</span>
@@ -582,6 +597,16 @@
                     🔒 View Only
                 </div>
                 @endif
+
+            {{-- Tombol Lihat Semua --}}
+            @if($overdueTransactions->count() > 3)
+            <button class="btn-show-more" id="btnShowMore" onclick="toggleOverdue()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <polyline points="6,9 12,15 18,9"/>
+                </svg>
+                Lihat Semua ({{ $overdueTransactions->count() }})
+            </button>
+            @endif
             </div>
             @empty
             <div class="empty-overdue">
@@ -979,6 +1004,24 @@
             const f = document.getElementById('formResolve');
             f.action = '/penalties/' + confirmId + '/resolve';
             f.submit();
+        }
+    }
+
+    // ── Toggle Overdue List ──────────────────────────────────────────────────
+    function toggleOverdue() {
+        const hidden  = document.querySelectorAll('.overdue-hidden');
+        const btn     = document.getElementById('btnShowMore');
+        const total   = parseInt('{{ $overdueTransactions->count() }}');
+        const isOpen  = btn.classList.contains('expanded');
+
+        if (isOpen) {
+            hidden.forEach(el => el.style.display = 'none');
+            btn.classList.remove('expanded');
+            btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg> Lihat Semua (${total})`;
+        } else {
+            document.querySelectorAll('.overdue-card').forEach(el => el.style.display = 'block');
+            btn.classList.add('expanded');
+            btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="18,15 12,9 6,15"/></svg> Sembunyikan`;
         }
     }
 </script>

@@ -98,6 +98,23 @@
                 </svg>
                 Laporan Owner
             </a>
+
+            <a href="/revenue-kategori" class="{{ request()->is('revenue-kategori*') ? 'active' : '' }}">
+                <svg class="menu-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                Revenue Kategori
+            </a>
+
+            {{-- ✅ Stock Opname --}}
+            <a href="/stock-opname" class="{{ request()->is('stock-opname*') ? 'active' : '' }}">
+                <svg class="menu-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                Stock Opname
+            </a>
+
             <a href="/penalties" class="{{ request()->is('penalties*') ? 'active' : '' }}">
                 <svg class="menu-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
@@ -155,18 +172,20 @@
             <div class="topbar-title">
                 @php
                     $titles = [
-                        'dashboard'        => 'Dashboard',
-                        'produks.index'    => 'Products',
-                        'produks.create'   => 'Add Product',
-                        'produks.edit'     => 'Edit Product',
-                        'kategoris.index'  => 'Categories',
-                        'reports.index'    => 'Reports & Transactions',
-                        'penalties.index'  => 'Penalties & Returns',
-                        'admins.index'     => 'Admin',
-                        'users.index'      => 'Users',
-                        'transaksi.create' => 'Buat Transaksi',
-                        'transaksi.edit'   => 'Edit Transaksi',
-                        'laporan.index' => 'Laporan Owner',
+                        'dashboard'              => 'Dashboard',
+                        'produks.index'          => 'Products',
+                        'produks.create'         => 'Add Product',
+                        'produks.edit'           => 'Edit Product',
+                        'kategoris.index'        => 'Categories',
+                        'reports.index'          => 'Reports & Transactions',
+                        'penalties.index'        => 'Penalties & Returns',
+                        'admins.index'           => 'Admin',
+                        'users.index'            => 'Users',
+                        'transaksi.create'       => 'Buat Transaksi',
+                        'transaksi.edit'         => 'Edit Transaksi',
+                        'laporan.index'          => 'Laporan Owner',
+                        'revenue-kategori.index' => 'Revenue per Kategori',
+                        'stock-opname.index'     => 'Stock Opname',
                     ];
                     echo $titles[Route::currentRouteName()] ?? ucfirst(Route::currentRouteName() ?? 'Dashboard');
                 @endphp

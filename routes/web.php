@@ -11,6 +11,8 @@ use App\Http\Controllers\PenaltyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\StockOpnameController;
+use App\Http\Controllers\RevenueKategoriController;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,4 +116,16 @@ Route::middleware(['auth'])->group(function () {
     // ── Laporan Owner ──
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.exportPdf');
+    Route::get('/reports/export-filtered', [ReportController::class, 'exportFiltered'])->name('reports.exportFiltered');
+    Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.exportPdf');
+
+    // ── Stock Opname — dapat diakses Admin & Owner ──
+    Route::get('/stock-opname', [StockOpnameController::class, 'index'])->name('stock-opname.index');
+    Route::get('/stock-opname/export-pdf', [StockOpnameController::class, 'exportPdf'])->name('stock-opname.exportPdf');
+    Route::get('/stock-opname/export-csv', [StockOpnameController::class, 'exportCsv'])->name('stock-opname.exportCsv');
+
+    // ── Revenue Kategori ──
+    Route::get('/revenue-kategori', [RevenueKategoriController::class, 'index'])->name('revenue-kategori.index');
+    Route::get('/revenue-kategori/export-pdf', [RevenueKategoriController::class, 'exportPdf'])->name('revenue-kategori.exportPdf');
+    Route::get('/revenue-kategori/export-csv', [RevenueKategoriController::class, 'exportCsv'])->name('revenue-kategori.exportCsv');
 });

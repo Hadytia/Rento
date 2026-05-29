@@ -148,6 +148,97 @@
     .b-pending { background: #fef9c3; color: #a16207; }
     .b-cancel  { background: #fee2e2; color: #b91c1c; }
     .b-none    { background: #f1f5f9; color: #64748b; }
+
+    /* ── LEGEND ITEM CLICKABLE ── */
+    .legend-item {
+        cursor: pointer;
+        transition: background .15s ease;
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin: 0 -10px;
+    }
+    .legend-item:hover { background: #f8fafc; }
+    .legend-item.active { background: #eff6ff; }
+
+    /* ── PREVIEW MODAL ── */
+    .modal-overlay {
+        display: none; position: fixed; inset: 0; z-index: 999;
+        align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(15,23,42,.6); backdrop-filter: blur(6px);
+    }
+    .preview-modal {
+        position: relative; z-index: 1;
+        background: white; border-radius: 16px;
+        width: 100%; max-width: 900px; max-height: 90vh;
+        display: flex; flex-direction: column;
+        box-shadow: 0 25px 60px rgba(0,0,0,.2);
+        overflow: hidden;
+    }
+    .preview-modal-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 18px 24px; border-bottom: 1px solid #e2e8f0;
+        background: #1e3a5f; flex-shrink: 0;
+    }
+    .preview-modal-header h3 {
+        font-family: Inter, sans-serif; font-size: 15px; font-weight: 700;
+        color: white; margin: 0;
+    }
+    .preview-modal-header-right { display: flex; align-items: center; gap: 10px; }
+    .btn-download-pdf {
+        height: 38px; padding: 0 18px;
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+        border: none; border-radius: 8px; color: white;
+        font-family: Inter, sans-serif; font-size: 13px;
+        font-weight: 600; cursor: pointer; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn-close-modal {
+        width: 34px; height: 34px; border-radius: 8px;
+        background: rgba(255,255,255,.15); border: none;
+        color: white; cursor: pointer; font-size: 16px;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .btn-close-modal:hover { background: rgba(255,255,255,.25); }
+    .preview-modal-body {
+        flex: 1; overflow-y: auto; padding: 28px 32px;
+        background: #f8fafc;
+    }
+
+    /* Preview content */
+    .preview-header-bg {
+        background: #1e3a5f; border-radius: 8px;
+        padding: 18px 22px; margin-bottom: 4px;
+    }
+    .preview-header-bg table { width: 100%; border-collapse: collapse; }
+    .preview-brand { font-size: 22px; font-weight: 900; color: white; letter-spacing: 3px; }
+    .preview-tagline { font-size: 10px; color: rgba(255,255,255,.55); margin-top: 3px; letter-spacing: 1px; text-transform: uppercase; }
+    .preview-invoice-label { font-size: 16px; font-weight: 800; color: white; letter-spacing: 2px; text-align: right; }
+    .preview-invoice-period { font-size: 11px; color: rgba(255,255,255,.65); text-align: right; margin-top: 4px; }
+    .preview-accent { height: 3px; background: #2563eb; margin-bottom: 20px; border-radius: 2px; }
+    .preview-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+    .preview-card {
+        background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;
+    }
+    .preview-card-label { font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; }
+    .preview-card-value { font-size: 16px; font-weight: 800; color: #0f172a; }
+    .preview-card-sub { font-size: 10px; color: #64748b; margin-top: 3px; }
+    .preview-section-title { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .preview-table { width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
+    .preview-table thead td { background: #1e3a5f; padding: 9px 12px; font-size: 10px; font-weight: 700; color: white; text-transform: uppercase; }
+    .preview-table tbody td { padding: 9px 12px; font-size: 12px; border-bottom: 1px solid #f1f5f9; color: #374151; }
+    .preview-table tbody tr:last-child td { border-bottom: none; }
+    .preview-table tbody tr:nth-child(even) td { background: #f8fafc; }
+    .preview-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+    .pb-lunas   { background: #dcfce7; color: #15803d; }
+    .pb-pending { background: #fef9c3; color: #a16207; }
+    .pb-cancel  { background: #fee2e2; color: #b91c1c; }
+    .pb-active  { background: #dbeafe; color: #1d4ed8; }
+    .pb-overdue { background: #ffedd5; color: #c2410c; }
+    .pb-none    { background: #f1f5f9; color: #64748b; }
 </style>
 
 {{-- FILTER BAR --}}
@@ -168,15 +259,15 @@
         </select>
 
         <button type="submit" class="btn-filter">Tampilkan</button>
+        <input type="hidden" id="activeStatusInput" value="all">
 
-        <a href="{{ route('laporan.exportPdf', ['bulan' => $bulan, 'tahun' => $tahun]) }}"
-           class="btn-pdf">
+        <button type="button" class="btn-pdf" onclick="openPreview()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14,2 14,8 20,8"/>
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
             </svg>
-            Download PDF
-        </a>
+            Preview & Download
+        </button>
     </div>
 </form>
 
@@ -275,7 +366,7 @@
         @endphp
         @foreach($statusConfig as $key => [$label, $color])
         @php $count = $statusBreakdown[$key] ?? 0; @endphp
-        <div class="legend-item">
+        <div class="legend-item" onclick="filterByStatus('{{ strtolower($key) }}')" data-status="{{ strtolower($key) }}">
             <div class="legend-dot" style="background:{{ $color }};"></div>
             <div class="legend-label">{{ $label }}</div>
             <div class="legend-val">{{ $count }}</div>
@@ -311,7 +402,7 @@
             </thead>
             <tbody>
                 @forelse($transaksi as $trx)
-                <tr>
+                <tr data-status="{{ strtolower($trx->trx_status) }}">
                     <td style="font-family:monospace;font-weight:700;color:#0f172a;font-size:12px;">
                         {{ $trx->trx_code }}
                     </td>
@@ -357,6 +448,155 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+</div>
+
+{{-- PREVIEW MODAL --}}
+<div class="modal-overlay" id="previewModal">
+    <div class="modal-backdrop" onclick="closePreview()"></div>
+    <div class="preview-modal">
+        <div class="preview-modal-header">
+            <h3>
+                Preview Laporan —
+                {{ \Carbon\Carbon::create()->month((int)$bulan)->format('F') }} {{ $tahun }}
+            </h3>
+            <div class="preview-modal-header-right">
+                <a href="{{ route('laporan.exportPdf', ['bulan' => $bulan, 'tahun' => $tahun]) }}"
+                    class="btn-download-pdf"
+                    id="btnDownloadPdf">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                    </svg>
+                    Download PDF
+                </a>
+                <button class="btn-close-modal" onclick="closePreview()">✕</button>
+            </div>
+        </div>
+        <div class="preview-modal-body">
+
+            {{-- Header --}}
+            <div class="preview-header-bg">
+                <table>
+                    <tr>
+                        <td>
+                            <div class="preview-brand">RENTO</div>
+                            <div class="preview-tagline">Sistem Manajemen Rental</div>
+                        </td>
+                        <td>
+                            <div class="preview-invoice-label">LAPORAN BULANAN</div>
+                            <div class="preview-invoice-period">
+                                {{ \Carbon\Carbon::create()->month((int)$bulan)->format('F') }} {{ $tahun }}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="preview-accent"></div>
+
+            {{-- Summary Cards --}}
+            <div class="preview-cards">
+                <div class="preview-card">
+                    <div class="preview-card-label">Total Revenue</div>
+                    <div class="preview-card-value" style="font-size:13px;">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</div>
+                    <div class="preview-card-sub">Dari transaksi lunas</div>
+                </div>
+                <div class="preview-card">
+                    <div class="preview-card-label">Total Transaksi</div>
+                    <div class="preview-card-value">{{ $totalTransaksi }}</div>
+                    <div class="preview-card-sub">Semua status</div>
+                </div>
+                <div class="preview-card">
+                    <div class="preview-card-label">Transaksi Lunas</div>
+                    <div class="preview-card-value" style="color:#15803d;">{{ $transaksiLunas }}</div>
+                    <div class="preview-card-sub">Payment settlement</div>
+                </div>
+                <div class="preview-card">
+                    <div class="preview-card-label">Belum Lunas</div>
+                    <div class="preview-card-value" style="color:#a16207;">{{ $totalTransaksi - $transaksiLunas }}</div>
+                    <div class="preview-card-sub">Perlu follow up</div>
+                </div>
+            </div>
+
+            {{-- Top Produk --}}
+            <div class="preview-section-title">Top Produk</div>
+            <table class="preview-table" style="margin-bottom:20px;">
+                <thead><tr>
+                    <td style="width:5%;">#</td>
+                    <td style="width:50%;">Nama Produk</td>
+                    <td style="width:20%;text-align:center;">Total Disewa</td>
+                    <td style="width:25%;text-align:right;">Total Revenue</td>
+                </tr></thead>
+                <tbody>
+                    @forelse($topProduk as $i => $item)
+                    <tr>
+                        <td style="font-weight:800;color:#64748b;">{{ $i+1 }}</td>
+                        <td style="font-weight:600;">{{ $item->product->product_name ?? '-' }}</td>
+                        <td style="text-align:center;">{{ $item->total_sewa }}x</td>
+                        <td style="text-align:right;font-weight:700;color:#2563eb;">Rp {{ number_format($item->total_revenue, 0, ',', '.') }}</td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="4" style="text-align:center;padding:14px;color:#94a3b8;">Tidak ada data</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+            {{-- Tabel Transaksi --}}
+            <div class="preview-section-title">Detail Transaksi</div>
+            <table class="preview-table">
+                <thead><tr>
+                    <td style="width:16%;">ID Transaksi</td>
+                    <td style="width:16%;">Customer</td>
+                    <td style="width:19%;">Produk</td>
+                    <td style="width:18%;">Periode</td>
+                    <td style="width:13%;text-align:right;">Total</td>
+                    <td style="width:9%;text-align:center;">Status</td>
+                    <td style="width:9%;text-align:center;">Payment</td>
+                </tr></thead>
+                <tbody>
+                    @forelse($transaksi as $trx)
+                    <tr class="preview-trx-row" data-status="{{ strtolower($trx->trx_status) }}">
+                        <td style="font-family:monospace;font-size:10px;font-weight:700;">{{ $trx->trx_code }}</td>
+                        <td>{{ $trx->user->name ?? '-' }}</td>
+                        <td>{{ $trx->product->product_name ?? '-' }}</td>
+                        <td style="font-size:10px;color:#64748b;">
+                            {{ \Carbon\Carbon::parse($trx->rental_start)->format('d M Y') }} -
+                            {{ \Carbon\Carbon::parse($trx->rental_end)->format('d M Y') }}
+                        </td>
+                        <td style="text-align:right;font-weight:700;white-space:nowrap;">
+                            Rp {{ number_format($trx->total_amount, 0, ',', '.') }}
+                        </td>
+                        <td style="text-align:center;">
+                            @php
+                                $sc = match(strtolower($trx->trx_status)) {
+                                    'active'    => ['Aktif',      'pb-active'],
+                                    'completed' => ['Selesai',    'pb-lunas'],
+                                    'overdue'   => ['Terlambat',  'pb-overdue'],
+                                    'cancelled' => ['Dibatalkan', 'pb-cancel'],
+                                    default     => [$trx->trx_status, 'pb-none'],
+                                };
+                            @endphp
+                            <span class="preview-badge {{ $sc[1] }}">{{ $sc[0] }}</span>
+                        </td>
+                        <td style="text-align:center;">
+                            @if($trx->payment?->transaction_status === 'settlement')
+                                <span class="preview-badge pb-lunas">Lunas</span>
+                            @elseif($trx->payment?->transaction_status === 'pending')
+                                <span class="preview-badge pb-pending">Pending</span>
+                            @elseif($trx->payment)
+                                <span class="preview-badge pb-cancel">Batal</span>
+                            @else
+                                <span class="preview-badge pb-none">-</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="7" style="text-align:center;padding:20px;color:#94a3b8;">Tidak ada transaksi.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+        </div>
     </div>
 </div>
 
@@ -425,6 +665,75 @@
             }
         }
     });
+
+    // ── Preview Modal ────────────────────────────────────────────────────
+    function openPreview() {
+        filterPreviewTable(activeStatus);
+        document.getElementById('previewModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePreview() {
+        document.getElementById('previewModal').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closePreview();
+    });
+
+    // ── Filter Tabel by Status ───────────────────────────────────────────
+    let activeStatus = 'all';
+
+    function filterByStatus(status) {
+        activeStatus = activeStatus === status ? 'all' : status;
+
+        // Update legend highlight
+        document.querySelectorAll('.legend-item').forEach(el => {
+            el.classList.toggle('active', el.dataset.status === activeStatus);
+        });
+
+        // Filter tabel utama
+        filterMainTable(activeStatus);
+
+        // Filter tabel preview
+        filterPreviewTable(activeStatus);
+
+        // Update download PDF link dengan status
+        updatePdfLink(activeStatus);
+    }
+
+    function filterMainTable(status) {
+        let count = 0;
+        document.querySelectorAll('tbody tr[data-status]').forEach(row => {
+            const show = status === 'all' || row.dataset.status === status;
+            row.style.display = show ? '' : 'none';
+            if (show) count++;
+        });
+
+        // Update counter badge
+        const badge = document.querySelector('.table-box-header span span');
+        if (badge) badge.textContent = count;
+    }
+
+    function filterPreviewTable(status) {
+        document.querySelectorAll('.preview-trx-row').forEach(row => {
+            row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+        });
+    }
+
+    function updatePdfLink(status) {
+        const link = document.getElementById('btnDownloadPdf');
+        if (!link) return;
+
+        const url = new URL(link.href);
+        if (status === 'all') {
+            url.searchParams.delete('status');
+        } else {
+            url.searchParams.set('status', status);
+        }
+        link.href = url.toString();
+    }
 </script>
 
 @endsection

@@ -498,6 +498,64 @@
         color:#4F46E5; font-weight:700;
         background:#F5F3FF;
     }
+
+    /* ── PREVIEW PDF MODAL ── */
+    .preview-pdf-modal {
+        position: relative; z-index: 1;
+        background: white; border-radius: 16px;
+        width: 100%; max-width: 960px; max-height: 90vh;
+        display: flex; flex-direction: column;
+        box-shadow: 0 25px 60px rgba(0,0,0,.2);
+        overflow: hidden;
+    }
+    .preview-pdf-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 24px; border-bottom: 1px solid #e2e8f0;
+        background: #1e3a5f; flex-shrink: 0;
+    }
+    .preview-pdf-header h3 {
+        font-family: Inter, sans-serif; font-size: 15px; font-weight: 700;
+        color: white; margin: 0;
+    }
+    .preview-pdf-actions { display: flex; align-items: center; gap: 10px; }
+    .btn-dl-csv {
+        height: 36px; padding: 0 16px;
+        background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+        border-radius: 8px; color: white; font-family: Inter, sans-serif;
+        font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-dl-csv:hover { background: rgba(255,255,255,.25); color: white; }
+    .btn-dl-pdf {
+        height: 36px; padding: 0 16px;
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+        border: none; border-radius: 8px; color: white;
+        font-family: Inter, sans-serif; font-size: 12px; font-weight: 600;
+        cursor: pointer; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-close-preview {
+        width: 32px; height: 32px; border-radius: 8px;
+        background: rgba(255,255,255,.15); border: none;
+        color: white; cursor: pointer; font-size: 16px;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .btn-close-preview:hover { background: rgba(255,255,255,.25); }
+    .preview-pdf-body {
+        flex: 1; overflow-y: auto; padding: 24px 28px; background: #f8fafc;
+    }
+    .preview-pdf-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .preview-pdf-table thead th { background: #1e3a5f; padding: 10px 14px; font-size: 11px; font-weight: 700; color: white; text-align: left; text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; }
+    .preview-pdf-table tbody td { padding: 10px 14px; font-size: 12px; border-bottom: 1px solid #f1f5f9; color: #374151; vertical-align: middle; }
+    .preview-pdf-table tbody tr:last-child td { border-bottom: none; }
+    .preview-pdf-table tbody tr:nth-child(even) td { background: #f8fafc; }
+    .pbadge { display: inline-block; padding: 3px 9px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+    .pb-active   { background: #dbeafe; color: #1d4ed8; }
+    .pb-lunas    { background: #dcfce7; color: #15803d; }
+    .pb-overdue  { background: #ffedd5; color: #c2410c; }
+    .pb-cancel   { background: #fee2e2; color: #b91c1c; }
+    .pb-pending  { background: #fef9c3; color: #a16207; }
+    .pb-none     { background: #f1f5f9; color: #64748b; }
 </style>
 
 <div class="page-header">
@@ -544,14 +602,23 @@
         </div>
     </div>
 
-    <a href="{{ route('reports.export') }}" class="btn-export">
+    <button type="button" class="btn-export" onclick="exportCsv()">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7,10 12,15 17,10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
         </svg>
         Ekspor CSV
-    </a>
+    </button>
+
+    <button type="button" class="btn-export" onclick="openPreviewPdf()"
+        style="background:linear-gradient(135deg,#dc2626,#ef4444);box-shadow:0 4px 12px rgba(220,38,38,.3),0 1px 0 rgba(255,255,255,.15) inset;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+        </svg>
+        Preview & PDF
+    </button>
 
     @if(!$isDosen && $canEdit)
     <a href="{{ route('transaksi.create') }}" class="btn-create">
@@ -787,6 +854,60 @@
             @endforelse
         </tbody>
     </table>
+    </div>
+</div>
+
+{{-- PREVIEW PDF MODAL --}}
+<div class="modal-overlay" id="modalPreviewPdf">
+    <div class="modal-backdrop" onclick="closePreviewPdf()"></div>
+    <div class="preview-pdf-modal">
+        <div class="preview-pdf-header">
+            <h3 id="previewPdfTitle">Preview Transaksi</h3>
+            <div class="preview-pdf-actions">
+                <a href="#" class="btn-dl-csv" id="btnDlCsv">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download CSV
+                </a>
+                <a href="#" class="btn-dl-pdf" id="btnDlPdf">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                    </svg>
+                    Download PDF
+                </a>
+                <button class="btn-close-preview" onclick="closePreviewPdf()">✕</button>
+            </div>
+        </div>
+        <div class="preview-pdf-body">
+            {{-- Info --}}
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                <div style="font-family:Inter,sans-serif;font-size:13px;color:#64748b;">
+                    Menampilkan: <strong id="previewCount" style="color:#0f172a;">0</strong> transaksi
+                    <span id="previewFilterBadge" style="margin-left:8px;"></span>
+                </div>
+            </div>
+
+            {{-- Tabel Preview --}}
+            <table class="preview-pdf-table">
+                <thead>
+                    <tr>
+                        <th>ID Transaksi</th>
+                        <th>Customer</th>
+                        <th>Produk</th>
+                        <th>Periode</th>
+                        <th style="text-align:right;">Total</th>
+                        <th style="text-align:center;">Status</th>
+                        <th style="text-align:center;">Payment</th>
+                    </tr>
+                </thead>
+                <tbody id="previewPdfBody">
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -1076,6 +1197,101 @@
         });
         rows.forEach(r => tbody.appendChild(r));
     }
+
+    // ── Preview PDF & Export ─────────────────────────────────────────────
+
+    const exportBaseUrl  = '{{ route("reports.exportFiltered") }}';
+    const exportPdfUrl   = '{{ route("reports.exportPdf") }}';
+    const searchKeyword  = () => document.getElementById('searchInput').value;
+
+    function exportCsv() {
+        const params = new URLSearchParams({
+            status: currentStatus,
+            search: searchKeyword()
+        });
+        window.location.href = exportBaseUrl + '?' + params.toString();
+    }
+
+    function openPreviewPdf() {
+        const status  = currentStatus;
+        const search  = searchKeyword();
+
+        // Kumpulkan baris yang visible
+        const rows = [...document.querySelectorAll('#transactionTable tbody tr[data-status]')]
+            .filter(r => r.style.display !== 'none');
+
+        // Update title
+        const statusNames = { all:'Semua', active:'Aktif', completed:'Selesai', overdue:'Terlambat', cancelled:'Dibatalkan' };
+        document.getElementById('previewPdfTitle').textContent = 'Preview Transaksi — ' + (statusNames[status] || 'Semua');
+        document.getElementById('previewCount').textContent    = rows.length;
+
+        // Badge filter
+        const colors = { all:'#eff6ff;color:#2563eb', active:'#dbeafe;color:#1d4ed8', completed:'#dcfce7;color:#15803d', overdue:'#ffedd5;color:#c2410c', cancelled:'#fee2e2;color:#b91c1c' };
+        const badgeEl = document.getElementById('previewFilterBadge');
+        if (status !== 'all') {
+            badgeEl.innerHTML = `<span style="background:${colors[status]};padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:Inter,sans-serif;">${statusNames[status]}</span>`;
+        } else {
+            badgeEl.innerHTML = '';
+        }
+
+        // Build tabel preview dari DOM
+        const tbody = document.getElementById('previewPdfBody');
+        tbody.innerHTML = '';
+
+        rows.forEach(row => {
+            const cells = row.cells;
+            // Ambil data dari kolom tabel (skip kolom Aksi = index 0)
+            const trxCode  = cells[1]?.innerText.trim() ?? '-';
+            const customer = cells[2]?.innerText.trim() ?? '-';
+            const produk   = cells[3]?.innerText.trim() ?? '-';
+            const periode  = cells[4]?.innerText.trim() ?? '-';
+            const total    = cells[5]?.innerText.trim() ?? '-';
+            const statusTxt= cells[6]?.innerText.trim() ?? '-';
+            const payment  = cells[7]?.innerText.trim() ?? '-';
+
+            const statusClass = {
+                'Aktif':'pb-active','Selesai':'pb-lunas','Terlambat':'pb-overdue',
+                'Dibatalkan':'pb-cancel'
+            }[statusTxt] || 'pb-none';
+
+            const payClass = {
+                'Lunas':'pb-lunas','Pending':'pb-pending','Batal':'pb-cancel','-':'pb-none'
+            }[payment] || 'pb-none';
+
+            tbody.innerHTML += `
+                <tr>
+                    <td style="font-family:monospace;font-size:11px;font-weight:700;">${trxCode}</td>
+                    <td>${customer}</td>
+                    <td>${produk}</td>
+                    <td style="font-size:11px;color:#64748b;">${periode}</td>
+                    <td style="text-align:right;font-weight:700;">${total}</td>
+                    <td style="text-align:center;"><span class="pbadge ${statusClass}">${statusTxt}</span></td>
+                    <td style="text-align:center;"><span class="pbadge ${payClass}">${payment}</span></td>
+                </tr>`;
+        });
+
+        if (rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:#94a3b8;">Tidak ada transaksi.</td></tr>';
+        }
+
+        // Update link download
+        const params = new URLSearchParams({ status, search });
+        document.getElementById('btnDlCsv').href = exportBaseUrl + '?' + params.toString();
+        document.getElementById('btnDlPdf').href = exportPdfUrl  + '?' + params.toString();
+
+        // Show modal
+        document.getElementById('modalPreviewPdf').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePreviewPdf() {
+        document.getElementById('modalPreviewPdf').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closePreviewPdf();
+    });
 </script>
 
 @endsection
