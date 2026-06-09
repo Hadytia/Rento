@@ -120,75 +120,102 @@ class ProdukController extends Controller
         return redirect()->route('produks.index')->with('success', 'Produk berhasil dihapus.');
     }
 
+    // ── API ──────────────────────────────────────────────────────────────────
+
     public function apiIndex(Request $request)
     {
-        $query = Produk::with('kategori')
-            ->where('is_deleted', 0)
-            ->where('status', 1);
+        try {
+            $query = Produk::with('kategori')
+                ->where('is_deleted', 0)
+                ->where('status', 1);
 
-        if ($request->category_id) {
-            $query->where('category_id', $request->category_id);
+            if ($request->category_id) {
+                $query->where('category_id', $request->category_id);
+            }
+
+            $produks = $query->get()->map(function ($produk) {
+                return [
+                    'id'              => $produk->id,
+                    'product_name'    => $produk->product_name,
+                    'description'     => $produk->description,
+                    'rental_price'    => $produk->rental_price,
+                    'stock'           => $produk->stock,
+                    'condition'       => $produk->condition,
+                    'min_rental_days' => $produk->min_rental_days,
+                    'category'        => $produk->kategori?->category_name,
+                    'photo'           => $produk->photo
+                        ? asset('products/' . $produk->photo)
+                        : null,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data'    => $produks,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data produk.',
+                'error'   => $e->getMessage(),
+            ], 500);
         }
-
-        $produks = $query->get()->map(function ($produk) {
-            return [
-                'id'              => $produk->id,
-                'product_name'    => $produk->product_name,
-                'description'     => $produk->description,
-                'rental_price'    => $produk->rental_price,
-                'stock'           => $produk->stock,
-                'condition'       => $produk->condition,
-                'min_rental_days' => $produk->min_rental_days,
-                'category'        => $produk->kategori?->category_name,
-                'photo'           => $produk->photo
-                    ? asset('products/' . $produk->photo)
-                    : null,
-            ];
-        });
-
-        return response()->json([
-            'success' => true,
-            'data'    => $produks,
-        ]);
     }
 
     public function apiStore(Request $request)
     {
-        $request->validate([
-            'product_name'    => 'required|string|max:255',
-            'description'     => 'nullable|string',
-            'rental_price'    => 'required|numeric|min:0',
-            'stock'           => 'required|integer|min:0',
-            'condition'       => 'required|in:New,Excellent,Good,Fair,Poor',
-            'category_id'     => 'required|exists:categories,id',
-            'min_rental_days' => 'nullable|integer|min:1',
-        ]);
+        try {
+            $request->validate([
+                'product_name'    => 'required|string|max:255',
+                'description'     => 'nullable|string',
+                'rental_price'    => 'required|numeric|min:0',
+                'stock'           => 'required|integer|min:0',
+                'condition'       => 'required|in:New,Excellent,Good,Fair,Poor',
+                'category_id'     => 'required|exists:categories,id',
+                'min_rental_days' => 'nullable|integer|min:1',
+            ]);
 
-        $produk = Produk::create([
-            'product_name'    => $request->product_name,
-            'description'     => $request->description,
-            'rental_price'    => $request->rental_price,
-            'stock'           => $request->stock,
-            'condition'       => $request->condition,
-            'category_id'     => $request->category_id,
-            'min_rental_days' => $request->min_rental_days ?? 1,
-            'photo'           => null,
-            'status'          => 1,
-            'is_deleted'      => 0,
-            'created_by'      => 'api',
-            'created_date'    => now(),
-        ]);
+            $produk = Produk::create([
+                'product_name'    => $request->product_name,
+                'description'     => $request->description,
+                'rental_price'    => $request->rental_price,
+                'stock'           => $request->stock,
+                'condition'       => $request->condition,
+                'category_id'     => $request->category_id,
+                'min_rental_days' => $request->min_rental_days ?? 1,
+                'photo'           => null,
+                'status'          => 1,
+                'is_deleted'      => 0,
+                'created_by'      => 'api',
+                'created_date'    => now(),
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Produk berhasil ditambahkan.',
-            'data'    => [
-                'id'           => $produk->id,
-                'product_name' => $produk->product_name,
-                'rental_price' => $produk->rental_price,
-                'stock'        => $produk->stock,
-                'condition'    => $produk->condition,
-            ],
-        ], 201);
+            return response()->json([
+                'success' => true,
+                'message' => 'Produk berhasil ditambahkan.',
+                'data'    => [
+                    'id'           => $produk->id,
+                    'product_name' => $produk->product_name,
+                    'rental_price' => $produk->rental_price,
+                    'stock'        => $produk->stock,
+                    'condition'    => $produk->condition,
+                ],
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal.',
+                'errors'  => $e->errors(),
+            ], 422);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menambahkan produk.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 }

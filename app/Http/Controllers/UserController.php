@@ -42,21 +42,21 @@ class UserController extends Controller
         ]);
 
         User::create([
-            'name'              => $request->name,
-            'email'             => $request->email,
-            'password'          => bcrypt(str()->random(16)),
-            'phone'             => $request->phone,
-            'address'           => $request->address,
-            'id_card_number'    => $request->id_card_number,
-            'emergency_contact' => $request->emergency_contact,
+            'name'                 => $request->name,
+            'email'                => $request->email,
+            'password'             => bcrypt(str()->random(16)),
+            'phone'                => $request->phone,
+            'address'              => $request->address,
+            'id_card_number'       => $request->id_card_number,
+            'emergency_contact'    => $request->emergency_contact,
             'no_emergency_contact' => $request->no_emergency_contact,
-            'company_code'      => null, // akan diisi otomatis saat transaksi pertama
-            'status'            => $request->has('status') ? 1 : 0,
-            'is_deleted'        => 0,
-            'created_by'        => auth()->user()->name ?? 'system',
-            'created_date'      => now(),
-            'last_updated_by'   => auth()->user()->name ?? 'system',
-            'last_updated_date' => now(),
+            'company_code'         => null,
+            'status'               => $request->has('status') ? 1 : 0,
+            'is_deleted'           => 0,
+            'created_by'           => auth()->user()->name ?? 'system',
+            'created_date'         => now(),
+            'last_updated_by'      => auth()->user()->name ?? 'system',
+            'last_updated_date'    => now(),
         ]);
 
         return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
@@ -77,17 +77,16 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
         $user->update([
-            'name'              => $request->name,
-            'email'             => $request->email,
-            'phone'             => $request->phone,
-            'address'           => $request->address,
-            'id_card_number'    => $request->id_card_number,
-            'emergency_contact' => $request->emergency_contact,
+            'name'                 => $request->name,
+            'email'                => $request->email,
+            'phone'                => $request->phone,
+            'address'              => $request->address,
+            'id_card_number'       => $request->id_card_number,
+            'emergency_contact'    => $request->emergency_contact,
             'no_emergency_contact' => $request->no_emergency_contact,
-            // company_code tidak diupdate dari form, dikelola otomatis
-            'status'            => $request->has('status') ? 1 : 0,
-            'last_updated_by'   => auth()->user()->name ?? 'system',
-            'last_updated_date' => now(),
+            'status'               => $request->has('status') ? 1 : 0,
+            'last_updated_by'      => auth()->user()->name ?? 'system',
+            'last_updated_date'    => now(),
         ]);
 
         return redirect()->route('users.index')->with('success', 'User berhasil diupdate.');
@@ -107,79 +106,106 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
     }
 
+    // ── API ──────────────────────────────────────────────────────────────────
+
     public function apiIndex(Request $request)
     {
-        $userIds = DB::table('transactions')
-            ->whereNotNull('user_id')
-            ->where('is_deleted', 0)
-            ->distinct()
-            ->pluck('user_id');
+        try {
+            $userIds = DB::table('transactions')
+                ->whereNotNull('user_id')
+                ->where('is_deleted', 0)
+                ->distinct()
+                ->pluck('user_id');
 
-        $users = User::whereIn('id', $userIds)
-            ->where('is_deleted', 0)
-            ->orderBy('id', 'asc')
-            ->get()
-            ->map(function ($user) {
-                return [
-                    'id'                => $user->id,
-                    'name'              => $user->name,
-                    'email'             => $user->email,
-                    'phone'             => $user->phone,
-                    'address'           => $user->address,
-                    'id_card_number'    => $user->id_card_number,
-                    'company_code'      => $user->company_code,
-                    'emergency_contact' => $user->emergency_contact,
-                    'no_emergency_contact' => $user->no_emergency_contact,
-                    'status'            => $user->status,
-                ];
-            });
+            $users = User::whereIn('id', $userIds)
+                ->where('is_deleted', 0)
+                ->orderBy('id', 'asc')
+                ->get()
+                ->map(function ($user) {
+                    return [
+                        'id'                   => $user->id,
+                        'name'                 => $user->name,
+                        'email'                => $user->email,
+                        'phone'                => $user->phone,
+                        'address'              => $user->address,
+                        'id_card_number'       => $user->id_card_number,
+                        'company_code'         => $user->company_code,
+                        'emergency_contact'    => $user->emergency_contact,
+                        'no_emergency_contact' => $user->no_emergency_contact,
+                        'status'               => $user->status,
+                    ];
+                });
 
-        return response()->json([
-            'success' => true,
-            'data'    => $users,
-        ]);
+            return response()->json([
+                'success' => true,
+                'data'    => $users,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data user.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function apiStore(Request $request)
     {
-        $request->validate([
-            'name'              => 'required|string|max:255',
-            'email'             => 'required|email|unique:users,email',
-            'phone'             => 'required|string|max:20',
-            'address'           => 'nullable|string',
-            'id_card_number'    => 'nullable|string|max:16',
-            'emergency_contact' => 'nullable|string|max:255',
-        ]);
+        try {
+            $request->validate([
+                'name'              => 'required|string|max:255',
+                'email'             => 'required|email|unique:users,email',
+                'phone'             => 'required|string|max:20',
+                'address'           => 'nullable|string',
+                'id_card_number'    => 'nullable|string|max:16',
+                'emergency_contact' => 'nullable|string|max:255',
+            ]);
 
-        $user = User::create([
-            'name'              => $request->name,
-            'email'             => $request->email,
-            'password'          => bcrypt(str()->random(16)),
-            'phone'             => $request->phone,
-            'address'           => $request->address,
-            'id_card_number'    => $request->id_card_number,
-            'emergency_contact' => $request->emergency_contact,
-            'no_emergency_contact' => $request->no_emergency_contact,
-            'company_code'      => null,
-            'status'            => 1,
-            'is_deleted'        => 0,
-            'created_by'        => 'api',
-            'created_date'      => now(),
-            'last_updated_by'   => 'api',
-            'last_updated_date' => now(),
-        ]);
+            $user = User::create([
+                'name'                 => $request->name,
+                'email'                => $request->email,
+                'password'             => bcrypt(str()->random(16)),
+                'phone'                => $request->phone,
+                'address'              => $request->address,
+                'id_card_number'       => $request->id_card_number,
+                'emergency_contact'    => $request->emergency_contact,
+                'no_emergency_contact' => $request->no_emergency_contact,
+                'company_code'         => null,
+                'status'               => 1,
+                'is_deleted'           => 0,
+                'created_by'           => 'api',
+                'created_date'         => now(),
+                'last_updated_by'      => 'api',
+                'last_updated_date'    => now(),
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User berhasil ditambahkan.',
-            'data'    => [
-                'id'           => $user->id,
-                'name'         => $user->name,
-                'email'        => $user->email,
-                'phone'        => $user->phone,
-                'id_card_number' => $user->id_card_number,
-                'company_code' => $user->company_code,
-            ],
-        ], 201);
+            return response()->json([
+                'success' => true,
+                'message' => 'User berhasil ditambahkan.',
+                'data'    => [
+                    'id'             => $user->id,
+                    'name'           => $user->name,
+                    'email'          => $user->email,
+                    'phone'          => $user->phone,
+                    'id_card_number' => $user->id_card_number,
+                    'company_code'   => $user->company_code,
+                ],
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal.',
+                'errors'  => $e->errors(),
+            ], 422);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menambahkan user.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 }

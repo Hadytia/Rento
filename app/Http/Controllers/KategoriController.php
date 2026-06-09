@@ -76,53 +76,80 @@ class KategoriController extends Controller
         return redirect()->route('kategoris.index')->with('success', 'Kategori berhasil dihapus.');
     }
 
-        public function apiIndex(Request $request)
-    {
-        $kategoris = Kategori::where('is_deleted', 0)
-            ->where('status', 1)
-            ->orderBy('category_name')
-            ->get()
-            ->map(function ($k) {
-                return [
-                    'id'            => $k->id,
-                    'category_name' => $k->category_name,
-                    'description'   => $k->description,
-                    'status'        => $k->status,
-                ];
-            });
+    // ── API ──────────────────────────────────────────────────────────────────
 
-        return response()->json([
-            'success' => true,
-            'data'    => $kategoris,
-        ]);
+    public function apiIndex(Request $request)
+    {
+        try {
+            $kategoris = Kategori::where('is_deleted', 0)
+                ->where('status', 1)
+                ->orderBy('category_name')
+                ->get()
+                ->map(function ($k) {
+                    return [
+                        'id'            => $k->id,
+                        'category_name' => $k->category_name,
+                        'description'   => $k->description,
+                        'status'        => $k->status,
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'data'    => $kategoris,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data kategori.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function apiStore(Request $request)
     {
-        $request->validate([
-            'category_name' => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'status'        => 'nullable|in:1,0',
-        ]);
+        try {
+            $request->validate([
+                'category_name' => 'required|string|max:255',
+                'description'   => 'nullable|string',
+                'status'        => 'nullable|in:1,0',
+            ]);
 
-        $kategori = Kategori::create([
-            'category_name' => $request->category_name,
-            'description'   => $request->description,
-            'status'        => $request->status ?? 1,
-            'is_deleted'    => 0,
-            'created_by'    => 'api',
-            'created_date'  => now(),
-        ]);
+            $kategori = Kategori::create([
+                'category_name' => $request->category_name,
+                'description'   => $request->description,
+                'status'        => $request->status ?? 1,
+                'is_deleted'    => 0,
+                'created_by'    => 'api',
+                'created_date'  => now(),
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Kategori berhasil ditambahkan.',
-            'data'    => [
-                'id'            => $kategori->id,
-                'category_name' => $kategori->category_name,
-                'description'   => $kategori->description,
-                'status'        => $kategori->status,
-            ],
-        ], 201);
+            return response()->json([
+                'success' => true,
+                'message' => 'Kategori berhasil ditambahkan.',
+                'data'    => [
+                    'id'            => $kategori->id,
+                    'category_name' => $kategori->category_name,
+                    'description'   => $kategori->description,
+                    'status'        => $kategori->status,
+                ],
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal.',
+                'errors'  => $e->errors(),
+            ], 422);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menambahkan kategori.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 }
