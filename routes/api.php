@@ -7,6 +7,7 @@ use App\Http\Controllers\PenaltyController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReturnRequestController;
 
 // ── GET ──────────────────────────────────────────────────
 Route::get('/products',     [ProdukController::class,    'apiIndex']);
@@ -27,3 +28,9 @@ Route::post('/categories',   [KategoriController::class,  'apiStore']);
 Route::post('/payment/create',               [PaymentController::class, 'createSnapToken']);
 Route::post('/payment/notification',         [PaymentController::class, 'notification']);
 Route::get('/payment/status/{order_id}',     [PaymentController::class, 'checkStatus']);
+
+// ── RETURN REQUESTS ──────────────────────────────────────────────────────────
+Route::get('/return-requests',      [ReturnRequestController::class, 'apiIndex']);
+Route::get('/return-requests/{id}', [ReturnRequestController::class, 'apiShow']);
+Route::post('/return-requests',     [ReturnRequestController::class, 'apiStore']);
+Route::put('/return-requests/{id}', [ReturnRequestController::class, 'apiUpdate']);
