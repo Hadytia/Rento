@@ -91,9 +91,35 @@ class ReportController extends Controller
             default     => 'Semua',
         };
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', compact(
+        // PASS 1: render untuk hitung total halaman
+        $pdfCounter = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', compact(
             'transactions', 'status', 'statusLabel', 'search'
-        ))->setPaper('a4', 'portrait');
+        ))->setPaper('a4', 'portrait')
+        ->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled'      => true,
+            'defaultFont'          => 'Helvetica',
+        ]);
+        $pdfCounter->render();
+        $totalPages = $pdfCounter->getDomPDF()->get_canvas()->get_page_count();
+
+        // PASS 2: render final dengan total halaman yang sudah diketahui
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', compact(
+            'transactions', 'status', 'statusLabel', 'search', 'totalPages'
+        ))->setPaper('a4', 'portrait')
+        ->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled'      => true,
+            'defaultFont'          => 'Helvetica',
+        ]);
+
+        $dompdf = $pdf->getDomPDF();
+        $canvas = $dompdf->get_canvas();
+        $font   = $dompdf->getFontMetrics()->getFont('Helvetica');
+        $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages, $font) {
+            $text = "Halaman {$pageNumber} dari {$totalPages}";
+            $canvas->text(420, 800, $text, $font, 9, [0.4, 0.45, 0.51]);
+        });
 
         $suffix   = $status !== 'all' ? '-' . ucfirst($status) : '';
         $filename = 'Transaksi' . $suffix . '-' . now()->format('Ymd') . '.pdf';

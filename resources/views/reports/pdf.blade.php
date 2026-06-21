@@ -5,17 +5,28 @@
     <title>Laporan Transaksi{{ $status !== 'all' ? ' - ' . $statusLabel : '' }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: #1e293b; }
-        .page { padding: 36px 44px; }
 
-        .header-bg { background-color: #1e3a5f; border-radius: 8px; padding: 18px 22px; margin-bottom: 4px; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: #1e293b; margin-top: 130px; margin-bottom: 60px; }
+
+        /* ===== HEADER (native dompdf, berulang tiap halaman) ===== */
+        .header-bg { background-color: #1e3a5f; border-radius: 8px; padding: 18px 22px; }
         .header-bg table { width: 100%; border-collapse: collapse; }
         .brand-name { font-size: 22px; font-weight: 900; color: #fff; letter-spacing: 3px; }
         .brand-tagline { font-size: 9px; color: rgba(255,255,255,0.55); margin-top: 3px; letter-spacing: 1px; text-transform: uppercase; }
         .report-label { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 2px; text-align: right; }
         .report-sub { font-size: 10px; color: rgba(255,255,255,0.65); text-align: right; margin-top: 4px; }
-        .accent { height: 3px; background: #2563eb; margin-bottom: 20px; }
+        .accent { height: 3px; background: #2563eb; margin-top: 6px; border-radius: 2px; }
 
+        /* ===== FOOTER (native dompdf, berulang tiap halaman) ===== */
+        .footer-wrap { border-top: 1px solid #e2e8f0; padding-top: 10px; }
+        .footer-wrap table { width: 100%; border-collapse: collapse; }
+        .footer-brand { font-size: 11px; font-weight: 900; color: #1e3a5f; letter-spacing: 2px; }
+        .footer-sub { font-size: 8px; color: #94a3b8; margin-top: 1px; }
+        .footer-page { font-size: 9px; color: #64748b; text-align: right; vertical-align: bottom; }
+        /* body { counter-reset: page; }
+        .footer-pagenum:after { content: "Halaman " counter(page) " dari " counter(pages); } */
+
+        /* ===== CONTENT ===== */
         .info-row { display: table; width: 100%; margin-bottom: 16px; }
         .info-chip {
             display: inline-block; padding: 4px 12px; border-radius: 20px;
@@ -42,35 +53,45 @@
         .b-active  { background: #dbeafe; color: #1d4ed8; }
         .b-overdue { background: #ffedd5; color: #c2410c; }
         .b-none    { background: #f1f5f9; color: #64748b; }
-
-        .footer { border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 20px; }
-        .footer table { width: 100%; border-collapse: collapse; }
-        .footer-brand { font-size: 12px; font-weight: 900; color: #1e3a5f; letter-spacing: 2px; }
-        .footer-sub { font-size: 9px; color: #94a3b8; margin-top: 1px; }
     </style>
 </head>
 <body>
-<div class="page">
 
-    <div class="header-bg">
-        <table><tr>
-            <td>
-                <div class="brand-name">RENTO</div>
-                <div class="brand-tagline">Sistem Manajemen Rental</div>
-            </td>
-            <td>
-                <div class="report-label">LAPORAN TRANSAKSI</div>
-                <div class="report-sub">
-                    Filter: {{ $statusLabel }}
-                    @if($search) · Pencarian: "{{ $search }}" @endif
-                </div>
-                <div class="report-sub">Dicetak: {{ now()->format('d F Y, H:i') }} WIB</div>
-            </td>
-        </tr></table>
-    </div>
-    <div class="accent"></div>
+    {{-- HEADER NATIVE DOMPDF: otomatis berulang di setiap halaman --}}
+    <htmlpageheader name="page-header">
+        <div class="header-bg">
+            <table><tr>
+                <td>
+                    <div class="brand-name">RENTO</div>
+                    <div class="brand-tagline">Sistem Manajemen Rental</div>
+                </td>
+                <td>
+                    <div class="report-label">LAPORAN TRANSAKSI</div>
+                    <div class="report-sub">
+                        Filter: {{ $statusLabel }}
+                        @if($search) · Pencarian: "{{ $search }}" @endif
+                    </div>
+                    <div class="report-sub">Dicetak: {{ now()->format('d F Y, H:i') }} WIB</div>
+                </td>
+            </tr></table>
+        </div>
+        <div class="accent"></div>
+    </htmlpageheader>
 
-    {{-- Info filter --}}
+    {{-- FOOTER NATIVE DOMPDF: otomatis berulang dengan page number --}}
+    <htmlpagefooter name="page-footer">
+        <div class="footer-wrap">
+            <table><tr>
+                <td>
+                    <div class="footer-brand">RENTO</div>
+                    <div class="footer-sub">Dokumen ini digenerate otomatis oleh sistem</div>
+                </td>
+                <td class="footer-page" id="footer-pagenum"></td>
+            </tr></table>
+        </div>
+    </htmlpagefooter>
+
+    {{-- KONTEN UTAMA --}}
     <div style="margin-bottom:16px;">
         <span style="font-size:12px;color:#64748b;">
             Total: <strong style="color:#0f172a;">{{ $transactions->count() }} transaksi</strong>
@@ -141,18 +162,5 @@
         </tbody>
     </table>
 
-    <div class="footer">
-        <table><tr>
-            <td>
-                <div class="footer-brand">RENTO</div>
-                <div class="footer-sub">Dokumen ini digenerate otomatis oleh sistem</div>
-            </td>
-            <td style="text-align:right;font-size:9px;color:#94a3b8;vertical-align:bottom;">
-                {{ now()->format('d F Y, H:i') }} WIB
-            </td>
-        </tr></table>
-    </div>
-
-</div>
 </body>
 </html>

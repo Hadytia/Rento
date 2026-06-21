@@ -500,6 +500,7 @@
     }
 
     /* ── PREVIEW PDF MODAL ── */
+    /* ── PREVIEW PDF MODAL (selaras dengan kop PDF) ── */
     .preview-pdf-modal {
         position: relative; z-index: 1;
         background: white; border-radius: 16px;
@@ -508,39 +509,54 @@
         box-shadow: 0 25px 60px rgba(0,0,0,.2);
         overflow: hidden;
     }
-    .preview-pdf-header {
+
+    /* Header kop perusahaan — sama seperti PDF */
+    .preview-pdf-kop {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 60%, #3b82f6 100%);
+        padding: 18px 24px;
+        flex-shrink: 0;
+    }
+    .preview-pdf-kop-row {
         display: flex; align-items: center; justify-content: space-between;
-        padding: 16px 24px; border-bottom: 1px solid #e2e8f0;
-        background: #1e3a5f; flex-shrink: 0;
     }
-    .preview-pdf-header h3 {
-        font-family: Inter, sans-serif; font-size: 15px; font-weight: 700;
-        color: white; margin: 0;
+    .preview-pdf-brand { font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 3px; font-family: Inter, sans-serif; }
+    .preview-pdf-tagline { font-size: 9px; color: rgba(255,255,255,.55); margin-top: 3px; letter-spacing: 1px; text-transform: uppercase; font-family: Inter, sans-serif; }
+    .preview-pdf-report-label { font-size: 14px; font-weight: 800; color: #fff; letter-spacing: 2px; text-align: right; font-family: Inter, sans-serif; }
+    .preview-pdf-report-sub { font-size: 10px; color: rgba(255,255,255,.65); text-align: right; margin-top: 4px; font-family: Inter, sans-serif; }
+    .preview-pdf-accent { height: 3px; background: #2563eb; }
+
+    /* Toolbar aksi (download csv/pdf, close) — dipisah dari kop */
+    .preview-pdf-toolbar {
+        display: flex; align-items: center; justify-content: flex-end;
+        gap: 10px; padding: 12px 24px; background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0; flex-shrink: 0;
     }
-    .preview-pdf-actions { display: flex; align-items: center; gap: 10px; }
     .btn-dl-csv {
         height: 36px; padding: 0 16px;
-        background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
-        border-radius: 8px; color: white; font-family: Inter, sans-serif;
+        background: #fff; border: 1px solid #cbd5e1;
+        border-radius: 8px; color: #334155; font-family: Inter, sans-serif;
         font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none;
         display: inline-flex; align-items: center; gap: 6px;
     }
-    .btn-dl-csv:hover { background: rgba(255,255,255,.25); color: white; }
+    .btn-dl-csv:hover { background: #f1f5f9; color: #334155; }
     .btn-dl-pdf {
         height: 36px; padding: 0 16px;
-        background: linear-gradient(135deg, #dc2626, #ef4444);
+        background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
         border: none; border-radius: 8px; color: white;
         font-family: Inter, sans-serif; font-size: 12px; font-weight: 600;
         cursor: pointer; text-decoration: none;
         display: inline-flex; align-items: center; gap: 6px;
+        box-shadow: 0 2px 6px rgba(37,99,235,.3);
     }
+    .btn-dl-pdf:hover { color: white; box-shadow: 0 4px 10px rgba(37,99,235,.4); }
     .btn-close-preview {
         width: 32px; height: 32px; border-radius: 8px;
-        background: rgba(255,255,255,.15); border: none;
-        color: white; cursor: pointer; font-size: 16px;
+        background: #f1f5f9; border: none;
+        color: #475569; cursor: pointer; font-size: 16px;
         display: flex; align-items: center; justify-content: center;
     }
-    .btn-close-preview:hover { background: rgba(255,255,255,.25); }
+    .btn-close-preview:hover { background: #e2e8f0; }
+
     .preview-pdf-body {
         flex: 1; overflow-y: auto; padding: 24px 28px; background: #f8fafc;
     }
@@ -861,27 +877,42 @@
 <div class="modal-overlay" id="modalPreviewPdf">
     <div class="modal-backdrop" onclick="closePreviewPdf()"></div>
     <div class="preview-pdf-modal">
-        <div class="preview-pdf-header">
-            <h3 id="previewPdfTitle">Preview Transaksi</h3>
-            <div class="preview-pdf-actions">
-                <a href="#" class="btn-dl-csv" id="btnDlCsv">
-                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7,10 12,15 17,10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Download CSV
-                </a>
-                <a href="#" class="btn-dl-pdf" id="btnDlPdf">
-                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14,2 14,8 20,8"/>
-                    </svg>
-                    Download PDF
-                </a>
-                <button class="btn-close-preview" onclick="closePreviewPdf()">✕</button>
+
+        {{-- Kop perusahaan, mirror dari reports/pdf.blade.php --}}
+        <div class="preview-pdf-kop">
+            <div class="preview-pdf-kop-row">
+                <div>
+                    <div class="preview-pdf-brand">RENTO</div>
+                    <div class="preview-pdf-tagline">Sistem Manajemen Rental</div>
+                </div>
+                <div>
+                    <div class="preview-pdf-report-label" id="previewPdfTitle">LAPORAN TRANSAKSI</div>
+                    <div class="preview-pdf-report-sub" id="previewPdfFilterText">Filter: Semua</div>
+                </div>
             </div>
         </div>
+        <div class="preview-pdf-accent"></div>
+
+        {{-- Toolbar aksi --}}
+        <div class="preview-pdf-toolbar">
+            <a href="#" class="btn-dl-csv" id="btnDlCsv">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7,10 12,15 17,10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download CSV
+            </a>
+            <a href="#" class="btn-dl-pdf" id="btnDlPdf">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                </svg>
+                Download PDF
+            </a>
+            <button class="btn-close-preview" onclick="closePreviewPdf()">✕</button>
+        </div>
+
         <div class="preview-pdf-body">
             {{-- Info --}}
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
@@ -1222,7 +1253,7 @@
 
         // Update title
         const statusNames = { all:'Semua', active:'Aktif', completed:'Selesai', overdue:'Terlambat', cancelled:'Dibatalkan' };
-        document.getElementById('previewPdfTitle').textContent = 'Preview Transaksi — ' + (statusNames[status] || 'Semua');
+        document.getElementById('previewPdfFilterText').textContent = 'Filter: ' + (statusNames[status] || 'Semua') + (search ? ' · Pencarian: "' + search + '"' : '');
         document.getElementById('previewCount').textContent    = rows.length;
 
         // Badge filter
